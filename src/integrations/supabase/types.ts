@@ -14,16 +14,130 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      enrollments: {
+        Row: {
+          admin_notes: string | null
+          amount_due: number
+          company: string | null
+          course_id: string
+          course_name: string
+          created_at: string
+          email: string
+          full_name: string
+          id: string
+          nuit: string | null
+          payment_plan: Database["public"]["Enums"]["payment_plan_type"]
+          phone: string
+          status: Database["public"]["Enums"]["payment_status"]
+          total_price: number
+          updated_at: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          amount_due: number
+          company?: string | null
+          course_id: string
+          course_name: string
+          created_at?: string
+          email: string
+          full_name: string
+          id?: string
+          nuit?: string | null
+          payment_plan?: Database["public"]["Enums"]["payment_plan_type"]
+          phone: string
+          status?: Database["public"]["Enums"]["payment_status"]
+          total_price: number
+          updated_at?: string
+        }
+        Update: {
+          admin_notes?: string | null
+          amount_due?: number
+          company?: string | null
+          course_id?: string
+          course_name?: string
+          created_at?: string
+          email?: string
+          full_name?: string
+          id?: string
+          nuit?: string | null
+          payment_plan?: Database["public"]["Enums"]["payment_plan_type"]
+          phone?: string
+          status?: Database["public"]["Enums"]["payment_status"]
+          total_price?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      payment_proofs: {
+        Row: {
+          created_at: string
+          enrollment_id: string
+          file_name: string
+          file_path: string
+          file_type: string
+          id: string
+          installment_number: number
+        }
+        Insert: {
+          created_at?: string
+          enrollment_id: string
+          file_name: string
+          file_path: string
+          file_type: string
+          id?: string
+          installment_number?: number
+        }
+        Update: {
+          created_at?: string
+          enrollment_id?: string
+          file_name?: string
+          file_path?: string
+          file_type?: string
+          id?: string
+          installment_number?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_proofs_enrollment_id_fkey"
+            columns: ["enrollment_id"]
+            isOneToOne: false
+            referencedRelation: "enrollments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      is_admin: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "user"
+      payment_plan_type: "full" | "60-40" | "60-20-20"
+      payment_status: "pending" | "approved" | "rejected" | "partial"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +264,10 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "user"],
+      payment_plan_type: ["full", "60-40", "60-20-20"],
+      payment_status: ["pending", "approved", "rejected", "partial"],
+    },
   },
 } as const

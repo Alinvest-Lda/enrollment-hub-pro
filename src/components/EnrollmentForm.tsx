@@ -11,6 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Course, formatCurrency, getWhatsAppLink } from "@/lib/courses-data";
 import { toast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 const enrollmentSchema = z.object({
   fullName: z.string().min(3, "Nome completo obrigatório").max(100),
@@ -29,10 +30,13 @@ interface EnrollmentFormProps {
 
 const EnrollmentForm = ({ course }: EnrollmentFormProps) => {
   const [step, setStep] = useState<"form" | "upload" | "done">("form");
+  const [uploading, setUploading] = useState(false);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [enrollmentId, setEnrollmentId] = useState<string | null>(null);
+  const [formData, setFormData] = useState<EnrollmentFormData | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const { register, handleSubmit, watch, formState: { errors } } = useForm<EnrollmentFormData>({
+  const { register, handleSubmit, watch, formState: { errors, isSubmitting } } = useForm<EnrollmentFormData>({
     resolver: zodResolver(enrollmentSchema),
     defaultValues: { paymentPlanId: course.paymentPlans[0]?.id || "" },
   });
@@ -42,13 +46,9 @@ const EnrollmentForm = ({ course }: EnrollmentFormProps) => {
   const firstInstallment = selectedPlan ? course.price * selectedPlan.installments[0].percentage / 100 : course.price;
 
   const onSubmit = (data: EnrollmentFormData) => {
-    // In production, this would save to database
-    console.log("Enrollment data:", data);
+    setFormData(data);
     setStep("upload");
-    toast({
-      title: "Dados guardados!",
-      description: "Agora envie o comprovativo de pagamento.",
-    });
+    toast({ title: "Dados guardados!", description: "Agora envie o comprovativo de pagamento." });
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -67,15 +67,43 @@ const EnrollmentForm = ({ course }: EnrollmentFormProps) => {
     }
   };
 
-  const handleUploadSubmit = () => {
-    if (!uploadedFile) {
+  const handleUploadSubmit = async () => {
+    if (!uploadedFile || !formData) {
       toast({ title: "Sem ficheiro", description: "Por favor envie o comprovativo.", variant: "destructive" });
       return;
     }
-    // In production, this would upload to storage
-    console.log("Uploading file:", uploadedFile.name);
-    setStep("done");
-    toast({ title: "Comprovativo enviado!", description: "A nossa equipa irá verificar e confirmar o seu pagamento." });
+
+    setUploading(true);
+    try {
+      const body = new FormData();
+      body.append("fullName", formData.fullName);
+      body.append("email", formData.email);
+      body.append("phone", formData.phone);
+      body.append("company", formData.company || "");
+      body.append("nuit", formData.nuit || "");
+      body.append("courseId", course.id);
+      body.append("courseName", course.title);
+      body.append("paymentPlan", formData.paymentPlanId);
+      body.append("amountDue", firstInstallment.toString());
+      body.append("totalPrice", course.price.toString());
+      body.append("file", uploadedFile);
+
+      const { data, error } = await supabase.functions.invoke("submit-enrollment", {
+        body,
+      });
+
+      if (error) throw error;
+      if (!data?.success) throw new Error(data?.error || "Erro desconhecido");
+
+      setEnrollmentId(data.enrollmentId);
+      setStep("done");
+      toast({ title: "Comprovativo enviado!", description: "A nossa equipa irá verificar e confirmar o seu pagamento." });
+    } catch (err: any) {
+      console.error("Submit error:", err);
+      toast({ title: "Erro ao enviar", description: err.message || "Tente novamente.", variant: "destructive" });
+    } finally {
+      setUploading(false);
+    }
   };
 
   return (
@@ -119,13 +147,11 @@ const EnrollmentForm = ({ course }: EnrollmentFormProps) => {
                 <Input id="nuit" {...register("nuit")} placeholder="Número Único de Identificação Tributária" />
               </div>
 
-              {/* Payment Plan */}
               <div>
                 <Label className="mb-2 block font-heading font-semibold">Modalidade de Pagamento *</Label>
                 <RadioGroup
                   value={selectedPlanId}
                   onValueChange={(val) => {
-                    // react-hook-form workaround
                     const event = { target: { name: "paymentPlanId", value: val } };
                     register("paymentPlanId").onChange(event as any);
                   }}
@@ -144,7 +170,6 @@ const EnrollmentForm = ({ course }: EnrollmentFormProps) => {
                 {errors.paymentPlanId && <p className="text-xs text-destructive mt-1">{errors.paymentPlanId.message}</p>}
               </div>
 
-              {/* Summary */}
               <div className="bg-muted rounded-lg p-4">
                 <p className="text-sm font-heading font-semibold">Resumo do Pagamento Inicial</p>
                 <p className="text-2xl font-heading font-bold text-accent mt-1">{formatCurrency(firstInstallment)}</p>
@@ -153,7 +178,7 @@ const EnrollmentForm = ({ course }: EnrollmentFormProps) => {
                 </p>
               </div>
 
-              <Button type="submit" variant="navy" className="w-full" size="lg">
+              <Button type="submit" variant="navy" className="w-full" size="lg" disabled={isSubmitting}>
                 <Send className="w-4 h-4" />
                 Prosseguir para Pagamento
               </Button>
@@ -176,13 +201,7 @@ const EnrollmentForm = ({ course }: EnrollmentFormProps) => {
                 onClick={() => fileInputRef.current?.click()}
                 className="border-2 border-dashed border-border rounded-lg p-8 text-center cursor-pointer hover:border-accent hover:bg-accent/5 transition-colors"
               >
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/*,.pdf"
-                  onChange={handleFileChange}
-                  className="hidden"
-                />
+                <input ref={fileInputRef} type="file" accept="image/*,.pdf" onChange={handleFileChange} className="hidden" />
                 {uploadedFile ? (
                   <div className="flex items-center justify-center gap-2 text-success">
                     <FileText className="w-6 h-6" />
@@ -197,9 +216,9 @@ const EnrollmentForm = ({ course }: EnrollmentFormProps) => {
                 )}
               </div>
 
-              <Button onClick={handleUploadSubmit} variant="navy" className="w-full" size="lg">
+              <Button onClick={handleUploadSubmit} variant="navy" className="w-full" size="lg" disabled={uploading}>
                 <Send className="w-4 h-4" />
-                Enviar Comprovativo
+                {uploading ? "A enviar..." : "Enviar Comprovativo"}
               </Button>
             </motion.div>
           )}
@@ -208,11 +227,12 @@ const EnrollmentForm = ({ course }: EnrollmentFormProps) => {
             <motion.div key="done" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="text-center py-8 space-y-4">
               <CheckCircle className="w-16 h-16 mx-auto text-success" />
               <h3 className="font-heading text-xl font-bold">Inscrição Submetida com Sucesso!</h3>
+              {enrollmentId && <p className="text-xs text-muted-foreground font-mono">Ref: {enrollmentId.substring(0, 8).toUpperCase()}</p>}
               <p className="text-muted-foreground text-sm max-w-md mx-auto">
                 O seu comprovativo será analisado pela nossa equipa. Receberá confirmação via WhatsApp em até 24 horas.
               </p>
               <a
-                href={getWhatsAppLink(`Olá, acabei de submeter a minha inscrição para o curso: ${course.title}. Gostaria de confirmar a recepção.`)}
+                href={getWhatsAppLink(`Olá, acabei de submeter a minha inscrição para o curso: ${course.title}. Ref: ${enrollmentId?.substring(0, 8).toUpperCase()}`)}
                 target="_blank"
                 rel="noopener noreferrer"
               >
