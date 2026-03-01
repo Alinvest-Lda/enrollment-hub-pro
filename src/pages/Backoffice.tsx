@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Check, X, Eye, Clock, FileText, Search, MessageCircle, Download } from "lucide-react";
+import { Check, X, Eye, Clock, FileText, Search, MessageCircle, LogOut, Loader2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -11,50 +12,131 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { formatCurrency, getWhatsAppLink } from "@/lib/courses-data";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/hooks/use-toast";
 
-type EnrollmentStatus = "pending" | "approved" | "rejected";
+type PaymentStatus = "pending" | "approved" | "rejected" | "partial";
 
-interface MockEnrollment {
+interface Enrollment {
   id: string;
-  studentName: string;
+  full_name: string;
   email: string;
   phone: string;
-  courseName: string;
-  paymentPlan: string;
-  amountDue: number;
-  status: EnrollmentStatus;
-  submittedAt: string;
-  proofFileName: string;
+  company: string | null;
+  course_name: string;
+  payment_plan: string;
+  amount_due: number;
+  total_price: number;
+  status: PaymentStatus;
+  created_at: string;
+  admin_notes: string | null;
 }
 
-const MOCK_ENROLLMENTS: MockEnrollment[] = [
-  { id: "INS-001", studentName: "Maria da Conceição", email: "maria@email.com", phone: "+258849001122", courseName: "ISO 9001 – Implementação", paymentPlan: "60% + 40%", amountDue: 15000, status: "pending", submittedAt: "2026-02-28", proofFileName: "comprovativo_maria.pdf" },
-  { id: "INS-002", studentName: "Carlos Nhantumbo", email: "carlos@email.com", phone: "+258841234567", courseName: "Gestão de Projectos", paymentPlan: "100%", amountDue: 20000, status: "approved", submittedAt: "2026-02-26", proofFileName: "pagamento_carlos.jpg" },
-  { id: "INS-003", studentName: "Ana Machel", email: "ana@email.com", phone: "+258852223344", courseName: "HSE Básico", paymentPlan: "100%", amountDue: 15000, status: "pending", submittedAt: "2026-02-27", proofFileName: "recibo_ana.png" },
-  { id: "INS-004", studentName: "Jorge Sitoe", email: "jorge@email.com", phone: "+258843334455", courseName: "ISO 45001", paymentPlan: "60% + 20% + 20%", amountDue: 21000, status: "rejected", submittedAt: "2026-02-25", proofFileName: "prova_jorge.pdf" },
-  { id: "INS-005", studentName: "Fátima Mondlane", email: "fatima@email.com", phone: "+258844556677", courseName: "Liderança Executiva", paymentPlan: "60% + 20% + 20%", amountDue: 24000, status: "pending", submittedAt: "2026-02-28", proofFileName: "comp_fatima.jpg" },
-];
+interface PaymentProof {
+  id: string;
+  enrollment_id: string;
+  file_path: string;
+  file_name: string;
+  file_type: string;
+  created_at: string;
+}
 
-const statusConfig: Record<EnrollmentStatus, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
+const statusConfig: Record<PaymentStatus, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
   pending: { label: "Pendente", variant: "outline" },
   approved: { label: "Aprovado", variant: "default" },
   rejected: { label: "Rejeitado", variant: "destructive" },
+  partial: { label: "Parcial", variant: "secondary" },
 };
 
 const Backoffice = () => {
-  const [enrollments, setEnrollments] = useState(MOCK_ENROLLMENTS);
+  const [enrollments, setEnrollments] = useState<Enrollment[]>([]);
+  const [proofs, setProofs] = useState<Record<string, PaymentProof[]>>({});
+  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [activeTab, setActiveTab] = useState("all");
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    checkAuth();
+    fetchEnrollments();
+  }, []);
+
+  const checkAuth = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      navigate("/admin");
+      return;
+    }
+    const { data: roles } = await supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", session.user.id)
+      .eq("role", "admin");
+
+    if (!roles || roles.length === 0) {
+      await supabase.auth.signOut();
+      navigate("/admin");
+    }
+  };
+
+  const fetchEnrollments = async () => {
+    setLoading(true);
+    const { data, error } = await supabase
+      .from("enrollments")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      console.error("Fetch error:", error);
+      toast({ title: "Erro", description: "Não foi possível carregar as inscrições.", variant: "destructive" });
+    } else {
+      setEnrollments((data as Enrollment[]) || []);
+    }
+    setLoading(false);
+  };
+
+  const fetchProofs = async (enrollmentId: string) => {
+    if (proofs[enrollmentId]) return;
+    const { data } = await supabase
+      .from("payment_proofs")
+      .select("*")
+      .eq("enrollment_id", enrollmentId);
+    if (data) {
+      setProofs((prev) => ({ ...prev, [enrollmentId]: data as PaymentProof[] }));
+    }
+  };
+
+  const updateStatus = async (id: string, status: PaymentStatus) => {
+    const { error } = await supabase
+      .from("enrollments")
+      .update({ status })
+      .eq("id", id);
+
+    if (error) {
+      toast({ title: "Erro", description: "Não foi possível actualizar.", variant: "destructive" });
+    } else {
+      setEnrollments((prev) => prev.map((e) => (e.id === id ? { ...e, status } : e)));
+      toast({ title: "Actualizado", description: `Estado alterado para ${statusConfig[status].label}.` });
+    }
+  };
+
+  const getProofUrl = async (filePath: string) => {
+    const { data } = await supabase.storage.from("payment-proofs").createSignedUrl(filePath, 300);
+    if (data?.signedUrl) {
+      window.open(data.signedUrl, "_blank");
+    }
+  };
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    navigate("/admin");
+  };
 
   const filtered = enrollments.filter((e) => {
-    const matchesSearch = e.studentName.toLowerCase().includes(search.toLowerCase()) || e.id.toLowerCase().includes(search.toLowerCase());
+    const matchesSearch = e.full_name.toLowerCase().includes(search.toLowerCase()) || e.id.toLowerCase().includes(search.toLowerCase());
     if (activeTab === "all") return matchesSearch;
     return matchesSearch && e.status === activeTab;
   });
-
-  const updateStatus = (id: string, status: EnrollmentStatus) => {
-    setEnrollments((prev) => prev.map((e) => (e.id === id ? { ...e, status } : e)));
-  };
 
   const counts = {
     all: enrollments.length,
@@ -69,16 +151,23 @@ const Backoffice = () => {
 
       <div className="container mx-auto px-4 py-8 flex-1">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-          <h1 className="font-heading text-3xl font-extrabold mb-2">Backoffice</h1>
-          <p className="text-muted-foreground mb-6">Gestão de inscrições e aprovação de pagamentos</p>
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h1 className="font-heading text-3xl font-extrabold">Backoffice</h1>
+              <p className="text-muted-foreground">Gestão de inscrições e aprovação de pagamentos</p>
+            </div>
+            <Button variant="ghost" size="sm" onClick={handleLogout}>
+              <LogOut className="w-4 h-4 mr-1" /> Sair
+            </Button>
+          </div>
 
           {/* Stats */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
             {[
-              { label: "Total", value: counts.all, color: "bg-primary text-primary-foreground" },
-              { label: "Pendentes", value: counts.pending, color: "bg-warning/10 text-warning" },
-              { label: "Aprovados", value: counts.approved, color: "bg-success/10 text-success" },
-              { label: "Rejeitados", value: counts.rejected, color: "bg-destructive/10 text-destructive" },
+              { label: "Total", value: counts.all },
+              { label: "Pendentes", value: counts.pending },
+              { label: "Aprovados", value: counts.approved },
+              { label: "Rejeitados", value: counts.rejected },
             ].map((stat) => (
               <Card key={stat.label} className="border-border">
                 <CardContent className="p-4 text-center">
@@ -89,12 +178,10 @@ const Backoffice = () => {
             ))}
           </div>
 
-          {/* Search & Tabs */}
-          <div className="flex flex-col sm:flex-row gap-4 mb-4">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <Input placeholder="Pesquisar por nome ou ID..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-10" />
-            </div>
+          {/* Search */}
+          <div className="relative mb-4">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Input placeholder="Pesquisar por nome ou ID..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-10" />
           </div>
 
           <Tabs value={activeTab} onValueChange={setActiveTab}>
@@ -107,102 +194,119 @@ const Backoffice = () => {
 
             <TabsContent value={activeTab}>
               <Card>
-                <div className="overflow-x-auto">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>ID</TableHead>
-                        <TableHead>Aluno</TableHead>
-                        <TableHead className="hidden md:table-cell">Curso</TableHead>
-                        <TableHead className="hidden sm:table-cell">Plano</TableHead>
-                        <TableHead>Valor</TableHead>
-                        <TableHead>Estado</TableHead>
-                        <TableHead>Acções</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {filtered.length === 0 ? (
-                        <TableRow><TableCell colSpan={7} className="text-center py-8 text-muted-foreground">Sem resultados</TableCell></TableRow>
-                      ) : (
-                        filtered.map((enrollment) => (
-                          <TableRow key={enrollment.id}>
-                            <TableCell className="font-mono text-xs">{enrollment.id}</TableCell>
-                            <TableCell>
-                              <div>
-                                <p className="font-medium text-sm">{enrollment.studentName}</p>
-                                <p className="text-xs text-muted-foreground">{enrollment.phone}</p>
-                              </div>
-                            </TableCell>
-                            <TableCell className="hidden md:table-cell text-sm">{enrollment.courseName}</TableCell>
-                            <TableCell className="hidden sm:table-cell text-sm">{enrollment.paymentPlan}</TableCell>
-                            <TableCell className="font-heading font-semibold text-sm">{formatCurrency(enrollment.amountDue)}</TableCell>
-                            <TableCell>
-                              <Badge variant={statusConfig[enrollment.status].variant}>
-                                {statusConfig[enrollment.status].label}
-                              </Badge>
-                            </TableCell>
-                            <TableCell>
-                              <div className="flex items-center gap-1">
-                                {/* View proof */}
-                                <Dialog>
-                                  <DialogTrigger asChild>
-                                    <Button variant="ghost" size="icon" title="Ver comprovativo">
-                                      <Eye className="w-4 h-4" />
-                                    </Button>
-                                  </DialogTrigger>
-                                  <DialogContent>
-                                    <DialogHeader>
-                                      <DialogTitle>Comprovativo — {enrollment.studentName}</DialogTitle>
-                                    </DialogHeader>
-                                    <div className="space-y-3">
-                                      <div className="bg-muted rounded-lg p-4 flex items-center gap-3">
-                                        <FileText className="w-8 h-8 text-muted-foreground" />
+                {loading ? (
+                  <div className="flex items-center justify-center py-16">
+                    <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Aluno</TableHead>
+                          <TableHead className="hidden md:table-cell">Curso</TableHead>
+                          <TableHead className="hidden sm:table-cell">Plano</TableHead>
+                          <TableHead>Valor</TableHead>
+                          <TableHead>Estado</TableHead>
+                          <TableHead>Acções</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {filtered.length === 0 ? (
+                          <TableRow><TableCell colSpan={6} className="text-center py-8 text-muted-foreground">Sem resultados</TableCell></TableRow>
+                        ) : (
+                          filtered.map((enrollment) => (
+                            <TableRow key={enrollment.id}>
+                              <TableCell>
+                                <div>
+                                  <p className="font-medium text-sm">{enrollment.full_name}</p>
+                                  <p className="text-xs text-muted-foreground">{enrollment.phone}</p>
+                                </div>
+                              </TableCell>
+                              <TableCell className="hidden md:table-cell text-sm">{enrollment.course_name}</TableCell>
+                              <TableCell className="hidden sm:table-cell text-sm">{enrollment.payment_plan}</TableCell>
+                              <TableCell className="font-heading font-semibold text-sm">{formatCurrency(enrollment.amount_due)}</TableCell>
+                              <TableCell>
+                                <Badge variant={statusConfig[enrollment.status].variant}>
+                                  {statusConfig[enrollment.status].label}
+                                </Badge>
+                              </TableCell>
+                              <TableCell>
+                                <div className="flex items-center gap-1">
+                                  <Dialog>
+                                    <DialogTrigger asChild>
+                                      <Button variant="ghost" size="icon" title="Ver detalhes" onClick={() => fetchProofs(enrollment.id)}>
+                                        <Eye className="w-4 h-4" />
+                                      </Button>
+                                    </DialogTrigger>
+                                    <DialogContent className="max-w-lg">
+                                      <DialogHeader>
+                                        <DialogTitle>{enrollment.full_name}</DialogTitle>
+                                      </DialogHeader>
+                                      <div className="space-y-3 text-sm">
+                                        <div className="grid grid-cols-2 gap-2">
+                                          <div><span className="text-muted-foreground">Email:</span> {enrollment.email}</div>
+                                          <div><span className="text-muted-foreground">Telefone:</span> {enrollment.phone}</div>
+                                          <div><span className="text-muted-foreground">Empresa:</span> {enrollment.company || "—"}</div>
+                                          <div><span className="text-muted-foreground">Curso:</span> {enrollment.course_name}</div>
+                                          <div><span className="text-muted-foreground">Plano:</span> {enrollment.payment_plan}</div>
+                                          <div><span className="text-muted-foreground">Valor:</span> {formatCurrency(enrollment.amount_due)} / {formatCurrency(enrollment.total_price)}</div>
+                                        </div>
+
                                         <div>
-                                          <p className="font-medium text-sm">{enrollment.proofFileName}</p>
-                                          <p className="text-xs text-muted-foreground">Submetido em {enrollment.submittedAt}</p>
+                                          <p className="font-heading font-semibold mb-2">Comprovativos</p>
+                                          {(proofs[enrollment.id] || []).length === 0 ? (
+                                            <p className="text-muted-foreground text-xs">Nenhum comprovativo encontrado</p>
+                                          ) : (
+                                            (proofs[enrollment.id] || []).map((proof) => (
+                                              <div key={proof.id} className="flex items-center gap-2 bg-muted rounded p-2 mb-1">
+                                                <FileText className="w-4 h-4 shrink-0" />
+                                                <span className="text-xs flex-1 truncate">{proof.file_name}</span>
+                                                <Button variant="ghost" size="sm" onClick={() => getProofUrl(proof.file_path)}>
+                                                  <Eye className="w-3 h-3" />
+                                                </Button>
+                                              </div>
+                                            ))
+                                          )}
+                                        </div>
+
+                                        <div className="flex gap-2 pt-2">
+                                          <Button size="sm" onClick={() => updateStatus(enrollment.id, "approved")} className="flex-1">
+                                            <Check className="w-4 h-4" /> Aprovar
+                                          </Button>
+                                          <Button variant="destructive" size="sm" onClick={() => updateStatus(enrollment.id, "rejected")} className="flex-1">
+                                            <X className="w-4 h-4" /> Rejeitar
+                                          </Button>
                                         </div>
                                       </div>
-                                      <div className="bg-muted/50 rounded-lg h-48 flex items-center justify-center text-muted-foreground text-sm">
-                                        Pré-visualização do ficheiro (requer backend)
-                                      </div>
-                                      <div className="flex gap-2">
-                                        <Button variant="default" size="sm" onClick={() => updateStatus(enrollment.id, "approved")} className="flex-1">
-                                          <Check className="w-4 h-4" /> Aprovar
-                                        </Button>
-                                        <Button variant="destructive" size="sm" onClick={() => updateStatus(enrollment.id, "rejected")} className="flex-1">
-                                          <X className="w-4 h-4" /> Rejeitar
-                                        </Button>
-                                      </div>
-                                    </div>
-                                  </DialogContent>
-                                </Dialog>
+                                    </DialogContent>
+                                  </Dialog>
 
-                                {/* Approve / Reject quick actions */}
-                                {enrollment.status === "pending" && (
-                                  <>
-                                    <Button variant="ghost" size="icon" title="Aprovar" onClick={() => updateStatus(enrollment.id, "approved")}>
-                                      <Check className="w-4 h-4 text-success" />
-                                    </Button>
-                                    <Button variant="ghost" size="icon" title="Rejeitar" onClick={() => updateStatus(enrollment.id, "rejected")}>
-                                      <X className="w-4 h-4 text-destructive" />
-                                    </Button>
-                                  </>
-                                )}
+                                  {enrollment.status === "pending" && (
+                                    <>
+                                      <Button variant="ghost" size="icon" onClick={() => updateStatus(enrollment.id, "approved")}>
+                                        <Check className="w-4 h-4 text-success" />
+                                      </Button>
+                                      <Button variant="ghost" size="icon" onClick={() => updateStatus(enrollment.id, "rejected")}>
+                                        <X className="w-4 h-4 text-destructive" />
+                                      </Button>
+                                    </>
+                                  )}
 
-                                {/* WhatsApp */}
-                                <a href={getWhatsAppLink(`Olá ${enrollment.studentName}, referente à inscrição ${enrollment.id}...`)} target="_blank" rel="noopener noreferrer">
-                                  <Button variant="ghost" size="icon" title="WhatsApp">
-                                    <MessageCircle className="w-4 h-4" />
-                                  </Button>
-                                </a>
-                              </div>
-                            </TableCell>
-                          </TableRow>
-                        ))
-                      )}
-                    </TableBody>
-                  </Table>
-                </div>
+                                  <a href={getWhatsAppLink(`Olá ${enrollment.full_name}, referente à sua inscrição no curso ${enrollment.course_name}...`)} target="_blank" rel="noopener noreferrer">
+                                    <Button variant="ghost" size="icon">
+                                      <MessageCircle className="w-4 h-4" />
+                                    </Button>
+                                  </a>
+                                </div>
+                              </TableCell>
+                            </TableRow>
+                          ))
+                        )}
+                      </TableBody>
+                    </Table>
+                  </div>
+                )}
               </Card>
             </TabsContent>
           </Tabs>
