@@ -14,6 +14,63 @@ export type Database = {
   }
   public: {
     Tables: {
+      courses: {
+        Row: {
+          category: string
+          created_at: string
+          currency: string
+          description: string
+          duration: string
+          duration_weeks: number
+          highlights: string[]
+          id: string
+          image: string
+          is_active: boolean
+          payment_plan_group: string
+          price: number
+          slug: string
+          start_date: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          currency?: string
+          description?: string
+          duration?: string
+          duration_weeks?: number
+          highlights?: string[]
+          id?: string
+          image?: string
+          is_active?: boolean
+          payment_plan_group?: string
+          price?: number
+          slug: string
+          start_date?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          currency?: string
+          description?: string
+          duration?: string
+          duration_weeks?: number
+          highlights?: string[]
+          id?: string
+          image?: string
+          is_active?: boolean
+          payment_plan_group?: string
+          price?: number
+          slug?: string
+          start_date?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       enrollments: {
         Row: {
           admin_notes: string | null
