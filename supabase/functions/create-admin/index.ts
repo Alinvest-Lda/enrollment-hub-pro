@@ -18,23 +18,36 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
-    // Create user
-    const { data: user, error: createError } = await supabaseAdmin.auth.admin.createUser({
+    // Try to create user, or find existing
+    let userId: string;
+    const { data: newUser, error: createError } = await supabaseAdmin.auth.admin.createUser({
       email,
       password,
       email_confirm: true,
     });
 
-    if (createError) throw createError;
+    if (createError) {
+      // User exists - find them
+      const { data: { users }, error: listError } = await supabaseAdmin.auth.admin.listUsers();
+      if (listError) throw listError;
+      const existing = users.find(u => u.email === email);
+      if (!existing) throw new Error("User not found");
+      userId = existing.id;
+      
+      // Update password
+      await supabaseAdmin.auth.admin.updateUserById(userId, { password });
+    } else {
+      userId = newUser.user.id;
+    }
 
-    // Assign admin role
+    // Assign admin role (upsert)
     const { error: roleError } = await supabaseAdmin
       .from("user_roles")
-      .insert({ user_id: user.user.id, role: "admin" });
+      .upsert({ user_id: userId, role: "admin" }, { onConflict: "user_id,role" });
 
     if (roleError) throw roleError;
 
-    return new Response(JSON.stringify({ success: true, userId: user.user.id }), {
+    return new Response(JSON.stringify({ success: true, userId }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (error) {
