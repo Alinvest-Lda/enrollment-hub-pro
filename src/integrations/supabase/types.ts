@@ -163,6 +163,63 @@ export type Database = {
           },
         ]
       }
+      training_requests: {
+        Row: {
+          admin_notes: string | null
+          budget_range: string | null
+          client_type: Database["public"]["Enums"]["client_type"]
+          created_at: string
+          email: string
+          full_name: string
+          id: string
+          num_participants: number | null
+          organization_name: string | null
+          organization_sector: string | null
+          phone: string
+          preferred_start: string | null
+          status: string
+          training_details: string | null
+          training_topic: string
+          updated_at: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          budget_range?: string | null
+          client_type?: Database["public"]["Enums"]["client_type"]
+          created_at?: string
+          email: string
+          full_name: string
+          id?: string
+          num_participants?: number | null
+          organization_name?: string | null
+          organization_sector?: string | null
+          phone: string
+          preferred_start?: string | null
+          status?: string
+          training_details?: string | null
+          training_topic: string
+          updated_at?: string
+        }
+        Update: {
+          admin_notes?: string | null
+          budget_range?: string | null
+          client_type?: Database["public"]["Enums"]["client_type"]
+          created_at?: string
+          email?: string
+          full_name?: string
+          id?: string
+          num_participants?: number | null
+          organization_name?: string | null
+          organization_sector?: string | null
+          phone?: string
+          preferred_start?: string | null
+          status?: string
+          training_details?: string | null
+          training_topic?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -193,6 +250,7 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "user"
+      client_type: "individual" | "empresa" | "ong" | "estado"
       payment_plan_type: "full" | "60-40" | "60-20-20"
       payment_status: "pending" | "approved" | "rejected" | "partial"
     }
@@ -323,6 +381,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "user"],
+      client_type: ["individual", "empresa", "ong", "estado"],
       payment_plan_type: ["full", "60-40", "60-20-20"],
       payment_status: ["pending", "approved", "rejected", "partial"],
     },

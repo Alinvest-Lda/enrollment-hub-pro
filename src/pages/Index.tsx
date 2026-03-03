@@ -1,6 +1,7 @@
 import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
 import CoursesGrid from "@/components/CoursesGrid";
+import TrainingRequestSection from "@/components/TrainingRequestSection";
 import Footer from "@/components/Footer";
 
 const Index = () => {
@@ -9,6 +10,7 @@ const Index = () => {
       <Navbar />
       <HeroSection />
       <CoursesGrid />
+      <TrainingRequestSection />
       <Footer />
     </div>
   );
