@@ -1,8 +1,11 @@
 import { motion } from "framer-motion";
-import { COURSES } from "@/lib/courses-data";
+import { useCourses } from "@/hooks/use-courses";
 import CourseCard from "./CourseCard";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const CoursesGrid = () => {
+  const { data: courses, isLoading } = useCourses();
+
   return (
     <section id="cursos" className="py-20 bg-background">
       <div className="container mx-auto px-4">
@@ -21,11 +24,19 @@ const CoursesGrid = () => {
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {COURSES.map((course, i) => (
-            <CourseCard key={course.id} course={course} index={i} />
-          ))}
-        </div>
+        {isLoading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <Skeleton key={i} className="h-80 rounded-lg" />
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {courses?.map((course, i) => (
+              <CourseCard key={course.id} course={course} index={i} />
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );

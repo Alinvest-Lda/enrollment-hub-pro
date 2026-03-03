@@ -1,16 +1,32 @@
 import { useParams, Link } from "react-router-dom";
 import { ArrowLeft, Clock, Calendar, CheckCircle, MessageCircle } from "lucide-react";
 import { motion } from "framer-motion";
-import { COURSES, formatCurrency, getWhatsAppLink } from "@/lib/courses-data";
+import { formatCurrency, getWhatsAppLink } from "@/lib/courses-data";
+import { useCourse } from "@/hooks/use-courses";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import EnrollmentForm from "@/components/EnrollmentForm";
 
 const CourseDetail = () => {
   const { id } = useParams<{ id: string }>();
-  const course = COURSES.find((c) => c.id === id);
+  const { course, isLoading } = useCourse(id);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Navbar />
+        <div className="py-16 container mx-auto px-4 space-y-4">
+          <Skeleton className="h-10 w-2/3" />
+          <Skeleton className="h-6 w-1/2" />
+          <Skeleton className="h-64 w-full mt-8" />
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   if (!course) {
     return (
@@ -33,7 +49,6 @@ const CourseDetail = () => {
     <div className="min-h-screen flex flex-col bg-background">
       <Navbar />
 
-      {/* Course Header */}
       <section className="bg-navy-gradient text-primary-foreground py-16">
         <div className="container mx-auto px-4">
           <Link to="/" className="inline-flex items-center gap-1 text-sm text-primary-foreground/70 hover:text-primary-foreground mb-6 transition-colors">
@@ -48,17 +63,17 @@ const CourseDetail = () => {
 
             <div className="flex flex-wrap gap-6 text-sm text-primary-foreground/70">
               <span className="flex items-center gap-2"><Clock className="w-4 h-4" /> {course.duration}</span>
-              <span className="flex items-center gap-2"><Calendar className="w-4 h-4" /> Início: {new Date(course.startDate).toLocaleDateString("pt-MZ", { day: "numeric", month: "long", year: "numeric" })}</span>
+              {course.startDate && (
+                <span className="flex items-center gap-2"><Calendar className="w-4 h-4" /> Início: {new Date(course.startDate).toLocaleDateString("pt-MZ", { day: "numeric", month: "long", year: "numeric" })}</span>
+              )}
               <span className="font-heading font-bold text-xl text-accent">{formatCurrency(course.price)}</span>
             </div>
           </motion.div>
         </div>
       </section>
 
-      {/* Content */}
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-10">
-          {/* Left: Info */}
           <div className="lg:col-span-2 space-y-6">
             <div>
               <h3 className="font-heading text-lg font-bold mb-3">O que vai aprender</h3>
@@ -99,7 +114,6 @@ const CourseDetail = () => {
             </a>
           </div>
 
-          {/* Right: Enrollment Form */}
           <div className="lg:col-span-3">
             <EnrollmentForm course={course} />
           </div>
