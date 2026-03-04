@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { LogOut, Loader2, BookOpen, Users, RefreshCw } from "lucide-react";
+import { LogOut, Loader2, BookOpen, Users, RefreshCw, GraduationCap } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -9,6 +9,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import EnrollmentsTab from "@/components/backoffice/EnrollmentsTab";
 import CoursesTab from "@/components/backoffice/CoursesTab";
+import TrainingRequestsTab from "@/components/backoffice/TrainingRequestsTab";
 import { useBackofficeData } from "@/hooks/use-backoffice-data";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -62,13 +63,14 @@ const Backoffice = () => {
           </div>
 
           {/* Stats */}
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
+          <div className="grid grid-cols-2 md:grid-cols-6 gap-4 mb-8">
             {[
               { label: "Inscrições", value: enrollmentCounts.total },
               { label: "Pendentes", value: enrollmentCounts.pending },
               { label: "Aprovados", value: enrollmentCounts.approved },
               { label: "Rejeitados", value: enrollmentCounts.rejected },
               { label: "Cursos", value: data.courses.length },
+              { label: "Pedidos Form.", value: data.trainingRequests.length },
             ].map((stat) => (
               <Card key={stat.label} className="border-border">
                 <CardContent className="p-4 text-center">
@@ -88,6 +90,7 @@ const Backoffice = () => {
               <TabsList className="mb-4">
                 <TabsTrigger value="enrollments"><Users className="w-4 h-4 mr-1" /> Inscrições</TabsTrigger>
                 <TabsTrigger value="courses"><BookOpen className="w-4 h-4 mr-1" /> Cursos</TabsTrigger>
+                <TabsTrigger value="training"><GraduationCap className="w-4 h-4 mr-1" /> Formações</TabsTrigger>
               </TabsList>
 
               <TabsContent value="enrollments">
@@ -108,6 +111,15 @@ const Backoffice = () => {
                   saveCourse={data.saveCourse}
                   deleteCourse={data.deleteCourse}
                   toggleCourseActive={data.toggleCourseActive}
+                />
+              </TabsContent>
+
+              <TabsContent value="training">
+                <TrainingRequestsTab
+                  requests={data.trainingRequests}
+                  updateStatus={data.updateTrainingRequestStatus}
+                  updateNotes={data.updateTrainingRequestNotes}
+                  deleteRequest={data.deleteTrainingRequest}
                 />
               </TabsContent>
             </Tabs>
