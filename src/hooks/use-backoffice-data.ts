@@ -19,6 +19,7 @@ export interface Enrollment {
   created_at: string;
   admin_notes: string | null;
   nuit: string | null;
+  message: string | null;
 }
 
 export interface PaymentProof {
