@@ -56,9 +56,28 @@ export const statusConfig: Record<PaymentStatus, { label: string; variant: "defa
   partial: { label: "Parcial", variant: "secondary" },
 };
 
+export interface TrainingRequest {
+  id: string;
+  full_name: string;
+  email: string;
+  phone: string;
+  client_type: "individual" | "empresa" | "ong" | "estado";
+  organization_name: string | null;
+  organization_sector: string | null;
+  training_topic: string;
+  training_details: string | null;
+  num_participants: number | null;
+  preferred_start: string | null;
+  budget_range: string | null;
+  status: string;
+  admin_notes: string | null;
+  created_at: string;
+}
+
 export function useBackofficeData() {
   const [enrollments, setEnrollments] = useState<Enrollment[]>([]);
   const [courses, setCourses] = useState<CourseRow[]>([]);
+  const [trainingRequests, setTrainingRequests] = useState<TrainingRequest[]>([]);
   const [proofs, setProofs] = useState<Record<string, PaymentProof[]>>({});
   const [loading, setLoading] = useState(true);
 
@@ -88,9 +107,22 @@ export function useBackofficeData() {
     }
   };
 
+  const fetchTrainingRequests = async () => {
+    const { data, error } = await supabase
+      .from("training_requests")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      toast({ title: "Erro", description: "Não foi possível carregar os pedidos.", variant: "destructive" });
+    } else {
+      setTrainingRequests((data as TrainingRequest[]) || []);
+    }
+  };
+
   const fetchAll = async () => {
     setLoading(true);
-    await Promise.all([fetchEnrollments(), fetchCourses()]);
+    await Promise.all([fetchEnrollments(), fetchCourses(), fetchTrainingRequests()]);
     setLoading(false);
   };
 
@@ -179,6 +211,36 @@ export function useBackofficeData() {
     }
   };
 
+  const updateTrainingRequestStatus = async (id: string, status: string) => {
+    const { error } = await supabase.from("training_requests").update({ status }).eq("id", id);
+    if (error) {
+      toast({ title: "Erro", description: "Não foi possível actualizar.", variant: "destructive" });
+    } else {
+      setTrainingRequests((prev) => prev.map((r) => (r.id === id ? { ...r, status } : r)));
+      toast({ title: "Estado actualizado" });
+    }
+  };
+
+  const updateTrainingRequestNotes = async (id: string, notes: string) => {
+    const { error } = await supabase.from("training_requests").update({ admin_notes: notes }).eq("id", id);
+    if (error) {
+      toast({ title: "Erro", description: "Não foi possível guardar notas.", variant: "destructive" });
+    } else {
+      setTrainingRequests((prev) => prev.map((r) => (r.id === id ? { ...r, admin_notes: notes } : r)));
+      toast({ title: "Notas guardadas" });
+    }
+  };
+
+  const deleteTrainingRequest = async (id: string) => {
+    const { error } = await supabase.from("training_requests").delete().eq("id", id);
+    if (error) {
+      toast({ title: "Erro", description: "Não foi possível eliminar.", variant: "destructive" });
+    } else {
+      setTrainingRequests((prev) => prev.filter((r) => r.id !== id));
+      toast({ title: "Pedido eliminado" });
+    }
+  };
+
   const getProofUrl = async (filePath: string) => {
     const { data } = await supabase.storage.from("payment-proofs").createSignedUrl(filePath, 300);
     if (data?.signedUrl) window.open(data.signedUrl, "_blank");
@@ -187,8 +249,10 @@ export function useBackofficeData() {
   useEffect(() => { fetchAll(); }, []);
 
   return {
-    enrollments, courses, proofs, loading,
+    enrollments, courses, trainingRequests, proofs, loading,
     fetchProofs, updateEnrollmentStatus, updateEnrollmentNotes, deleteEnrollment,
-    saveCourse, deleteCourse, toggleCourseActive, getProofUrl, refetch: fetchAll,
+    saveCourse, deleteCourse, toggleCourseActive, getProofUrl,
+    updateTrainingRequestStatus, updateTrainingRequestNotes, deleteTrainingRequest,
+    refetch: fetchAll,
   };
 }
