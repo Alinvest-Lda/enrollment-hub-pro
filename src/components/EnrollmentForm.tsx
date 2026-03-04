@@ -3,11 +3,12 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { motion, AnimatePresence } from "framer-motion";
-import { Upload, FileText, CheckCircle, Send, MessageCircle, User, Phone, Mail, Building } from "lucide-react";
+import { Upload, FileText, CheckCircle, Send, MessageCircle, User, Phone, Mail, Building, PenLine } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Course, formatCurrency, getWhatsAppLink } from "@/lib/courses-data";
 import { toast } from "@/hooks/use-toast";
@@ -19,6 +20,7 @@ const enrollmentSchema = z.object({
   phone: z.string().min(9, "Telefone inválido").max(20),
   company: z.string().max(100).optional(),
   nuit: z.string().max(20).optional(),
+  message: z.string().max(500).optional(),
   paymentPlanId: z.string().min(1, "Seleccione um plano de pagamento"),
 });
 
@@ -81,6 +83,7 @@ const EnrollmentForm = ({ course }: EnrollmentFormProps) => {
       body.append("phone", formData.phone);
       body.append("company", formData.company || "");
       body.append("nuit", formData.nuit || "");
+      body.append("message", formData.message || "");
       body.append("courseId", course.id);
       body.append("courseName", course.title);
       body.append("paymentPlan", formData.paymentPlanId);
@@ -145,6 +148,11 @@ const EnrollmentForm = ({ course }: EnrollmentFormProps) => {
               <div>
                 <Label htmlFor="nuit" className="mb-1.5 block">NUIT (Opcional)</Label>
                 <Input id="nuit" {...register("nuit")} placeholder="Número Único de Identificação Tributária" />
+              </div>
+
+              <div>
+                <Label htmlFor="message" className="mb-1.5 block">Mensagem (Opcional)</Label>
+                <Textarea id="message" {...register("message")} placeholder="Alguma dúvida, pedido especial ou informação adicional?" rows={3} />
               </div>
 
               <div>

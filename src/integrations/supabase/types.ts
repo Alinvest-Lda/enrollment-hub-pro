@@ -82,6 +82,7 @@ export type Database = {
           email: string
           full_name: string
           id: string
+          message: string | null
           nuit: string | null
           payment_plan: Database["public"]["Enums"]["payment_plan_type"]
           phone: string
@@ -99,6 +100,7 @@ export type Database = {
           email: string
           full_name: string
           id?: string
+          message?: string | null
           nuit?: string | null
           payment_plan?: Database["public"]["Enums"]["payment_plan_type"]
           phone: string
@@ -116,6 +118,7 @@ export type Database = {
           email?: string
           full_name?: string
           id?: string
+          message?: string | null
           nuit?: string | null
           payment_plan?: Database["public"]["Enums"]["payment_plan_type"]
           phone?: string

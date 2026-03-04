@@ -1,0 +1,1 @@
+ALTER TABLE public.enrollments ADD COLUMN message text DEFAULT NULL;

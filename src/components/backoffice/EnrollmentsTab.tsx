@@ -104,7 +104,14 @@ export default function EnrollmentsTab({ enrollments, proofs, fetchProofs, updat
                                     <div><span className="text-muted-foreground">Curso:</span> {enrollment.course_name}</div>
                                     <div><span className="text-muted-foreground">Plano:</span> {enrollment.payment_plan}</div>
                                     <div className="col-span-2"><span className="text-muted-foreground">Valor:</span> {formatCurrency(enrollment.amount_due)} / {formatCurrency(enrollment.total_price)}</div>
-                                  </div>
+                                    </div>
+
+                                  {enrollment.message && (
+                                    <div>
+                                      <p className="font-heading font-semibold mb-1">Mensagem do Inscrito</p>
+                                      <p className="whitespace-pre-wrap text-muted-foreground bg-muted rounded p-2 text-xs">{enrollment.message}</p>
+                                    </div>
+                                  )}
 
                                   <div>
                                     <p className="font-heading font-semibold mb-2">Comprovativos</p>

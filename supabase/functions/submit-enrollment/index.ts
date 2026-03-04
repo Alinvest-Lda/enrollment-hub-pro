@@ -18,6 +18,7 @@ Deno.serve(async (req) => {
     const phone = formData.get("phone") as string;
     const company = formData.get("company") as string | null;
     const nuit = formData.get("nuit") as string | null;
+    const message = formData.get("message") as string | null;
     const courseId = formData.get("courseId") as string;
     const courseName = formData.get("courseName") as string;
     const paymentPlan = formData.get("paymentPlan") as string;
@@ -63,6 +64,7 @@ Deno.serve(async (req) => {
         phone: phone.trim().substring(0, 20),
         company: company?.trim().substring(0, 100) || null,
         nuit: nuit?.trim().substring(0, 20) || null,
+        message: message?.trim().substring(0, 500) || null,
         course_id: courseId.substring(0, 100),
         course_name: courseName.substring(0, 200),
         payment_plan: paymentPlan,
