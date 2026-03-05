@@ -84,8 +84,10 @@ export type Database = {
           id: string
           message: string | null
           nuit: string | null
+          payment_method: string | null
           payment_plan: Database["public"]["Enums"]["payment_plan_type"]
           phone: string
+          source: Database["public"]["Enums"]["enrollment_source"]
           status: Database["public"]["Enums"]["payment_status"]
           total_price: number
           updated_at: string
@@ -102,8 +104,10 @@ export type Database = {
           id?: string
           message?: string | null
           nuit?: string | null
+          payment_method?: string | null
           payment_plan?: Database["public"]["Enums"]["payment_plan_type"]
           phone: string
+          source?: Database["public"]["Enums"]["enrollment_source"]
           status?: Database["public"]["Enums"]["payment_status"]
           total_price: number
           updated_at?: string
@@ -120,8 +124,10 @@ export type Database = {
           id?: string
           message?: string | null
           nuit?: string | null
+          payment_method?: string | null
           payment_plan?: Database["public"]["Enums"]["payment_plan_type"]
           phone?: string
+          source?: Database["public"]["Enums"]["enrollment_source"]
           status?: Database["public"]["Enums"]["payment_status"]
           total_price?: number
           updated_at?: string
@@ -254,6 +260,14 @@ export type Database = {
     Enums: {
       app_role: "admin" | "user"
       client_type: "individual" | "empresa" | "ong" | "estado"
+      enrollment_source:
+        | "site"
+        | "presencial"
+        | "telefone"
+        | "whatsapp"
+        | "email"
+        | "csv_import"
+        | "outro"
       payment_plan_type: "full" | "60-40" | "60-20-20"
       payment_status: "pending" | "approved" | "rejected" | "partial"
     }
@@ -385,6 +399,15 @@ export const Constants = {
     Enums: {
       app_role: ["admin", "user"],
       client_type: ["individual", "empresa", "ong", "estado"],
+      enrollment_source: [
+        "site",
+        "presencial",
+        "telefone",
+        "whatsapp",
+        "email",
+        "csv_import",
+        "outro",
+      ],
       payment_plan_type: ["full", "60-40", "60-20-20"],
       payment_status: ["pending", "approved", "rejected", "partial"],
     },

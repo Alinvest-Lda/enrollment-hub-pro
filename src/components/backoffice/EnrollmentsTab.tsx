@@ -137,6 +137,9 @@ export default function EnrollmentsTab({ enrollments, proofs, fetchProofs, updat
                         <TableCell>
                           <p className="font-medium text-sm">{enrollment.full_name}</p>
                           <p className="text-xs text-muted-foreground">{enrollment.phone}</p>
+                          {enrollment.source && enrollment.source !== "site" && (
+                            <Badge variant="outline" className="text-[10px] mt-0.5 px-1.5 py-0">{enrollment.source}</Badge>
+                          )}
                         </TableCell>
                         <TableCell className="hidden md:table-cell text-sm">{enrollment.course_name}</TableCell>
                         <TableCell className="hidden sm:table-cell text-sm">{enrollment.payment_plan}</TableCell>

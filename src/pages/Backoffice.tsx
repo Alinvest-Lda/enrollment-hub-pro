@@ -11,6 +11,8 @@ import EnrollmentsTab from "@/components/backoffice/EnrollmentsTab";
 import CoursesTab from "@/components/backoffice/CoursesTab";
 import TrainingRequestsTab from "@/components/backoffice/TrainingRequestsTab";
 import DashboardTab from "@/components/backoffice/DashboardTab";
+import ManualEnrollmentForm from "@/components/backoffice/ManualEnrollmentForm";
+import CSVImportDialog from "@/components/backoffice/CSVImportDialog";
 import { useBackofficeData } from "@/hooks/use-backoffice-data";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -57,7 +59,9 @@ const Backoffice = () => {
               <h1 className="font-heading text-3xl font-extrabold">Backoffice</h1>
               <p className="text-muted-foreground">Gestão completa do sistema</p>
             </div>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
+              <ManualEnrollmentForm courses={data.courses} onSubmit={data.createManualEnrollment} />
+              <CSVImportDialog courses={data.courses} onImport={data.bulkImportEnrollments} />
               <Button variant="outline" size="sm" onClick={data.refetch}><RefreshCw className="w-4 h-4 mr-1" /> Actualizar</Button>
               <Button variant="ghost" size="sm" onClick={handleLogout}><LogOut className="w-4 h-4 mr-1" /> Sair</Button>
             </div>
