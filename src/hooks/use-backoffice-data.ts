@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 
 export type PaymentStatus = "pending" | "approved" | "rejected" | "partial";
+export type EnrollmentSource = "site" | "presencial" | "telefone" | "whatsapp" | "email" | "csv_import" | "outro";
 
 export interface Enrollment {
   id: string;
@@ -20,6 +21,8 @@ export interface Enrollment {
   admin_notes: string | null;
   nuit: string | null;
   message: string | null;
+  source: EnrollmentSource;
+  payment_method: string | null;
 }
 
 export interface PaymentProof {
@@ -247,6 +250,65 @@ export function useBackofficeData() {
     if (data?.signedUrl) window.open(data.signedUrl, "_blank");
   };
 
+  const createManualEnrollment = async (enrollment: {
+    full_name: string; email: string; phone: string; company?: string; nuit?: string;
+    course_id: string; course_name: string; payment_plan: string;
+    amount_due: number; total_price: number; source: EnrollmentSource;
+    payment_method?: string; message?: string; admin_notes?: string;
+  }) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { error } = await supabase.from("enrollments").insert({
+      full_name: enrollment.full_name,
+      email: enrollment.email,
+      phone: enrollment.phone,
+      company: enrollment.company || null,
+      nuit: enrollment.nuit || null,
+      message: enrollment.message || null,
+      admin_notes: enrollment.admin_notes || null,
+      course_id: enrollment.course_id,
+      course_name: enrollment.course_name,
+      payment_plan: enrollment.payment_plan as "full" | "60-40" | "60-20-20",
+      amount_due: enrollment.amount_due,
+      total_price: enrollment.total_price,
+      status: "pending" as const,
+    } as any);
+    if (error) {
+      toast({ title: "Erro", description: error.message, variant: "destructive" });
+      return false;
+    }
+    await fetchEnrollments();
+    toast({ title: "Inscrição criada manualmente" });
+    return true;
+  };
+
+  const bulkImportEnrollments = async (rows: Array<{
+    full_name: string; email: string; phone: string; company?: string;
+    course_id: string; course_name: string; payment_plan: string;
+    amount_due: number; total_price: number; payment_method?: string;
+  }>) => {
+    const records = rows.map((r) => ({
+      full_name: r.full_name,
+      email: r.email,
+      phone: r.phone,
+      company: r.company || null,
+      course_id: r.course_id,
+      course_name: r.course_name,
+      payment_plan: (r.payment_plan || "full") as "full" | "60-40" | "60-20-20",
+      amount_due: r.amount_due,
+      total_price: r.total_price,
+      status: "pending" as const,
+    }));
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { error } = await supabase.from("enrollments").insert(records as any);
+    if (error) {
+      toast({ title: "Erro na importação", description: error.message, variant: "destructive" });
+      return false;
+    }
+    await fetchEnrollments();
+    toast({ title: "Importação concluída", description: `${records.length} inscrições importadas.` });
+    return true;
+  };
+
   useEffect(() => { fetchAll(); }, []);
 
   return {
@@ -254,6 +316,7 @@ export function useBackofficeData() {
     fetchProofs, updateEnrollmentStatus, updateEnrollmentNotes, deleteEnrollment,
     saveCourse, deleteCourse, toggleCourseActive, getProofUrl,
     updateTrainingRequestStatus, updateTrainingRequestNotes, deleteTrainingRequest,
+    createManualEnrollment, bulkImportEnrollments,
     refetch: fetchAll,
   };
 }
