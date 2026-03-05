@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Check, X, Eye, FileText, MessageCircle, Search, Trash2 } from "lucide-react";
+import { useState, useMemo } from "react";
+import { Check, X, Eye, FileText, MessageCircle, Search, Trash2, Download, Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -8,8 +8,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Enrollment, PaymentProof, PaymentStatus, statusConfig } from "@/hooks/use-backoffice-data";
 import { formatCurrency, getWhatsAppLink } from "@/lib/courses-data";
+import { exportToCSV, enrollmentCSVColumns } from "@/lib/csv-export";
 
 interface Props {
   enrollments: Enrollment[];
@@ -25,13 +27,34 @@ export default function EnrollmentsTab({ enrollments, proofs, fetchProofs, updat
   const [search, setSearch] = useState("");
   const [activeTab, setActiveTab] = useState("all");
   const [noteDraft, setNoteDraft] = useState<Record<string, string>>({});
+  const [courseFilter, setCourseFilter] = useState("all");
+  const [dateFilter, setDateFilter] = useState("all");
+  const [showFilters, setShowFilters] = useState(false);
 
-  const filtered = enrollments.filter((e) => {
-    const q = search.toLowerCase();
-    const matchesSearch = e.full_name.toLowerCase().includes(q) || e.email.toLowerCase().includes(q) || e.id.toLowerCase().includes(q);
-    if (activeTab === "all") return matchesSearch;
-    return matchesSearch && e.status === activeTab;
-  });
+  const courseNames = useMemo(() => {
+    const names = [...new Set(enrollments.map((e) => e.course_name))];
+    return names.sort();
+  }, [enrollments]);
+
+  const filtered = useMemo(() => {
+    return enrollments.filter((e) => {
+      const q = search.toLowerCase();
+      const matchesSearch = e.full_name.toLowerCase().includes(q) || e.email.toLowerCase().includes(q) || e.id.toLowerCase().includes(q);
+      const matchesStatus = activeTab === "all" || e.status === activeTab;
+      const matchesCourse = courseFilter === "all" || e.course_name === courseFilter;
+
+      let matchesDate = true;
+      if (dateFilter !== "all") {
+        const d = new Date(e.created_at);
+        const now = new Date();
+        if (dateFilter === "7d") matchesDate = now.getTime() - d.getTime() < 7 * 86400000;
+        else if (dateFilter === "30d") matchesDate = now.getTime() - d.getTime() < 30 * 86400000;
+        else if (dateFilter === "90d") matchesDate = now.getTime() - d.getTime() < 90 * 86400000;
+      }
+
+      return matchesSearch && matchesStatus && matchesCourse && matchesDate;
+    });
+  }, [enrollments, search, activeTab, courseFilter, dateFilter]);
 
   const counts = {
     all: enrollments.length,
@@ -42,10 +65,46 @@ export default function EnrollmentsTab({ enrollments, proofs, fetchProofs, updat
 
   return (
     <div className="space-y-4">
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-        <Input placeholder="Pesquisar por nome, email ou ID..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-10" />
+      <div className="flex gap-2">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <Input placeholder="Pesquisar por nome, email ou ID..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-10" />
+        </div>
+        <Button variant="outline" size="icon" onClick={() => setShowFilters(!showFilters)} title="Filtros">
+          <Filter className="w-4 h-4" />
+        </Button>
+        <Button variant="outline" size="icon" onClick={() => exportToCSV(filtered, enrollmentCSVColumns, `inscricoes-${new Date().toISOString().slice(0, 10)}`)} title="Exportar CSV">
+          <Download className="w-4 h-4" />
+        </Button>
       </div>
+
+      {showFilters && (
+        <div className="flex flex-wrap gap-3 p-3 bg-muted rounded-lg">
+          <Select value={courseFilter} onValueChange={setCourseFilter}>
+            <SelectTrigger className="w-[200px] bg-background"><SelectValue placeholder="Todos os cursos" /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todos os cursos</SelectItem>
+              {courseNames.map((name) => (
+                <SelectItem key={name} value={name}>{name}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Select value={dateFilter} onValueChange={setDateFilter}>
+            <SelectTrigger className="w-[160px] bg-background"><SelectValue placeholder="Período" /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todo o período</SelectItem>
+              <SelectItem value="7d">Últimos 7 dias</SelectItem>
+              <SelectItem value="30d">Últimos 30 dias</SelectItem>
+              <SelectItem value="90d">Últimos 90 dias</SelectItem>
+            </SelectContent>
+          </Select>
+          {(courseFilter !== "all" || dateFilter !== "all") && (
+            <Button variant="ghost" size="sm" onClick={() => { setCourseFilter("all"); setDateFilter("all"); }}>
+              Limpar filtros
+            </Button>
+          )}
+        </div>
+      )}
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList>
