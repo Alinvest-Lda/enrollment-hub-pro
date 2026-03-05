@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Eye, Search, MessageCircle, Trash2, Check, X } from "lucide-react";
+import { Eye, Search, MessageCircle, Trash2, Check, X, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -9,6 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { getWhatsAppLink } from "@/lib/courses-data";
+import { exportToCSV, trainingRequestCSVColumns } from "@/lib/csv-export";
 
 export interface TrainingRequest {
   id: string;
@@ -70,9 +71,14 @@ export default function TrainingRequestsTab({ requests, updateStatus, updateNote
 
   return (
     <div className="space-y-4">
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-        <Input placeholder="Pesquisar por nome, email ou tema..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-10" />
+      <div className="flex gap-2">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <Input placeholder="Pesquisar por nome, email ou tema..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-10" />
+        </div>
+        <Button variant="outline" size="icon" onClick={() => exportToCSV(filtered, trainingRequestCSVColumns, `pedidos-formacao-${new Date().toISOString().slice(0, 10)}`)} title="Exportar CSV">
+          <Download className="w-4 h-4" />
+        </Button>
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>

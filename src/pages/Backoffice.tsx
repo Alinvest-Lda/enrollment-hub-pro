@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { LogOut, Loader2, BookOpen, Users, RefreshCw, GraduationCap } from "lucide-react";
+import { LogOut, Loader2, BookOpen, Users, RefreshCw, GraduationCap, BarChart3 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -10,12 +10,13 @@ import Footer from "@/components/Footer";
 import EnrollmentsTab from "@/components/backoffice/EnrollmentsTab";
 import CoursesTab from "@/components/backoffice/CoursesTab";
 import TrainingRequestsTab from "@/components/backoffice/TrainingRequestsTab";
+import DashboardTab from "@/components/backoffice/DashboardTab";
 import { useBackofficeData } from "@/hooks/use-backoffice-data";
 import { supabase } from "@/integrations/supabase/client";
 
 const Backoffice = () => {
   const navigate = useNavigate();
-  const [section, setSection] = useState("enrollments");
+  const [section, setSection] = useState("dashboard");
   const data = useBackofficeData();
 
   useEffect(() => {
@@ -88,10 +89,15 @@ const Backoffice = () => {
           ) : (
             <Tabs value={section} onValueChange={setSection}>
               <TabsList className="mb-4">
+                <TabsTrigger value="dashboard"><BarChart3 className="w-4 h-4 mr-1" /> Dashboard</TabsTrigger>
                 <TabsTrigger value="enrollments"><Users className="w-4 h-4 mr-1" /> Inscrições</TabsTrigger>
                 <TabsTrigger value="courses"><BookOpen className="w-4 h-4 mr-1" /> Cursos</TabsTrigger>
                 <TabsTrigger value="training"><GraduationCap className="w-4 h-4 mr-1" /> Formações</TabsTrigger>
               </TabsList>
+
+              <TabsContent value="dashboard">
+                <DashboardTab enrollments={data.enrollments} trainingRequests={data.trainingRequests} />
+              </TabsContent>
 
               <TabsContent value="enrollments">
                 <EnrollmentsTab
