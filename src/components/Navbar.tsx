@@ -24,6 +24,9 @@ const Navbar = () => {
           <Link to="/" className="text-sm font-medium text-foreground hover:text-accent transition-colors">
             Cursos
           </Link>
+          <Link to="/sobre" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+            Sobre Nós
+          </Link>
           <Link to="/backoffice" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
             Backoffice
           </Link>
@@ -46,6 +49,9 @@ const Navbar = () => {
         <div className="md:hidden border-t border-border bg-card p-4 space-y-3">
           <Link to="/" className="block text-sm font-medium" onClick={() => setMobileOpen(false)}>
             Cursos
+          </Link>
+          <Link to="/sobre" className="block text-sm font-medium text-muted-foreground" onClick={() => setMobileOpen(false)}>
+            Sobre Nós
           </Link>
           <Link to="/backoffice" className="block text-sm font-medium text-muted-foreground" onClick={() => setMobileOpen(false)}>
             Backoffice
