@@ -1,1 +1,7 @@
 project_id = "dgypnfiyudrzhxoucbsc"
+
+[functions.submit-enrollment]
+verify_jwt = false
+
+[functions.mpesa-payment]
+verify_jwt = false
