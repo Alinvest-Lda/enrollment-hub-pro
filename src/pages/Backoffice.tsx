@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { LogOut, Loader2, BookOpen, Users, RefreshCw, GraduationCap, BarChart3 } from "lucide-react";
+import { LogOut, Loader2, BookOpen, Users, RefreshCw, GraduationCap, BarChart3, Bell } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -14,6 +14,7 @@ import DashboardTab from "@/components/backoffice/DashboardTab";
 import ManualEnrollmentForm from "@/components/backoffice/ManualEnrollmentForm";
 import CSVImportDialog from "@/components/backoffice/CSVImportDialog";
 import { useBackofficeData } from "@/hooks/use-backoffice-data";
+import RealtimeNotifications from "@/components/backoffice/RealtimeNotifications";
 import { supabase } from "@/integrations/supabase/client";
 
 const Backoffice = () => {
@@ -60,6 +61,7 @@ const Backoffice = () => {
               <p className="text-muted-foreground">Gestão completa do sistema</p>
             </div>
             <div className="flex flex-wrap gap-2">
+              <RealtimeNotifications />
               <ManualEnrollmentForm courses={data.courses} onSubmit={data.createManualEnrollment} />
               <CSVImportDialog courses={data.courses} onImport={data.bulkImportEnrollments} />
               <Button variant="outline" size="sm" onClick={data.refetch}><RefreshCw className="w-4 h-4 mr-1" /> Actualizar</Button>
