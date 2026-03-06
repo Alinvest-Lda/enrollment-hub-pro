@@ -71,6 +71,7 @@ Deno.serve(async (req) => {
         payment_plan: paymentPlan,
         amount_due: amountDue,
         total_price: totalPrice,
+        payment_method: paymentMethod || null,
         status: "pending",
       })
       .select("id")
