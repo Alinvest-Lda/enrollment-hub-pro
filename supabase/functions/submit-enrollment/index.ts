@@ -133,6 +133,20 @@ Deno.serve(async (req) => {
       }
     }
 
+    // Trigger admin notification (fire and forget)
+    try {
+      await supabase.functions.invoke("notify-admin", {
+        body: {
+          enrollmentId: enrollment.id,
+          courseName: courseName,
+          studentName: fullName,
+          amount: amountDue,
+        },
+      });
+    } catch (notifErr) {
+      console.error("Notification error (non-blocking):", notifErr);
+    }
+
     return new Response(
       JSON.stringify({
         success: true,
