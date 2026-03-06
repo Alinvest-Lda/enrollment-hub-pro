@@ -24,6 +24,7 @@ Deno.serve(async (req) => {
     const paymentPlan = formData.get("paymentPlan") as string;
     const amountDue = parseFloat(formData.get("amountDue") as string);
     const totalPrice = parseFloat(formData.get("totalPrice") as string);
+    const paymentMethod = formData.get("paymentMethod") as string | null;
     const file = formData.get("file") as File | null;
 
     // Validate required fields
