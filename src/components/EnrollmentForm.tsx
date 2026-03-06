@@ -1,9 +1,9 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { motion, AnimatePresence } from "framer-motion";
-import { Upload, FileText, CheckCircle, Send, MessageCircle, User, Phone, Mail, Building, PenLine } from "lucide-react";
+import { CheckCircle, Send, MessageCircle, User, Phone, Mail, Building, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,6 +13,9 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Course, formatCurrency, getWhatsAppLink } from "@/lib/courses-data";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import PaymentMethodStep, { type PaymentMethod } from "@/components/enrollment/PaymentMethodStep";
+import MpesaPaymentStep from "@/components/enrollment/MpesaPaymentStep";
+import ProofUploadStep from "@/components/enrollment/ProofUploadStep";
 
 const enrollmentSchema = z.object({
   fullName: z.string().min(3, "Nome completo obrigatório").max(100),
@@ -26,17 +29,17 @@ const enrollmentSchema = z.object({
 
 type EnrollmentFormData = z.infer<typeof enrollmentSchema>;
 
+type Step = "form" | "payment-method" | "mpesa" | "upload" | "done";
+
 interface EnrollmentFormProps {
   course: Course;
 }
 
 const EnrollmentForm = ({ course }: EnrollmentFormProps) => {
-  const [step, setStep] = useState<"form" | "upload" | "done">("form");
-  const [uploading, setUploading] = useState(false);
-  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
-  const [enrollmentId, setEnrollmentId] = useState<string | null>(null);
+  const [step, setStep] = useState<Step>("form");
   const [formData, setFormData] = useState<EnrollmentFormData | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | null>(null);
+  const [enrollmentId, setEnrollmentId] = useState<string | null>(null);
 
   const { register, handleSubmit, watch, formState: { errors, isSubmitting } } = useForm<EnrollmentFormData>({
     resolver: zodResolver(enrollmentSchema),
@@ -49,73 +52,80 @@ const EnrollmentForm = ({ course }: EnrollmentFormProps) => {
 
   const onSubmit = (data: EnrollmentFormData) => {
     setFormData(data);
-    setStep("upload");
-    toast({ title: "Dados guardados!", description: "Agora envie o comprovativo de pagamento." });
+    setStep("payment-method");
+    toast({ title: "Dados guardados!", description: "Escolha o método de pagamento." });
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const validTypes = ["image/jpeg", "image/png", "image/webp", "application/pdf"];
-      if (!validTypes.includes(file.type)) {
-        toast({ title: "Formato inválido", description: "Envie uma imagem (JPG, PNG) ou PDF.", variant: "destructive" });
-        return;
+  const handlePaymentMethodSelect = (method: PaymentMethod) => {
+    setPaymentMethod(method);
+  };
+
+  const handlePaymentMethodContinue = async () => {
+    if (!paymentMethod || !formData) return;
+
+    if (paymentMethod === "mpesa") {
+      // Create enrollment first, then process M-Pesa
+      try {
+        const body = new FormData();
+        body.append("fullName", formData.fullName);
+        body.append("email", formData.email);
+        body.append("phone", formData.phone);
+        body.append("company", formData.company || "");
+        body.append("nuit", formData.nuit || "");
+        body.append("message", formData.message || "");
+        body.append("courseId", course.id);
+        body.append("courseName", course.title);
+        body.append("paymentPlan", formData.paymentPlanId);
+        body.append("amountDue", firstInstallment.toString());
+        body.append("totalPrice", course.price.toString());
+        body.append("paymentMethod", "mpesa");
+
+        const { data, error } = await supabase.functions.invoke("submit-enrollment", { body });
+        if (error) throw error;
+        if (!data?.success) throw new Error(data?.error || "Erro");
+
+        setEnrollmentId(data.enrollmentId);
+        setStep("mpesa");
+      } catch (err: any) {
+        toast({ title: "Erro", description: err.message, variant: "destructive" });
       }
-      if (file.size > 10 * 1024 * 1024) {
-        toast({ title: "Ficheiro muito grande", description: "Máximo 10MB.", variant: "destructive" });
-        return;
-      }
-      setUploadedFile(file);
+    } else {
+      // Offline methods → upload proof
+      setStep("upload");
     }
   };
 
-  const handleUploadSubmit = async () => {
-    if (!uploadedFile || !formData) {
-      toast({ title: "Sem ficheiro", description: "Por favor envie o comprovativo.", variant: "destructive" });
-      return;
-    }
-
-    setUploading(true);
-    try {
-      const body = new FormData();
-      body.append("fullName", formData.fullName);
-      body.append("email", formData.email);
-      body.append("phone", formData.phone);
-      body.append("company", formData.company || "");
-      body.append("nuit", formData.nuit || "");
-      body.append("message", formData.message || "");
-      body.append("courseId", course.id);
-      body.append("courseName", course.title);
-      body.append("paymentPlan", formData.paymentPlanId);
-      body.append("amountDue", firstInstallment.toString());
-      body.append("totalPrice", course.price.toString());
-      body.append("file", uploadedFile);
-
-      const { data, error } = await supabase.functions.invoke("submit-enrollment", {
-        body,
-      });
-
-      if (error) throw error;
-      if (!data?.success) throw new Error(data?.error || "Erro desconhecido");
-
-      setEnrollmentId(data.enrollmentId);
-      setStep("done");
-      toast({ title: "Comprovativo enviado!", description: "A nossa equipa irá verificar e confirmar o seu pagamento." });
-    } catch (err: any) {
-      console.error("Submit error:", err);
-      toast({ title: "Erro ao enviar", description: err.message || "Tente novamente.", variant: "destructive" });
-    } finally {
-      setUploading(false);
-    }
+  const stepTitle = {
+    form: "Formulário de Inscrição",
+    "payment-method": "Método de Pagamento",
+    mpesa: "Pagamento M-Pesa",
+    upload: "Envio de Comprovativo",
+    done: "Inscrição Submetida",
   };
+
+  const stepIcon = {
+    form: <User className="w-5 h-5 text-accent" />,
+    "payment-method": <Send className="w-5 h-5 text-accent" />,
+    mpesa: <Send className="w-5 h-5 text-accent" />,
+    upload: <Send className="w-5 h-5 text-accent" />,
+    done: <CheckCircle className="w-5 h-5 text-success" />,
+  };
+
+  const canGoBack = step === "payment-method" || step === "upload";
 
   return (
     <Card className="shadow-card border-border">
       <CardHeader className="bg-muted/50 border-b border-border">
         <CardTitle className="font-heading text-xl flex items-center gap-2">
-          {step === "form" && <><User className="w-5 h-5 text-accent" /> Formulário de Inscrição</>}
-          {step === "upload" && <><Upload className="w-5 h-5 text-accent" /> Envio de Comprovativo</>}
-          {step === "done" && <><CheckCircle className="w-5 h-5 text-success" /> Inscrição Submetida</>}
+          {canGoBack && (
+            <button
+              onClick={() => setStep(step === "upload" ? "payment-method" : "form")}
+              className="p-1 rounded hover:bg-muted transition-colors"
+            >
+              <ArrowLeft className="w-4 h-4" />
+            </button>
+          )}
+          {stepIcon[step]} {stepTitle[step]}
         </CardTitle>
       </CardHeader>
 
@@ -152,7 +162,7 @@ const EnrollmentForm = ({ course }: EnrollmentFormProps) => {
 
               <div>
                 <Label htmlFor="message" className="mb-1.5 block">Mensagem (Opcional)</Label>
-                <Textarea id="message" {...register("message")} placeholder="Alguma dúvida, pedido especial ou informação adicional?" rows={3} />
+                <Textarea id="message" {...register("message")} placeholder="Alguma dúvida ou informação adicional?" rows={3} />
               </div>
 
               <div>
@@ -188,47 +198,59 @@ const EnrollmentForm = ({ course }: EnrollmentFormProps) => {
 
               <Button type="submit" variant="navy" className="w-full" size="lg" disabled={isSubmitting}>
                 <Send className="w-4 h-4" />
-                Prosseguir para Pagamento
+                Escolher Método de Pagamento
               </Button>
             </motion.form>
           )}
 
-          {step === "upload" && (
-            <motion.div key="upload" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-5">
-              <div className="bg-muted rounded-lg p-4 text-sm">
-                <p className="font-heading font-semibold mb-1">Instruções de Pagamento</p>
-                <p className="text-muted-foreground">
-                  Efectue o pagamento de <strong className="text-foreground">{formatCurrency(firstInstallment)}</strong> e envie o comprovativo abaixo (imagem ou PDF).
-                </p>
-                <p className="text-muted-foreground mt-2">
-                  Conta: <strong className="text-foreground">Millennium BIM — 000 000 000 000</strong>
-                </p>
+          {step === "payment-method" && (
+            <motion.div key="payment-method" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-5">
+              <div className="bg-muted rounded-lg p-4">
+                <p className="text-sm font-heading font-semibold">Valor a pagar</p>
+                <p className="text-2xl font-heading font-bold text-accent mt-1">{formatCurrency(firstInstallment)}</p>
               </div>
 
-              <div
-                onClick={() => fileInputRef.current?.click()}
-                className="border-2 border-dashed border-border rounded-lg p-8 text-center cursor-pointer hover:border-accent hover:bg-accent/5 transition-colors"
+              <PaymentMethodStep selected={paymentMethod} onSelect={handlePaymentMethodSelect} />
+
+              <Button
+                onClick={handlePaymentMethodContinue}
+                variant="navy"
+                className="w-full"
+                size="lg"
+                disabled={!paymentMethod}
               >
-                <input ref={fileInputRef} type="file" accept="image/*,.pdf" onChange={handleFileChange} className="hidden" />
-                {uploadedFile ? (
-                  <div className="flex items-center justify-center gap-2 text-success">
-                    <FileText className="w-6 h-6" />
-                    <span className="font-medium text-sm">{uploadedFile.name}</span>
-                  </div>
-                ) : (
-                  <>
-                    <Upload className="w-8 h-8 mx-auto text-muted-foreground mb-2" />
-                    <p className="text-sm text-muted-foreground">Clique para enviar o comprovativo</p>
-                    <p className="text-xs text-muted-foreground mt-1">JPG, PNG ou PDF (máx. 10MB)</p>
-                  </>
-                )}
-              </div>
-
-              <Button onClick={handleUploadSubmit} variant="navy" className="w-full" size="lg" disabled={uploading}>
                 <Send className="w-4 h-4" />
-                {uploading ? "A enviar..." : "Enviar Comprovativo"}
+                Continuar
               </Button>
             </motion.div>
+          )}
+
+          {step === "mpesa" && formData && enrollmentId && (
+            <MpesaPaymentStep
+              key="mpesa"
+              enrollmentId={enrollmentId}
+              phone={formData.phone}
+              amount={firstInstallment}
+              reference={course.id}
+              onSuccess={() => setStep("done")}
+              onError={(err) => toast({ title: "Erro M-Pesa", description: err, variant: "destructive" })}
+            />
+          )}
+
+          {step === "upload" && formData && paymentMethod && (
+            <ProofUploadStep
+              key="upload"
+              paymentMethod={paymentMethod}
+              amount={firstInstallment}
+              formData={formData as { fullName: string; email: string; phone: string; company?: string; nuit?: string; message?: string; paymentPlanId: string }}
+              courseId={course.id}
+              courseName={course.title}
+              totalPrice={course.price}
+              onSuccess={(id) => {
+                setEnrollmentId(id);
+                setStep("done");
+              }}
+            />
           )}
 
           {step === "done" && (
@@ -237,7 +259,9 @@ const EnrollmentForm = ({ course }: EnrollmentFormProps) => {
               <h3 className="font-heading text-xl font-bold">Inscrição Submetida com Sucesso!</h3>
               {enrollmentId && <p className="text-xs text-muted-foreground font-mono">Ref: {enrollmentId.substring(0, 8).toUpperCase()}</p>}
               <p className="text-muted-foreground text-sm max-w-md mx-auto">
-                O seu comprovativo será analisado pela nossa equipa. Receberá confirmação via WhatsApp em até 24 horas.
+                {paymentMethod === "mpesa"
+                  ? "Pagamento M-Pesa confirmado! Receberá confirmação via WhatsApp em breve."
+                  : "O seu comprovativo será analisado pela nossa equipa. Receberá confirmação via WhatsApp em até 24 horas."}
               </p>
               <a
                 href={getWhatsAppLink(`Olá, acabei de submeter a minha inscrição para o curso: ${course.title}. Ref: ${enrollmentId?.substring(0, 8).toUpperCase()}`)}
