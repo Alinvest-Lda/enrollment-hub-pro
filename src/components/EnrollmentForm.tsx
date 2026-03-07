@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { motion, AnimatePresence } from "framer-motion";
-import { CheckCircle, Send, MessageCircle, User, Phone, Mail, Building, ArrowLeft } from "lucide-react";
+import { CheckCircle, Send, MessageCircle, User, Phone, Mail, Building, ArrowLeft, CreditCard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -28,12 +28,17 @@ const enrollmentSchema = z.object({
 });
 
 type EnrollmentFormData = z.infer<typeof enrollmentSchema>;
-
 type Step = "form" | "payment-method" | "mpesa" | "upload" | "done";
 
 interface EnrollmentFormProps {
   course: Course;
 }
+
+const steps: { key: Step; label: string }[] = [
+  { key: "form", label: "Dados" },
+  { key: "payment-method", label: "Pagamento" },
+  { key: "done", label: "Confirmação" },
+];
 
 const EnrollmentForm = ({ course }: EnrollmentFormProps) => {
   const [step, setStep] = useState<Step>("form");
@@ -64,7 +69,6 @@ const EnrollmentForm = ({ course }: EnrollmentFormProps) => {
     if (!paymentMethod || !formData) return;
 
     if (paymentMethod === "mpesa") {
-      // Create enrollment first, then process M-Pesa
       try {
         const body = new FormData();
         body.append("fullName", formData.fullName);
@@ -90,83 +94,97 @@ const EnrollmentForm = ({ course }: EnrollmentFormProps) => {
         toast({ title: "Erro", description: err.message, variant: "destructive" });
       }
     } else {
-      // Offline methods → upload proof
       setStep("upload");
     }
   };
 
-  const stepTitle = {
+  const stepTitle: Record<Step, string> = {
     form: "Formulário de Inscrição",
     "payment-method": "Método de Pagamento",
     mpesa: "Pagamento M-Pesa",
     upload: "Envio de Comprovativo",
-    done: "Inscrição Submetida",
-  };
-
-  const stepIcon = {
-    form: <User className="w-5 h-5 text-accent" />,
-    "payment-method": <Send className="w-5 h-5 text-accent" />,
-    mpesa: <Send className="w-5 h-5 text-accent" />,
-    upload: <Send className="w-5 h-5 text-accent" />,
-    done: <CheckCircle className="w-5 h-5 text-success" />,
+    done: "Inscrição Confirmada",
   };
 
   const canGoBack = step === "payment-method" || step === "upload";
+  
+  const currentStepIndex = step === "form" ? 0 : step === "done" ? 2 : 1;
 
   return (
-    <Card className="shadow-card border-border">
-      <CardHeader className="bg-muted/50 border-b border-border">
-        <CardTitle className="font-heading text-xl flex items-center gap-2">
+    <Card className="shadow-card border-border rounded-xl overflow-hidden">
+      {/* Step progress */}
+      <div className="flex border-b border-border">
+        {steps.map((s, i) => (
+          <div
+            key={s.key}
+            className={`flex-1 py-3 text-center text-xs font-semibold transition-colors ${
+              i <= currentStepIndex
+                ? "bg-primary/5 text-primary border-b-2 border-primary"
+                : "text-muted-foreground bg-muted/30"
+            }`}
+          >
+            <span className="hidden sm:inline">{i + 1}. </span>{s.label}
+          </div>
+        ))}
+      </div>
+
+      <CardHeader className="pb-0 pt-5 px-6">
+        <CardTitle className="font-heading text-lg flex items-center gap-2">
           {canGoBack && (
             <button
               onClick={() => setStep(step === "upload" ? "payment-method" : "form")}
-              className="p-1 rounded hover:bg-muted transition-colors"
+              className="p-1.5 rounded-lg hover:bg-muted transition-colors"
             >
               <ArrowLeft className="w-4 h-4" />
             </button>
           )}
-          {stepIcon[step]} {stepTitle[step]}
+          {step === "done" ? (
+            <CheckCircle className="w-5 h-5 text-success" />
+          ) : (
+            <CreditCard className="w-5 h-5 text-accent" />
+          )}
+          {stepTitle[step]}
         </CardTitle>
       </CardHeader>
 
       <CardContent className="p-6">
         <AnimatePresence mode="wait">
           {step === "form" && (
-            <motion.form key="form" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            <motion.form key="form" initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 10 }} transition={{ duration: 0.2 }} onSubmit={handleSubmit(onSubmit)} className="space-y-5">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="fullName" className="flex items-center gap-1 mb-1.5"><User className="w-3.5 h-3.5" /> Nome Completo *</Label>
-                  <Input id="fullName" {...register("fullName")} placeholder="João da Silva" />
-                  {errors.fullName && <p className="text-xs text-destructive mt-1">{errors.fullName.message}</p>}
+                  <Label htmlFor="fullName" className="flex items-center gap-1.5 mb-2 text-sm font-medium"><User className="w-3.5 h-3.5 text-muted-foreground" /> Nome Completo *</Label>
+                  <Input id="fullName" {...register("fullName")} placeholder="João da Silva" className="rounded-lg" />
+                  {errors.fullName && <p className="text-xs text-destructive mt-1.5">{errors.fullName.message}</p>}
                 </div>
                 <div>
-                  <Label htmlFor="email" className="flex items-center gap-1 mb-1.5"><Mail className="w-3.5 h-3.5" /> Email *</Label>
-                  <Input id="email" type="email" {...register("email")} placeholder="joao@email.com" />
-                  {errors.email && <p className="text-xs text-destructive mt-1">{errors.email.message}</p>}
+                  <Label htmlFor="email" className="flex items-center gap-1.5 mb-2 text-sm font-medium"><Mail className="w-3.5 h-3.5 text-muted-foreground" /> Email *</Label>
+                  <Input id="email" type="email" {...register("email")} placeholder="joao@email.com" className="rounded-lg" />
+                  {errors.email && <p className="text-xs text-destructive mt-1.5">{errors.email.message}</p>}
                 </div>
                 <div>
-                  <Label htmlFor="phone" className="flex items-center gap-1 mb-1.5"><Phone className="w-3.5 h-3.5" /> Telefone/WhatsApp *</Label>
-                  <Input id="phone" {...register("phone")} placeholder="+258 84 999 9999" />
-                  {errors.phone && <p className="text-xs text-destructive mt-1">{errors.phone.message}</p>}
+                  <Label htmlFor="phone" className="flex items-center gap-1.5 mb-2 text-sm font-medium"><Phone className="w-3.5 h-3.5 text-muted-foreground" /> Telefone/WhatsApp *</Label>
+                  <Input id="phone" {...register("phone")} placeholder="+258 84 999 9999" className="rounded-lg" />
+                  {errors.phone && <p className="text-xs text-destructive mt-1.5">{errors.phone.message}</p>}
                 </div>
                 <div>
-                  <Label htmlFor="company" className="flex items-center gap-1 mb-1.5"><Building className="w-3.5 h-3.5" /> Empresa</Label>
-                  <Input id="company" {...register("company")} placeholder="Opcional" />
+                  <Label htmlFor="company" className="flex items-center gap-1.5 mb-2 text-sm font-medium"><Building className="w-3.5 h-3.5 text-muted-foreground" /> Empresa</Label>
+                  <Input id="company" {...register("company")} placeholder="Opcional" className="rounded-lg" />
                 </div>
               </div>
 
               <div>
-                <Label htmlFor="nuit" className="mb-1.5 block">NUIT (Opcional)</Label>
-                <Input id="nuit" {...register("nuit")} placeholder="Número Único de Identificação Tributária" />
+                <Label htmlFor="nuit" className="mb-2 block text-sm font-medium">NUIT (Opcional)</Label>
+                <Input id="nuit" {...register("nuit")} placeholder="Número Único de Identificação Tributária" className="rounded-lg" />
               </div>
 
               <div>
-                <Label htmlFor="message" className="mb-1.5 block">Mensagem (Opcional)</Label>
-                <Textarea id="message" {...register("message")} placeholder="Alguma dúvida ou informação adicional?" rows={3} />
+                <Label htmlFor="message" className="mb-2 block text-sm font-medium">Mensagem (Opcional)</Label>
+                <Textarea id="message" {...register("message")} placeholder="Alguma dúvida ou informação adicional?" rows={3} className="rounded-lg" />
               </div>
 
               <div>
-                <Label className="mb-2 block font-heading font-semibold">Modalidade de Pagamento *</Label>
+                <Label className="mb-3 block font-heading font-semibold text-sm">Modalidade de Pagamento *</Label>
                 <RadioGroup
                   value={selectedPlanId}
                   onValueChange={(val) => {
@@ -176,27 +194,27 @@ const EnrollmentForm = ({ course }: EnrollmentFormProps) => {
                   className="space-y-2"
                 >
                   {course.paymentPlans.map((plan) => (
-                    <label key={plan.id} className={`flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${selectedPlanId === plan.id ? "border-accent bg-accent/5" : "border-border hover:border-accent/50"}`}>
+                    <label key={plan.id} className={`flex items-start gap-3 p-3.5 rounded-xl border-2 cursor-pointer transition-all ${selectedPlanId === plan.id ? "border-accent bg-accent/5 shadow-sm" : "border-border hover:border-accent/40"}`}>
                       <RadioGroupItem value={plan.id} className="mt-0.5" />
                       <div>
                         <p className="font-heading font-semibold text-sm">{plan.label}</p>
-                        <p className="text-xs text-muted-foreground">{plan.description}</p>
+                        <p className="text-xs text-muted-foreground mt-0.5">{plan.description}</p>
                       </div>
                     </label>
                   ))}
                 </RadioGroup>
-                {errors.paymentPlanId && <p className="text-xs text-destructive mt-1">{errors.paymentPlanId.message}</p>}
+                {errors.paymentPlanId && <p className="text-xs text-destructive mt-1.5">{errors.paymentPlanId.message}</p>}
               </div>
 
-              <div className="bg-muted rounded-lg p-4">
-                <p className="text-sm font-heading font-semibold">Resumo do Pagamento Inicial</p>
-                <p className="text-2xl font-heading font-bold text-accent mt-1">{formatCurrency(firstInstallment)}</p>
+              <div className="bg-muted rounded-xl p-4">
+                <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide mb-1">Valor a pagar</p>
+                <p className="text-2xl font-heading font-extrabold text-accent">{formatCurrency(firstInstallment)}</p>
                 <p className="text-xs text-muted-foreground mt-1">
                   {selectedPlan?.installments.length === 1 ? "Pagamento único" : `1ª prestação de ${selectedPlan?.installments.length}`}
                 </p>
               </div>
 
-              <Button type="submit" variant="navy" className="w-full" size="lg" disabled={isSubmitting}>
+              <Button type="submit" variant="navy" className="w-full rounded-lg" size="lg" disabled={isSubmitting}>
                 <Send className="w-4 h-4" />
                 Escolher Método de Pagamento
               </Button>
@@ -204,10 +222,10 @@ const EnrollmentForm = ({ course }: EnrollmentFormProps) => {
           )}
 
           {step === "payment-method" && (
-            <motion.div key="payment-method" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-5">
-              <div className="bg-muted rounded-lg p-4">
-                <p className="text-sm font-heading font-semibold">Valor a pagar</p>
-                <p className="text-2xl font-heading font-bold text-accent mt-1">{formatCurrency(firstInstallment)}</p>
+            <motion.div key="payment-method" initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 10 }} transition={{ duration: 0.2 }} className="space-y-5">
+              <div className="bg-muted rounded-xl p-4">
+                <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide mb-1">Valor a pagar</p>
+                <p className="text-2xl font-heading font-extrabold text-accent">{formatCurrency(firstInstallment)}</p>
               </div>
 
               <PaymentMethodStep selected={paymentMethod} onSelect={handlePaymentMethodSelect} />
@@ -215,7 +233,7 @@ const EnrollmentForm = ({ course }: EnrollmentFormProps) => {
               <Button
                 onClick={handlePaymentMethodContinue}
                 variant="navy"
-                className="w-full"
+                className="w-full rounded-lg"
                 size="lg"
                 disabled={!paymentMethod}
               >
@@ -254,11 +272,13 @@ const EnrollmentForm = ({ course }: EnrollmentFormProps) => {
           )}
 
           {step === "done" && (
-            <motion.div key="done" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="text-center py-8 space-y-4">
-              <CheckCircle className="w-16 h-16 mx-auto text-success" />
+            <motion.div key="done" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="text-center py-10 space-y-4">
+              <div className="w-16 h-16 mx-auto rounded-full bg-success/10 flex items-center justify-center mb-2">
+                <CheckCircle className="w-10 h-10 text-success" />
+              </div>
               <h3 className="font-heading text-xl font-bold">Inscrição Submetida com Sucesso!</h3>
-              {enrollmentId && <p className="text-xs text-muted-foreground font-mono">Ref: {enrollmentId.substring(0, 8).toUpperCase()}</p>}
-              <p className="text-muted-foreground text-sm max-w-md mx-auto">
+              {enrollmentId && <p className="text-xs text-muted-foreground font-mono bg-muted inline-block px-3 py-1 rounded-full">Ref: {enrollmentId.substring(0, 8).toUpperCase()}</p>}
+              <p className="text-muted-foreground text-sm max-w-md mx-auto leading-relaxed">
                 {paymentMethod === "mpesa"
                   ? "Pagamento M-Pesa confirmado! Receberá confirmação via WhatsApp em breve."
                   : "O seu comprovativo será analisado pela nossa equipa. Receberá confirmação via WhatsApp em até 24 horas."}
@@ -268,7 +288,7 @@ const EnrollmentForm = ({ course }: EnrollmentFormProps) => {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <Button variant="whatsapp" size="lg" className="mt-4">
+                <Button variant="whatsapp" size="lg" className="mt-4 rounded-lg">
                   <MessageCircle className="w-4 h-4" />
                   Acompanhar no WhatsApp
                 </Button>
