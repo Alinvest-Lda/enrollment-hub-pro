@@ -16,12 +16,12 @@ const faqs = [
   {
     question: "Quais são os métodos de pagamento aceites?",
     answer:
-      "Aceitamos transferência bancária, M-Pesa e e-Mola. Após a inscrição, receberá os dados para pagamento e poderá enviar o comprovativo directamente pelo formulário.",
+      "Aceitamos M-Pesa (pagamento online instantâneo), transferência bancária e e-Mola. O M-Pesa permite pagamento directo no acto da inscrição. Para os demais métodos, envie o comprovativo pelo formulário.",
   },
   {
     question: "Posso pagar em prestações?",
     answer:
-      "Sim! Disponibilizamos planos de pagamento flexíveis dependendo da duração do curso. Pode optar por pagamento integral com desconto, ou dividir em 2 ou 3 prestações conforme o plano disponível para cada curso.",
+      "Sim! Disponibilizamos planos de pagamento flexíveis dependendo da duração do curso. Pode optar por pagamento integral ou dividir em 2 ou 3 prestações conforme o plano disponível para cada curso.",
   },
   {
     question: "Os cursos oferecem certificado?",
@@ -48,12 +48,12 @@ const FAQSection = () => {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center mb-12"
+          className="text-center mb-14"
         >
-          <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-1.5 rounded-full text-sm font-medium mb-4">
+          <span className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-1.5 rounded-full text-sm font-semibold mb-4">
             <HelpCircle className="w-4 h-4" />
             Dúvidas Frequentes
-          </div>
+          </span>
           <h2 className="font-heading text-3xl md:text-4xl font-extrabold text-foreground mb-3">
             Perguntas Frequentes
           </h2>
@@ -73,12 +73,12 @@ const FAQSection = () => {
               <AccordionItem
                 key={index}
                 value={`faq-${index}`}
-                className="bg-card border border-border rounded-xl px-6 data-[state=open]:shadow-md transition-shadow"
+                className="bg-card border border-border rounded-xl px-6 data-[state=open]:shadow-card transition-shadow"
               >
-                <AccordionTrigger className="text-left font-heading font-semibold text-sm md:text-base hover:no-underline py-4">
+                <AccordionTrigger className="text-left font-heading font-semibold text-sm md:text-base hover:no-underline py-5">
                   {faq.question}
                 </AccordionTrigger>
-                <AccordionContent className="text-muted-foreground text-sm leading-relaxed pb-4">
+                <AccordionContent className="text-muted-foreground text-sm leading-relaxed pb-5">
                   {faq.answer}
                 </AccordionContent>
               </AccordionItem>

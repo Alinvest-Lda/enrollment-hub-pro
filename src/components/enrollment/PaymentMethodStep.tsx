@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Smartphone, CreditCard, Building2, Banknote } from "lucide-react";
+import { Smartphone, Building2, Banknote } from "lucide-react";
 import { Card } from "@/components/ui/card";
 
 export type PaymentMethod = "mpesa" | "emola" | "bank_transfer";
@@ -56,15 +56,15 @@ const PaymentMethodStep = ({ selected, onSelect }: PaymentMethodStepProps) => {
           <Card
             key={method.id}
             onClick={() => onSelect(method.id)}
-            className={`p-4 cursor-pointer transition-all border-2 ${
+            className={`p-4 cursor-pointer transition-all border-2 rounded-xl ${
               isSelected
-                ? "border-accent bg-accent/5 shadow-md"
-                : "border-border hover:border-accent/50"
+                ? "border-accent bg-accent/5 shadow-sm"
+                : "border-border hover:border-accent/40"
             }`}
           >
             <div className="flex items-center gap-3">
               <div
-                className={`p-2.5 rounded-lg ${
+                className={`p-2.5 rounded-lg transition-colors ${
                   isSelected ? "bg-accent text-accent-foreground" : "bg-muted text-muted-foreground"
                 }`}
               >
@@ -74,7 +74,7 @@ const PaymentMethodStep = ({ selected, onSelect }: PaymentMethodStepProps) => {
                 <div className="flex items-center gap-2">
                   <p className="font-heading font-semibold text-sm">{method.label}</p>
                   <span
-                    className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${
+                    className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wide ${
                       method.online
                         ? "bg-success/10 text-success"
                         : "bg-muted text-muted-foreground"
@@ -83,14 +83,14 @@ const PaymentMethodStep = ({ selected, onSelect }: PaymentMethodStepProps) => {
                     {method.badge}
                   </span>
                 </div>
-                <p className="text-xs text-muted-foreground">{method.description}</p>
+                <p className="text-xs text-muted-foreground mt-0.5">{method.description}</p>
               </div>
               <div
-                className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
+                className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${
                   isSelected ? "border-accent" : "border-muted-foreground/30"
                 }`}
               >
-                {isSelected && <div className="w-2 h-2 rounded-full bg-accent" />}
+                {isSelected && <div className="w-2.5 h-2.5 rounded-full bg-accent" />}
               </div>
             </div>
           </Card>

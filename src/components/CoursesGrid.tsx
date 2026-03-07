@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, BookOpen } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useCourses } from "@/hooks/use-courses";
 import CourseCard from "./CourseCard";
@@ -18,12 +18,16 @@ const CoursesGrid = () => {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center mb-12"
+          className="text-center mb-14"
         >
+          <span className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-1.5 rounded-full text-sm font-semibold mb-4">
+            <BookOpen className="w-4 h-4" />
+            Formação Especializada
+          </span>
           <h2 className="font-heading text-3xl md:text-4xl font-extrabold text-foreground mb-3">
             Cursos Disponíveis
           </h2>
-          <p className="text-muted-foreground max-w-lg mx-auto">
+          <p className="text-muted-foreground max-w-lg mx-auto leading-relaxed">
             Escolha o curso ideal para o seu desenvolvimento profissional.
             Pagamento flexível e certificação reconhecida.
           </p>
@@ -32,7 +36,7 @@ const CoursesGrid = () => {
         {isLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {Array.from({ length: 6 }).map((_, i) => (
-              <Skeleton key={i} className="h-80 rounded-lg" />
+              <Skeleton key={i} className="h-80 rounded-xl" />
             ))}
           </div>
         ) : (
@@ -48,10 +52,10 @@ const CoursesGrid = () => {
                 initial={{ opacity: 0, y: 10 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                className="text-center mt-10"
+                className="text-center mt-12"
               >
                 <Link to="/cursos">
-                  <Button variant="navy" size="lg" className="gap-2">
+                  <Button variant="outline" size="lg" className="gap-2 rounded-lg border-2">
                     Ver todos os cursos
                     <ArrowRight className="w-4 h-4" />
                   </Button>
