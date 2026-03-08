@@ -57,6 +57,27 @@ export default function CoursesTab({ courses, saveCourse, deleteCourse, toggleCo
     if (ok) { setDialogOpen(false); setEditing(null); }
   };
 
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/")) { toast.error("Selecione um ficheiro de imagem"); return; }
+    if (file.size > 5 * 1024 * 1024) { toast.error("Imagem deve ter no máximo 5MB"); return; }
+
+    setUploading(true);
+    const slug = editing?.slug || "course";
+    const ext = file.name.split(".").pop();
+    const filePath = `${slug}-${Date.now()}.${ext}`;
+
+    const { error } = await supabase.storage.from("course-images").upload(filePath, file, { upsert: true });
+    if (error) { toast.error("Erro ao enviar imagem"); setUploading(false); return; }
+
+    const { data: urlData } = supabase.storage.from("course-images").getPublicUrl(filePath);
+    updateField("image", urlData.publicUrl);
+    toast.success("Imagem enviada com sucesso");
+    setUploading(false);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
   const updateField = (field: string, value: any) => setEditing((prev) => prev ? { ...prev, [field]: value } : prev);
 
   return (
