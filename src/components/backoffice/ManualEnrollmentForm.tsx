@@ -37,7 +37,7 @@ export default function ManualEnrollmentForm({ courses, onSubmit }: Props) {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
-    full_name: "", email: "", phone: "", company: "", nuit: "",
+    full_name: "", email: "", phone: "", company: "", nuit: "", province: "",
     course_id: "", payment_plan: "full",
     amount_due: "", source: "presencial" as EnrollmentSource,
     payment_method: "", message: "", admin_notes: "",
