@@ -2,8 +2,9 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import {
   Award, Plus, Pencil, Trash2, Save, X, Eye, Copy, Search,
   FileText, Loader2, Upload, Globe, QrCode, Image as ImageIcon,
-  MoveVertical, GripVertical, EyeOff,
+  MoveVertical, GripVertical, EyeOff, Settings2, LayoutGrid, Type,
 } from "lucide-react";
+import CollapsibleSection from "@/components/CollapsibleSection";
 import { QRCodeSVG } from "qrcode.react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
