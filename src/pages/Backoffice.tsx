@@ -86,6 +86,7 @@ const Backoffice = () => {
     quotations: "Cotações",
     certificates: "Certificados",
     partners: "Parceiros",
+    reports: "Relatórios",
     payment_plans: "Modelos de Pagamento",
     whatsapp: "Templates WhatsApp",
     settings: "Configurações",
