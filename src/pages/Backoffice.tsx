@@ -26,7 +26,6 @@ import ReportsTab from "@/components/backoffice/ReportsTab";
 import { useBackofficeData } from "@/hooks/use-backoffice-data";
 import RealtimeNotifications from "@/components/backoffice/RealtimeNotifications";
 import { supabase } from "@/integrations/supabase/client";
-import { supabase } from "@/integrations/supabase/client";
 
 type Section = "dashboard" | "enrollments" | "courses" | "training" | "quotations" | "certificates" | "reports" | "payment_plans" | "whatsapp" | "settings";
 
