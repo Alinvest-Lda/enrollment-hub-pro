@@ -263,7 +263,7 @@ export default function EnrollmentsTab({ enrollments, proofs, fetchProofs, updat
                               </>
                             )}
 
-                            <a href={getWhatsAppLink(`Olá ${enrollment.full_name}, referente à sua inscrição no curso ${enrollment.course_name}...`)} target="_blank" rel="noopener noreferrer">
+                            <a href={getWhatsAppLinkFromNumber(settings?.whatsappNumber || "", `Olá ${enrollment.full_name}, referente à sua inscrição no curso ${enrollment.course_name}...`)} target="_blank" rel="noopener noreferrer">
                               <Button variant="ghost" size="icon"><MessageCircle className="w-4 h-4" /></Button>
                             </a>
 
