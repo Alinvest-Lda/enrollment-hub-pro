@@ -341,7 +341,7 @@ const EnrollmentForm = ({ course }: EnrollmentFormProps) => {
               <ProofUploadStep
                 paymentMethod={paymentMethod}
                 amount={firstInstallment}
-                formData={formData as { fullName: string; email: string; phone: string; company?: string; nuit?: string; message?: string; paymentPlanId: string }}
+                formData={formData as { fullName: string; email: string; phone: string; company?: string; nuit: string; province: string; message?: string; paymentPlanId: string }}
                 courseId={course.id}
                 courseName={course.title}
                 totalPrice={course.price}
