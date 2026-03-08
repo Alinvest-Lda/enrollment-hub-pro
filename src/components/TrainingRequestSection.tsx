@@ -198,6 +198,23 @@ const TrainingRequestSection = () => {
                     <Input id="tr-phone" {...register("phone")} placeholder="+258 84 999 9999" className="rounded-lg" />
                     {errors.phone && <p className="text-xs text-destructive mt-1">{errors.phone.message}</p>}
                   </div>
+                  <div>
+                    <Label htmlFor="tr-nuit" className="flex items-center gap-1 mb-1.5">NUIT *</Label>
+                    <Input id="tr-nuit" {...register("nuit")} placeholder="Número Único de Identificação Tributária" className="rounded-lg" />
+                    {errors.nuit && <p className="text-xs text-destructive mt-1">{errors.nuit.message}</p>}
+                  </div>
+                  <div>
+                    <Label htmlFor="tr-province" className="flex items-center gap-1 mb-1.5"><MapPin className="w-3.5 h-3.5" /> Província *</Label>
+                    <Select value={watch("province") || ""} onValueChange={(val) => setValue("province", val, { shouldValidate: true })}>
+                      <SelectTrigger className="rounded-lg"><SelectValue placeholder="Seleccione a província" /></SelectTrigger>
+                      <SelectContent>
+                        {PROVINCES.map((p) => (
+                          <SelectItem key={p} value={p}>{p}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    {errors.province && <p className="text-xs text-destructive mt-1">{errors.province.message}</p>}
+                  </div>
                   {isOrg && (
                     <div>
                       <Label htmlFor="tr-org" className="flex items-center gap-1 mb-1.5"><Building className="w-3.5 h-3.5" /> Nome da Organização</Label>
