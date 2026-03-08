@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Enrollment, PaymentProof, PaymentStatus, statusConfig } from "@/hooks/use-backoffice-data";
 import { formatCurrency, getWhatsAppLink } from "@/lib/courses-data";
 import { exportToCSV, enrollmentCSVColumns } from "@/lib/csv-export";
+import { toast } from "@/hooks/use-toast";
 import InstallmentTracker from "@/components/backoffice/InstallmentTracker";
 
 interface Props {
