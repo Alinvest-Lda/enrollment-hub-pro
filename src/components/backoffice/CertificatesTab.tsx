@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import {
   Award, Plus, Pencil, Trash2, Save, X, Eye, Copy, Search,
-  FileText, Check, Loader2, Send,
+  FileText, Check, Loader2, Send, Upload, Image, Globe,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -26,12 +26,14 @@ interface CertTemplate {
   background_color: string;
   border_style: string;
   logo_url: string | null;
+  example_image_url: string | null;
   header_text: string;
   body_template: string;
   footer_text: string;
   signature_label: string;
   signature_name: string;
   variables: string[];
+  language: string;
   is_active: boolean;
   is_default: boolean;
   created_at: string;
@@ -48,6 +50,7 @@ interface Certificate {
   start_date: string | null;
   end_date: string | null;
   issue_date: string;
+  language: string;
   status: string;
   created_at: string;
 }
@@ -66,14 +69,27 @@ const emptyTemplate: Omit<CertTemplate, "id" | "created_at"> = {
   background_color: "#ffffff",
   border_style: "classic",
   logo_url: null,
+  example_image_url: null,
   header_text: "CERTIFICADO DE CONCLUSÃO",
   body_template: "Certificamos que {{student_name}} concluiu com sucesso o curso {{course_name}}, com a duração de {{duration}}, realizado no período de {{start_date}} a {{end_date}}.",
   footer_text: "",
   signature_label: "Director",
   signature_name: "",
   variables: ["student_name", "course_name", "duration", "start_date", "end_date"],
+  language: "pt",
   is_active: true,
   is_default: false,
+};
+
+const bodyTemplates: Record<string, { header: string; body: string }> = {
+  pt: {
+    header: "CERTIFICADO DE CONCLUSÃO",
+    body: "Certificamos que {{student_name}} concluiu com sucesso o curso {{course_name}}, com a duração de {{duration}}, realizado no período de {{start_date}} a {{end_date}}.",
+  },
+  en: {
+    header: "CERTIFICATE OF COMPLETION",
+    body: "This is to certify that {{student_name}} has successfully completed the course {{course_name}}, with a duration of {{duration}}, held from {{start_date}} to {{end_date}}.",
+  },
 };
 
 function generateCode() {
@@ -101,8 +117,10 @@ export default function CertificatesTab() {
     course_duration: "",
     start_date: "",
     end_date: "",
+    language: "pt",
   });
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
 
   const fetchAll = useCallback(async () => {
     setLoading(true);
@@ -118,6 +136,33 @@ export default function CertificatesTab() {
   }, []);
 
   useEffect(() => { fetchAll(); }, [fetchAll]);
+
+  // Upload example image
+  const handleExampleUpload = async (file: File) => {
+    setUploading(true);
+    const filePath = `examples/${Date.now()}-${file.name}`;
+    const { error } = await supabase.storage.from("certificate-examples").upload(filePath, file);
+    if (error) {
+      toast({ title: "Erro no upload", description: error.message, variant: "destructive" });
+      setUploading(false);
+      return;
+    }
+    const { data: urlData } = supabase.storage.from("certificate-examples").getPublicUrl(filePath);
+    setEditTemplate((p) => ({ ...p!, example_image_url: urlData.publicUrl }));
+    toast({ title: "Imagem de exemplo carregada" });
+    setUploading(false);
+  };
+
+  // Handle language change for template
+  const handleLanguageChange = (lang: string) => {
+    const defaults = bodyTemplates[lang] || bodyTemplates.pt;
+    setEditTemplate((p) => ({
+      ...p!,
+      language: lang,
+      header_text: defaults.header,
+      body_template: defaults.body,
+    }));
+  };
 
   // Template CRUD
   const saveTemplate = async () => {
@@ -158,6 +203,15 @@ export default function CertificatesTab() {
     }
   };
 
+  const handleTemplateSelectForGen = (templateId: string) => {
+    const t = templates.find((tpl) => tpl.id === templateId);
+    setGenForm((prev) => ({
+      ...prev,
+      template_id: templateId,
+      language: t?.language || "pt",
+    }));
+  };
+
   const generateCertificate = async () => {
     if (!genForm.student_name || !genForm.course_name) {
       toast({ title: "Preencha o nome e o curso", variant: "destructive" });
@@ -174,6 +228,7 @@ export default function CertificatesTab() {
       start_date: genForm.start_date || null,
       end_date: genForm.end_date || null,
       issue_date: new Date().toISOString().split("T")[0],
+      language: genForm.language,
     } as any);
 
     if (error) {
@@ -181,7 +236,7 @@ export default function CertificatesTab() {
     } else {
       toast({ title: "Certificado gerado com sucesso!" });
       setGenerateOpen(false);
-      setGenForm({ enrollment_id: "", template_id: "", student_name: "", course_name: "", course_duration: "", start_date: "", end_date: "" });
+      setGenForm({ enrollment_id: "", template_id: "", student_name: "", course_name: "", course_duration: "", start_date: "", end_date: "", language: "pt" });
       await fetchAll();
     }
     setSaving(false);
@@ -206,16 +261,18 @@ export default function CertificatesTab() {
     return c.student_name.toLowerCase().includes(q) || c.course_name.toLowerCase().includes(q) || c.certificate_code.toLowerCase().includes(q);
   });
 
-  // Preview template
   const previewBody = (template: Partial<CertTemplate>) => {
     let text = template.body_template || "";
+    const isEn = template.language === "en";
     text = text.replace("{{student_name}}", "João Silva");
-    text = text.replace("{{course_name}}", "Gestão de Projectos");
-    text = text.replace("{{duration}}", "4 semanas");
+    text = text.replace("{{course_name}}", isEn ? "Project Management" : "Gestão de Projectos");
+    text = text.replace("{{duration}}", isEn ? "4 weeks" : "4 semanas");
     text = text.replace("{{start_date}}", "01/01/2026");
     text = text.replace("{{end_date}}", "28/01/2026");
     return text;
   };
+
+  const langLabel = (lang: string) => lang === "en" ? "Inglês" : "Português";
 
   if (loading) return <div className="flex justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-muted-foreground" /></div>;
 
@@ -251,16 +308,30 @@ export default function CertificatesTab() {
                       </SelectContent>
                     </Select>
                   </div>
-                  <div>
-                    <Label className="text-xs">Template</Label>
-                    <Select value={genForm.template_id} onValueChange={(v) => setGenForm((p) => ({ ...p, template_id: v }))}>
-                      <SelectTrigger><SelectValue placeholder="Selecionar template" /></SelectTrigger>
-                      <SelectContent>
-                        {templates.filter((t) => t.is_active).map((t) => (
-                          <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <Label className="text-xs">Template</Label>
+                      <Select value={genForm.template_id} onValueChange={handleTemplateSelectForGen}>
+                        <SelectTrigger><SelectValue placeholder="Selecionar template" /></SelectTrigger>
+                        <SelectContent>
+                          {templates.filter((t) => t.is_active).map((t) => (
+                            <SelectItem key={t.id} value={t.id}>
+                              {t.name} ({langLabel(t.language)})
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label className="text-xs">Idioma</Label>
+                      <Select value={genForm.language} onValueChange={(v) => setGenForm((p) => ({ ...p, language: v }))}>
+                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="pt">🇲🇿 Português</SelectItem>
+                          <SelectItem value="en">🇬🇧 English</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     <div>
@@ -296,7 +367,6 @@ export default function CertificatesTab() {
 
         {/* Templates Tab */}
         <TabsContent value="templates" className="space-y-4">
-          {/* Edit/Create Template Dialog */}
           {editTemplate && (
             <Card className="border-primary/20">
               <CardHeader className="pb-2">
@@ -307,6 +377,16 @@ export default function CertificatesTab() {
                   <div>
                     <Label className="text-xs">Nome *</Label>
                     <Input value={editTemplate.name || ""} onChange={(e) => setEditTemplate((p) => ({ ...p!, name: e.target.value }))} />
+                  </div>
+                  <div>
+                    <Label className="text-xs">Idioma</Label>
+                    <Select value={editTemplate.language || "pt"} onValueChange={handleLanguageChange}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="pt">🇲🇿 Português</SelectItem>
+                        <SelectItem value="en">🇬🇧 English</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
                   <div>
                     <Label className="text-xs">Descrição</Label>
@@ -332,6 +412,48 @@ export default function CertificatesTab() {
                     </div>
                   </div>
                 </div>
+
+                {/* Example image upload */}
+                <div>
+                  <Label className="text-xs">Imagem de Exemplo / Referência</Label>
+                  <p className="text-[10px] text-muted-foreground mb-1">Carregue um modelo de certificado para servir de referência visual.</p>
+                  <div className="flex gap-3 items-start">
+                    <label className="cursor-pointer">
+                      <input
+                        type="file"
+                        className="hidden"
+                        accept="image/*,.pdf"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) handleExampleUpload(file);
+                          e.target.value = "";
+                        }}
+                      />
+                      <Button size="sm" variant="outline" className="text-xs" asChild>
+                        <span>
+                          <Upload className="w-3.5 h-3.5 mr-1" />
+                          {uploading ? "A enviar..." : "Carregar Exemplo"}
+                        </span>
+                      </Button>
+                    </label>
+                    {editTemplate.example_image_url && (
+                      <div className="flex items-center gap-2">
+                        <div className="w-20 h-14 rounded border border-border overflow-hidden bg-muted">
+                          <img src={editTemplate.example_image_url} alt="Exemplo" className="w-full h-full object-cover" />
+                        </div>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="h-7 text-xs text-destructive"
+                          onClick={() => setEditTemplate((p) => ({ ...p!, example_image_url: null }))}
+                        >
+                          <Trash2 className="w-3 h-3" />
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
                 <div>
                   <Label className="text-xs">Título do Certificado</Label>
                   <Input value={editTemplate.header_text || ""} onChange={(e) => setEditTemplate((p) => ({ ...p!, header_text: e.target.value }))} />
@@ -366,7 +488,23 @@ export default function CertificatesTab() {
                 {/* Preview */}
                 <Separator />
                 <div>
-                  <p className="text-xs font-medium mb-2">Pré-visualização:</p>
+                  <p className="text-xs font-medium mb-2 flex items-center gap-1">
+                    Pré-visualização
+                    <Badge variant="outline" className="text-[9px] ml-1">
+                      <Globe className="w-2.5 h-2.5 mr-0.5" />{langLabel(editTemplate.language || "pt")}
+                    </Badge>
+                  </p>
+
+                  {/* Show example image if uploaded */}
+                  {editTemplate.example_image_url && (
+                    <div className="mb-3">
+                      <p className="text-[10px] text-muted-foreground mb-1">Modelo de referência:</p>
+                      <div className="rounded-lg border border-border overflow-hidden max-h-48">
+                        <img src={editTemplate.example_image_url} alt="Referência" className="w-full object-contain" />
+                      </div>
+                    </div>
+                  )}
+
                   <div
                     className="rounded-lg p-6 text-center space-y-3 border-2"
                     style={{
@@ -404,11 +542,21 @@ export default function CertificatesTab() {
               <Card key={t.id}>
                 <CardContent className="p-4">
                   <div className="flex items-start justify-between mb-2">
-                    <div>
-                      <p className="font-heading font-semibold text-sm">{t.name}</p>
-                      <p className="text-xs text-muted-foreground">{t.description || "Sem descrição"}</p>
+                    <div className="flex items-start gap-3">
+                      {t.example_image_url && (
+                        <div className="w-14 h-10 rounded border border-border overflow-hidden bg-muted shrink-0">
+                          <img src={t.example_image_url} alt="Exemplo" className="w-full h-full object-cover" />
+                        </div>
+                      )}
+                      <div>
+                        <p className="font-heading font-semibold text-sm">{t.name}</p>
+                        <p className="text-xs text-muted-foreground">{t.description || "Sem descrição"}</p>
+                      </div>
                     </div>
                     <div className="flex items-center gap-1">
+                      <Badge variant="outline" className="text-[9px]">
+                        <Globe className="w-2.5 h-2.5 mr-0.5" />{langLabel(t.language)}
+                      </Badge>
                       {t.is_default && <Badge variant="secondary" className="text-[10px]">Padrão</Badge>}
                       <Badge variant={t.is_active ? "default" : "outline"} className="text-[10px]">
                         {t.is_active ? "Activo" : "Inactivo"}
@@ -451,6 +599,7 @@ export default function CertificatesTab() {
                     <TableHead>Código</TableHead>
                     <TableHead>Estudante</TableHead>
                     <TableHead className="hidden md:table-cell">Curso</TableHead>
+                    <TableHead className="hidden sm:table-cell">Idioma</TableHead>
                     <TableHead className="hidden sm:table-cell">Emissão</TableHead>
                     <TableHead>Estado</TableHead>
                     <TableHead>Acções</TableHead>
@@ -458,13 +607,18 @@ export default function CertificatesTab() {
                 </TableHeader>
                 <TableBody>
                   {filteredCerts.length === 0 ? (
-                    <TableRow><TableCell colSpan={6} className="text-center py-8 text-muted-foreground">Sem certificados</TableCell></TableRow>
+                    <TableRow><TableCell colSpan={7} className="text-center py-8 text-muted-foreground">Sem certificados</TableCell></TableRow>
                   ) : (
                     filteredCerts.map((cert) => (
                       <TableRow key={cert.id}>
                         <TableCell className="font-mono text-xs font-bold">{cert.certificate_code}</TableCell>
                         <TableCell className="text-sm font-medium">{cert.student_name}</TableCell>
                         <TableCell className="hidden md:table-cell text-sm">{cert.course_name}</TableCell>
+                        <TableCell className="hidden sm:table-cell">
+                          <Badge variant="outline" className="text-[9px]">
+                            {cert.language === "en" ? "🇬🇧 EN" : "🇲🇿 PT"}
+                          </Badge>
+                        </TableCell>
                         <TableCell className="hidden sm:table-cell text-xs">{new Date(cert.issue_date).toLocaleDateString("pt-PT")}</TableCell>
                         <TableCell>
                           <Badge variant={cert.status === "active" ? "default" : "destructive"} className="text-[10px]">

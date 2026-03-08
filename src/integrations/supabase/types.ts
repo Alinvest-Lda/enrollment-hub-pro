@@ -21,11 +21,13 @@ export type Database = {
           border_style: string
           created_at: string
           description: string
+          example_image_url: string | null
           footer_text: string
           header_text: string
           id: string
           is_active: boolean
           is_default: boolean
+          language: string
           logo_url: string | null
           name: string
           signature_label: string
@@ -39,11 +41,13 @@ export type Database = {
           border_style?: string
           created_at?: string
           description?: string
+          example_image_url?: string | null
           footer_text?: string
           header_text?: string
           id?: string
           is_active?: boolean
           is_default?: boolean
+          language?: string
           logo_url?: string | null
           name: string
           signature_label?: string
@@ -57,11 +61,13 @@ export type Database = {
           border_style?: string
           created_at?: string
           description?: string
+          example_image_url?: string | null
           footer_text?: string
           header_text?: string
           id?: string
           is_active?: boolean
           is_default?: boolean
+          language?: string
           logo_url?: string | null
           name?: string
           signature_label?: string
@@ -82,6 +88,7 @@ export type Database = {
           enrollment_id: string | null
           id: string
           issue_date: string
+          language: string
           start_date: string | null
           status: string
           student_name: string
@@ -98,6 +105,7 @@ export type Database = {
           enrollment_id?: string | null
           id?: string
           issue_date?: string
+          language?: string
           start_date?: string | null
           status?: string
           student_name: string
@@ -114,6 +122,7 @@ export type Database = {
           enrollment_id?: string | null
           id?: string
           issue_date?: string
+          language?: string
           start_date?: string | null
           status?: string
           student_name?: string
