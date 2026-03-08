@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useSearchParams } from "react-router-dom";
+import SEO from "@/components/SEO";
 import { Search, Award, CheckCircle, XCircle, ArrowLeft, Loader2, ShieldCheck } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import { supabase } from "@/integrations/supabase/client";
