@@ -82,7 +82,7 @@ const Backoffice = () => {
     <div className="min-h-screen flex bg-background">
       {/* Sidebar — Desktop */}
       <aside
-        className={`hidden md:flex flex-col bg-sidebar text-sidebar-foreground border-r border-sidebar-border transition-all duration-300 ${
+        className={`hidden md:flex flex-col bg-sidebar text-sidebar-foreground border-r border-sidebar-border transition-all duration-300 sticky top-0 h-screen ${
           sidebarCollapsed ? "w-[68px]" : "w-[240px]"
         }`}
       >
