@@ -209,8 +209,8 @@ export async function generateQuotationPDF(q: QuotationData): Promise<jsPDF> {
   return doc;
 }
 
-export function downloadQuotationPDF(q: QuotationData) {
-  const doc = generateQuotationPDF(q);
+export async function downloadQuotationPDF(q: QuotationData) {
+  const doc = await generateQuotationPDF(q);
   doc.save(`${q.quotation_number}.pdf`);
 }
 
