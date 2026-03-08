@@ -29,6 +29,7 @@ interface EnrollmentInfo {
   amount_due: number;
   payment_plan: string;
   status: string;
+  phone: string;
 }
 
 const statusLabels: Record<string, { label: string; color: string; icon: React.ElementType }> = {
