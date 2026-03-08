@@ -108,7 +108,7 @@ const CourseDetail = () => {
               </div>
             </div>
 
-            <a href={getWhatsAppLink(whatsappMsg)} target="_blank" rel="noopener noreferrer">
+            <a href={getWhatsAppLinkFromNumber(settings?.whatsappNumber || "", whatsappMsg)} target="_blank" rel="noopener noreferrer">
               <Button variant="whatsapp" className="w-full mt-4">
                 <MessageCircle className="w-4 h-4" />
                 Tirar dúvidas no WhatsApp
