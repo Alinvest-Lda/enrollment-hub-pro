@@ -1,6 +1,7 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useSearchParams } from "react-router-dom";
 import { Search, Award, CheckCircle, XCircle, ArrowLeft, Loader2, ShieldCheck } from "lucide-react";
+import { QRCodeSVG } from "qrcode.react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,14 +18,16 @@ interface CertificateData {
 }
 
 export default function VerifyCertificate() {
+  const [searchParams] = useSearchParams();
   const [code, setCode] = useState("");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<CertificateData | null>(null);
   const [notFound, setNotFound] = useState(false);
   const [searched, setSearched] = useState(false);
 
-  const handleSearch = async () => {
-    if (!code.trim()) return;
+  const handleSearch = async (searchCode?: string) => {
+    const c = searchCode || code;
+    if (!c.trim()) return;
     setLoading(true);
     setNotFound(false);
     setResult(null);
@@ -33,7 +36,7 @@ export default function VerifyCertificate() {
     const { data, error } = await supabase
       .from("certificates")
       .select("certificate_code, student_name, course_name, course_duration, issue_date, status")
-      .eq("certificate_code", code.trim().toUpperCase())
+      .eq("certificate_code", c.trim().toUpperCase())
       .maybeSingle();
 
     if (error || !data) {
@@ -43,6 +46,16 @@ export default function VerifyCertificate() {
     }
     setLoading(false);
   };
+
+  // Auto-search if code is in URL params
+  useEffect(() => {
+    const urlCode = searchParams.get("code");
+    if (urlCode) {
+      setCode(urlCode.toUpperCase());
+      handleSearch(urlCode.toUpperCase());
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className="min-h-screen bg-background">
@@ -70,6 +83,18 @@ export default function VerifyCertificate() {
           </p>
         </div>
 
+        {/* Illustrative certificate image */}
+        <div className="mb-8 max-w-md mx-auto">
+          <div className="rounded-lg border border-border overflow-hidden shadow-sm">
+            <img
+              src="/images/certificate-illustrative.png"
+              alt="Exemplo de Certificado ALINVEST"
+              className="w-full h-auto object-contain"
+            />
+          </div>
+          <p className="text-[10px] text-muted-foreground text-center mt-1">Modelo ilustrativo de certificado</p>
+        </div>
+
         <div className="flex gap-2 max-w-md mx-auto mb-8">
           <Input
             placeholder="Ex: CERT-2026-XXXX"
@@ -78,7 +103,7 @@ export default function VerifyCertificate() {
             onKeyDown={(e) => e.key === "Enter" && handleSearch()}
             className="text-center font-mono tracking-wider"
           />
-          <Button onClick={handleSearch} disabled={loading || !code.trim()}>
+          <Button onClick={() => handleSearch()} disabled={loading || !code.trim()}>
             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
           </Button>
         </div>
@@ -122,6 +147,18 @@ export default function VerifyCertificate() {
                         {result.status === "active" ? "Activo" : "Revogado"}
                       </Badge>
                     </div>
+                  </div>
+
+                  {/* QR Code for this certificate */}
+                  <div className="flex flex-col items-center pt-2">
+                    <QRCodeSVG
+                      value={`${window.location.origin}/verificar-certificado?code=${encodeURIComponent(result.certificate_code)}`}
+                      size={80}
+                      level="M"
+                      includeMargin
+                      className="rounded"
+                    />
+                    <p className="text-[10px] text-muted-foreground mt-1">QR Code de verificação</p>
                   </div>
                 </CardContent>
               </Card>
