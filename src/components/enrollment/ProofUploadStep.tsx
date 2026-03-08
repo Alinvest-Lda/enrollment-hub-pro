@@ -32,17 +32,6 @@ const methodLabels: Record<PaymentMethod, string> = {
   bank_transfer: "Transferência Bancária",
 };
 
-const paymentInstructions: Record<string, { label: string; details: string }> = {
-  bank_transfer: {
-    label: "Dados Bancários",
-    details: "Millennium BIM — Conta: 000 000 000 000 | NIB: 0001 0000 0000 0000 000 00",
-  },
-  emola: {
-    label: "Dados e-Mola",
-    details: "Número e-Mola: 86 999 9999 | Nome: Empresa XYZ",
-  },
-};
-
 const ProofUploadStep = ({
   paymentMethod,
   amount,
