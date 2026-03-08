@@ -255,10 +255,10 @@ const HeroSection = () => {
                           className="bg-muted/50 rounded-xl p-3 text-center border border-border/40 transition-colors cursor-default"
                         >
                           <StatIcon className="w-4 h-4 text-accent mx-auto mb-1.5" />
-                          <p className="text-xl font-extrabold text-primary-foreground font-heading">
+                          <p className="text-xl font-extrabold text-foreground font-heading">
                             <AnimatedCounter target={stat.value} suffix={stat.suffix} />
                           </p>
-                          <p className="text-[9px] text-primary-foreground/50 font-medium mt-0.5 leading-tight">
+                          <p className="text-[9px] text-muted-foreground font-medium mt-0.5 leading-tight">
                             {stat.label}
                           </p>
                         </motion.div>
