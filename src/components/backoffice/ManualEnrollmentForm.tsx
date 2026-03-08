@@ -26,7 +26,7 @@ const sources: { value: EnrollmentSource; label: string }[] = [
 interface Props {
   courses: CourseRow[];
   onSubmit: (data: {
-    full_name: string; email: string; phone: string; company?: string; nuit?: string;
+    full_name: string; email: string; phone: string; company?: string; nuit: string; province: string;
     course_id: string; course_name: string; payment_plan: string;
     amount_due: number; total_price: number; source: EnrollmentSource;
     payment_method?: string; message?: string; admin_notes?: string;
