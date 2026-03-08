@@ -11,6 +11,7 @@ import Backoffice from "./pages/Backoffice";
 import AboutUs from "./pages/AboutUs";
 import StudentPayments from "./pages/StudentPayments";
 import VerifyCertificate from "./pages/VerifyCertificate";
+import QuotationPayment from "./pages/QuotationPayment";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
