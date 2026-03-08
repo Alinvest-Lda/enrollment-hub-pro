@@ -343,6 +343,16 @@ export default function QuotationsTab({ trainingRequests }: Props) {
                       <div className="flex gap-1">
                         <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => printQuotation(q)} title="Pré-visualizar"><Eye className="w-4 h-4" /></Button>
                         <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => openEdit(q)} title="Editar"><Pencil className="w-4 h-4" /></Button>
+                        <Button
+                          variant="ghost" size="icon" className="h-8 w-8" title="Copiar link de pagamento"
+                          onClick={() => {
+                            const url = `${window.location.origin}/cotacao/${q.id}`;
+                            navigator.clipboard.writeText(url);
+                            toast({ title: "Link de pagamento copiado!" });
+                          }}
+                        >
+                          <Link2 className="w-4 h-4" />
+                        </Button>
                         <Select value={q.status} onValueChange={(v) => updateStatus(q.id, v)}>
                           <SelectTrigger className="h-8 w-[110px] text-xs"><SelectValue /></SelectTrigger>
                           <SelectContent>
