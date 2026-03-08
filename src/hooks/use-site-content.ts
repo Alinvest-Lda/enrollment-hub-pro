@@ -132,8 +132,7 @@ export function useAllTeamMembers() {
   return useQuery({
     queryKey: ["team-members-all"],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("team_members")
+      const { data, error } = await (supabase.from("team_members" as any) as any)
         .select("*")
         .order("display_order");
       if (error) throw error;
