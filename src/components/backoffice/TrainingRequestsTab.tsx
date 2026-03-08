@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Eye, Search, MessageCircle, Trash2, Check, X, Download } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Eye, Search, MessageCircle, Trash2, Check, X, Download, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Textarea } from "@/components/ui/textarea";
 import { useSystemSettings, getWhatsAppLinkFromNumber } from "@/hooks/use-system-settings";
 import { exportToCSV, trainingRequestCSVColumns } from "@/lib/csv-export";
+import { supabase } from "@/integrations/supabase/client";
 
 export interface TrainingRequest {
   id: string;
@@ -48,13 +49,40 @@ interface Props {
   updateStatus: (id: string, status: string) => void;
   updateNotes: (id: string, notes: string) => void;
   deleteRequest: (id: string) => void;
+  onNavigateToQuotations?: () => void;
 }
 
-export default function TrainingRequestsTab({ requests, updateStatus, updateNotes, deleteRequest }: Props) {
+export default function TrainingRequestsTab({ requests, updateStatus, updateNotes, deleteRequest, onNavigateToQuotations }: Props) {
   const { data: settings } = useSystemSettings();
   const [search, setSearch] = useState("");
   const [activeTab, setActiveTab] = useState("all");
   const [noteDraft, setNoteDraft] = useState<Record<string, string>>({});
+  const [quotationMap, setQuotationMap] = useState<Record<string, string>>({});
+
+  // Fetch which training requests already have quotations
+  useEffect(() => {
+    const fetchQuotationLinks = async () => {
+      const { data } = await supabase
+        .from("quotations")
+        .select("id, training_request_id")
+        .not("training_request_id", "is", null);
+      if (data) {
+        const map: Record<string, string> = {};
+        data.forEach((q: any) => { if (q.training_request_id) map[q.training_request_id] = q.id; });
+        setQuotationMap(map);
+      }
+    };
+    fetchQuotationLinks();
+
+    // Realtime sync
+    const channel = supabase
+      .channel("training-quotation-sync")
+      .on("postgres_changes", { event: "*", schema: "public", table: "quotations" }, () => {
+        fetchQuotationLinks();
+      })
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, []);
 
   const filtered = requests.filter((r) => {
     const q = search.toLowerCase();
@@ -121,6 +149,9 @@ export default function TrainingRequestsTab({ requests, updateStatus, updateNote
                           <Badge variant={(statusConfig[req.status] || statusConfig.new).variant}>
                             {(statusConfig[req.status] || statusConfig.new).label}
                           </Badge>
+                          {quotationMap[req.id] && (
+                            <Badge variant="secondary" className="ml-1 text-[10px]">Cotação</Badge>
+                          )}
                         </TableCell>
                         <TableCell>
                           <div className="flex items-center gap-1">
@@ -180,6 +211,16 @@ export default function TrainingRequestsTab({ requests, updateStatus, updateNote
                                       <X className="w-4 h-4" /> Rejeitar
                                     </Button>
                                   </div>
+
+                                  {quotationMap[req.id] ? (
+                                    <div className="pt-2">
+                                      <Button size="sm" variant="outline" className="w-full" onClick={() => onNavigateToQuotations?.()}>
+                                        <FileText className="w-4 h-4 mr-1" /> Ver Cotação (Rascunho Gerado)
+                                      </Button>
+                                    </div>
+                                  ) : (
+                                    <p className="text-xs text-muted-foreground pt-2 text-center">A cotação será gerada automaticamente.</p>
+                                  )}
                                 </div>
                               </DialogContent>
                             </Dialog>

@@ -320,6 +320,7 @@ const Backoffice = () => {
                   updateStatus={data.updateTrainingRequestStatus}
                   updateNotes={data.updateTrainingRequestNotes}
                   deleteRequest={data.deleteTrainingRequest}
+                  onNavigateToQuotations={() => setSection("quotations")}
                 />
               )}
               {section === "quotations" && (

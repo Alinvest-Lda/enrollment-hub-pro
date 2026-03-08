@@ -122,6 +122,19 @@ export default function QuotationsTab({ trainingRequests }: Props) {
 
   useEffect(() => { fetchQuotations(); }, []);
 
+  // Realtime sync for quotations
+  useEffect(() => {
+    const channel = supabase
+      .channel("quotations-realtime")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "quotations" },
+        () => { fetchQuotations(); }
+      )
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, []);
+
   const calculateTotals = (items: QuotationItem[], discount: number, tax: number) => {
     const subtotal = items.reduce((s, i) => s + i.quantity * i.unit_price, 0);
     const discountAmount = subtotal * (discount / 100);
