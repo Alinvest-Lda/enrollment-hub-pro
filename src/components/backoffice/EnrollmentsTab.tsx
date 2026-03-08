@@ -63,9 +63,9 @@ export default function EnrollmentsTab({ enrollments, proofs, fetchProofs, updat
         else if (dateFilter === "90d") matchesDate = now.getTime() - d.getTime() < 90 * 86400000;
       }
 
-      return matchesSearch && matchesStatus && matchesCourse && matchesDate;
+      return matchesSearch && matchesStatus && matchesCourse && matchesProvince && matchesDate;
     });
-  }, [enrollments, search, activeTab, courseFilter, dateFilter]);
+  }, [enrollments, search, activeTab, courseFilter, provinceFilter, dateFilter]);
 
   const counts = {
     all: enrollments.length,
