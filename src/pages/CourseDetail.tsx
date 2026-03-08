@@ -10,15 +10,6 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import EnrollmentForm from "@/components/EnrollmentForm";
 import CollapsibleSection from "@/components/CollapsibleSection";
-import { motion } from "framer-motion";
-import { formatCurrency, getWhatsAppLink } from "@/lib/courses-data";
-import { useCourse } from "@/hooks/use-courses";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
-import EnrollmentForm from "@/components/EnrollmentForm";
 
 const CourseDetail = () => {
   const { id } = useParams<{ id: string }>();
