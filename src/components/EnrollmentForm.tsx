@@ -357,6 +357,13 @@ const EnrollmentForm = ({ course }: EnrollmentFormProps) => {
                 totalPrice={course.price}
                 onSuccess={(id) => {
                   setEnrollmentId(id);
+                  addNotification({
+                    type: "success",
+                    title: "Inscrição Submetida!",
+                    message: `Inscrição em ${course.title} registada com sucesso.`,
+                    icon: "enrollment",
+                    action: { label: "Ver pagamentos", href: `/pagamentos/${id}` },
+                  });
                   setStep("done");
                 }}
               />
