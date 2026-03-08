@@ -47,20 +47,19 @@ const AboutUs = () => {
 
       {/* Mission & Vision */}
       <section className="py-16">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+        <div className="container mx-auto px-4 max-w-4xl">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <motion.div {...fadeInUp}>
               <Card className="h-full border-border shadow-card">
                 <CardContent className="p-8">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="p-3 rounded-lg bg-accent/10">
-                      <Target className="w-6 h-6 text-accent" />
-                    </div>
-                    <h2 className="font-heading text-2xl font-bold">Missão</h2>
-                  </div>
-                  <p className="text-muted-foreground leading-relaxed">
-                    Desenvolver competências técnicas e de gestão que impulsionem o crescimento sustentável das organizações moçambicanas, através de formação certificada e consultoria especializada alinhada com as normas internacionais.
-                  </p>
+                  <CollapsibleSection
+                    title="Missão"
+                    icon={<div className="p-2 rounded-lg bg-accent/10"><Target className="w-5 h-5 text-accent" /></div>}
+                  >
+                    <p className="text-muted-foreground leading-relaxed">
+                      Desenvolver competências técnicas e de gestão que impulsionem o crescimento sustentável das organizações moçambicanas, através de formação certificada e consultoria especializada alinhada com as normas internacionais.
+                    </p>
+                  </CollapsibleSection>
                 </CardContent>
               </Card>
             </motion.div>
@@ -68,15 +67,14 @@ const AboutUs = () => {
             <motion.div {...fadeInUp} transition={{ duration: 0.6, delay: 0.15 }}>
               <Card className="h-full border-border shadow-card">
                 <CardContent className="p-8">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="p-3 rounded-lg bg-primary/10">
-                      <Eye className="w-6 h-6 text-primary" />
-                    </div>
-                    <h2 className="font-heading text-2xl font-bold">Visão</h2>
-                  </div>
-                  <p className="text-muted-foreground leading-relaxed">
-                    Ser a referência em formação profissional e consultoria empresarial em Moçambique, reconhecida pela qualidade dos programas, impacto nos resultados dos clientes e contribuição para o desenvolvimento do capital humano nacional.
-                  </p>
+                  <CollapsibleSection
+                    title="Visão"
+                    icon={<div className="p-2 rounded-lg bg-primary/10"><Eye className="w-5 h-5 text-primary" /></div>}
+                  >
+                    <p className="text-muted-foreground leading-relaxed">
+                      Ser a referência em formação profissional e consultoria empresarial em Moçambique, reconhecida pela qualidade dos programas, impacto nos resultados dos clientes e contribuição para o desenvolvimento do capital humano nacional.
+                    </p>
+                  </CollapsibleSection>
                 </CardContent>
               </Card>
             </motion.div>
