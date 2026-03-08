@@ -4,6 +4,7 @@ import {
   MessageSquare, Globe, Shield, ToggleLeft, ToggleRight,
   Plus, Trash2, Pencil, X, Check,
 } from "lucide-react";
+import CollapsibleSection from "@/components/CollapsibleSection";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
