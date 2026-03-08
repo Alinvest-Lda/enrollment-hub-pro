@@ -844,7 +844,10 @@ export default function CertificatesTab() {
                   </div>
                 </div>
 
-                <Separator />
+                <CollapsibleSection
+                  title="Layout e Textos"
+                  icon={<LayoutGrid className="w-4 h-4 text-muted-foreground" />}
+                >
 
                 {/* Editor tabs: Fields vs Texts */}
                 <Tabs value={editorTab} onValueChange={v => setEditorTab(v as any)}>
