@@ -28,7 +28,7 @@ import { useBackofficeData } from "@/hooks/use-backoffice-data";
 import RealtimeNotifications from "@/components/backoffice/RealtimeNotifications";
 import { supabase } from "@/integrations/supabase/client";
 
-type Section = "dashboard" | "enrollments" | "courses" | "training" | "quotations" | "certificates" | "partners" | "payment_plans" | "whatsapp" | "settings";
+type Section = "dashboard" | "enrollments" | "courses" | "training" | "quotations" | "certificates" | "partners" | "reports" | "payment_plans" | "whatsapp" | "settings";
 
 const navItems: { id: Section; label: string; icon: React.ElementType; shortLabel: string }[] = [
   { id: "dashboard", label: "Dashboard", icon: BarChart3, shortLabel: "Dash" },
