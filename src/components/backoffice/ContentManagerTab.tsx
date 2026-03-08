@@ -22,23 +22,23 @@ import {
 async function upsertRow(table: string, row: any, queryClient: any, keys: string[]) {
   const { id, created_at, updated_at, ...rest } = row;
   if (id && !id.startsWith("new-")) {
-    const { error } = await supabase.from(table).update(rest).eq("id", id);
+    const { error } = await (supabase.from(table as any) as any).update(rest).eq("id", id);
     if (error) throw error;
   } else {
-    const { error } = await supabase.from(table).insert(rest);
+    const { error } = await (supabase.from(table as any) as any).insert(rest);
     if (error) throw error;
   }
   keys.forEach((k) => queryClient.invalidateQueries({ queryKey: [k] }));
 }
 
 async function deleteRow(table: string, id: string, queryClient: any, keys: string[]) {
-  const { error } = await supabase.from(table).delete().eq("id", id);
+  const { error } = await (supabase.from(table as any) as any).delete().eq("id", id);
   if (error) throw error;
   keys.forEach((k) => queryClient.invalidateQueries({ queryKey: [k] }));
 }
 
 async function toggleActive(table: string, id: string, active: boolean, queryClient: any, keys: string[]) {
-  const { error } = await supabase.from(table).update({ is_active: active }).eq("id", id);
+  const { error } = await (supabase.from(table as any) as any).update({ is_active: active }).eq("id", id);
   if (error) throw error;
   keys.forEach((k) => queryClient.invalidateQueries({ queryKey: [k] }));
 }
