@@ -107,8 +107,19 @@ export default function ManualEnrollmentForm({ courses, onSubmit }: Props) {
               <Input value={form.company} onChange={(e) => update("company", e.target.value)} />
             </div>
             <div>
-              <Label>NUIT</Label>
-              <Input value={form.nuit} onChange={(e) => update("nuit", e.target.value)} />
+              <Label>NUIT *</Label>
+              <Input value={form.nuit} onChange={(e) => update("nuit", e.target.value)} placeholder="Número de Identificação Tributária" />
+            </div>
+            <div>
+              <Label className="flex items-center gap-1"><MapPin className="w-3.5 h-3.5" /> Província *</Label>
+              <Select value={form.province} onValueChange={(v) => update("province", v)}>
+                <SelectTrigger><SelectValue placeholder="Seleccione" /></SelectTrigger>
+                <SelectContent>
+                  {PROVINCES.map((p) => (
+                    <SelectItem key={p} value={p}>{p}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <div>
               <Label>Origem *</Label>
