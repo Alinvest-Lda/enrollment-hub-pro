@@ -2,7 +2,7 @@ import { useLocation, Link } from "react-router-dom";
 import { useEffect } from "react";
 import { ArrowLeft, MessageCircle, SearchX } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { WHATSAPP_LINK } from "@/lib/courses-data";
+import { useSystemSettings, getWhatsAppUrl } from "@/hooks/use-system-settings";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 

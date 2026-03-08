@@ -339,7 +339,7 @@ const EnrollmentForm = ({ course }: EnrollmentFormProps) => {
                   : "O seu comprovativo será analisado pela nossa equipa. Receberá confirmação via WhatsApp em até 24 horas."}
               </p>
               <a
-                href={getWhatsAppLink(`Olá, acabei de submeter a minha inscrição para o curso: ${course.title}. Ref: ${enrollmentId?.substring(0, 8).toUpperCase()}`)}
+                href={getWhatsAppLinkFromNumber(settings?.whatsappNumber || "", `Olá, acabei de submeter a minha inscrição para o curso: ${course.title}. Ref: ${enrollmentId?.substring(0, 8).toUpperCase()}`)}
                 target="_blank"
                 rel="noopener noreferrer"
               >

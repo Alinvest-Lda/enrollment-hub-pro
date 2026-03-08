@@ -8,7 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { formatCurrency, WHATSAPP_LINK } from "@/lib/courses-data";
+import { formatCurrency } from "@/lib/courses-data";
+import { useSystemSettings, getWhatsAppUrl } from "@/hooks/use-system-settings";
 import { toast } from "@/hooks/use-toast";
 import MpesaPaymentStep from "@/components/enrollment/MpesaPaymentStep";
 
