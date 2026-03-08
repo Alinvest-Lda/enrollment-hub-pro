@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import {
   Plus, Trash2, Pencil, Save, X, RefreshCw, FileText,
   Send, Copy, Eye, Printer, DollarSign, Percent, Calendar, Link2,
+  Download, Mail, MessageCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,7 +22,8 @@ import {
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
-import { formatCurrency } from "@/lib/courses-data";
+import { formatCurrency, getWhatsAppLink, WHATSAPP_NUMBER } from "@/lib/courses-data";
+import { downloadQuotationPDF, getQuotationWhatsAppMessage, getQuotationEmailSubject, getQuotationEmailBody } from "@/lib/quotation-pdf";
 
 interface QuotationItem {
   description: string;
@@ -254,6 +256,28 @@ export default function QuotationsTab({ trainingRequests }: Props) {
     window.print();
   };
 
+  const handleDownloadPDF = (q: Quotation) => {
+    downloadQuotationPDF(q as any);
+    toast({ title: "PDF descarregado!" });
+  };
+
+  const getPaymentUrl = (q: Quotation) => `${window.location.origin}/cotacao/${q.id}`;
+
+  const handleShareWhatsApp = (q: Quotation) => {
+    const paymentUrl = getPaymentUrl(q);
+    const msg = getQuotationWhatsAppMessage(q as any, paymentUrl);
+    const url = `https://wa.me/${q.client_phone.replace(/\D/g, "")}?text=${encodeURIComponent(msg)}`;
+    window.open(url, "_blank");
+  };
+
+  const handleShareEmail = (q: Quotation) => {
+    const paymentUrl = getPaymentUrl(q);
+    const subject = getQuotationEmailSubject(q);
+    const body = getQuotationEmailBody(q as any, paymentUrl);
+    const mailto = `mailto:${encodeURIComponent(q.client_email)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    window.open(mailto, "_blank");
+  };
+
   const { subtotal: formSubtotal, total: formTotal } = calculateTotals(form.items, form.discount_percent, form.tax_percent);
 
   const filtered = quotations.filter((q) => {
@@ -395,10 +419,13 @@ export default function QuotationsTab({ trainingRequests }: Props) {
                       <div className="flex gap-1">
                         <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => printQuotation(q)} title="Pré-visualizar"><Eye className="w-4 h-4" /></Button>
                         <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => openEdit(q)} title="Editar"><Pencil className="w-4 h-4" /></Button>
+                        <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleDownloadPDF(q)} title="Download PDF"><Download className="w-4 h-4" /></Button>
+                        <Button variant="ghost" size="icon" className="h-8 w-8 text-success" onClick={() => handleShareWhatsApp(q)} title="Enviar por WhatsApp"><MessageCircle className="w-4 h-4" /></Button>
+                        <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleShareEmail(q)} title="Enviar por Email"><Mail className="w-4 h-4" /></Button>
                         <Button
                           variant="ghost" size="icon" className="h-8 w-8" title="Copiar link de pagamento"
                           onClick={() => {
-                            const url = `${window.location.origin}/cotacao/${q.id}`;
+                            const url = getPaymentUrl(q);
                             navigator.clipboard.writeText(url);
                             toast({ title: "Link de pagamento copiado!" });
                           }}
@@ -632,8 +659,11 @@ export default function QuotationsTab({ trainingRequests }: Props) {
                 <div><p className="text-xs font-semibold mb-1">Termos:</p><p className="text-xs text-muted-foreground">{previewQuotation.terms}</p></div>
               )}
 
-              <div className="flex gap-2 print:hidden pt-2">
+              <div className="flex flex-wrap gap-2 print:hidden pt-2">
                 <Button size="sm" onClick={handlePrint}><Printer className="w-4 h-4 mr-1" />Imprimir</Button>
+                <Button size="sm" variant="outline" onClick={() => handleDownloadPDF(previewQuotation)}><Download className="w-4 h-4 mr-1" />PDF</Button>
+                <Button size="sm" variant="outline" className="text-success border-success/30" onClick={() => handleShareWhatsApp(previewQuotation)}><MessageCircle className="w-4 h-4 mr-1" />WhatsApp</Button>
+                <Button size="sm" variant="outline" onClick={() => handleShareEmail(previewQuotation)}><Mail className="w-4 h-4 mr-1" />Email</Button>
                 <Button size="sm" variant="outline" onClick={() => setPreviewOpen(false)}>Fechar</Button>
               </div>
             </div>
