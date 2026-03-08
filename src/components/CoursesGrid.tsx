@@ -15,22 +15,35 @@ const CoursesGrid = () => {
     <section id="cursos" className="py-20 bg-background">
       <div className="container mx-auto px-4">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
           className="text-center mb-14"
         >
-          <span className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-1.5 rounded-full text-sm font-semibold mb-4">
+          <motion.span
+            className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-1.5 rounded-full text-sm font-semibold mb-4"
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.4, delay: 0.1 }}
+          >
             <BookOpen className="w-4 h-4" />
             Formação Especializada
-          </span>
+          </motion.span>
           <h2 className="font-heading text-3xl md:text-4xl font-extrabold text-foreground mb-3">
             Cursos Disponíveis
           </h2>
-          <p className="text-muted-foreground max-w-lg mx-auto leading-relaxed">
+          <motion.p
+            className="text-muted-foreground max-w-lg mx-auto leading-relaxed"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
             Escolha o curso ideal para o seu desenvolvimento profissional.
             Pagamento flexível e certificação reconhecida.
-          </p>
+          </motion.p>
         </motion.div>
 
         {isLoading ? (

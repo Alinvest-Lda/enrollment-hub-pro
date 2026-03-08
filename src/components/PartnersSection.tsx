@@ -34,15 +34,22 @@ const PartnersSection = () => {
     <section className="py-16 bg-card border-y border-border">
       <div className="container mx-auto px-4">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
           className="text-center mb-10"
         >
-          <div className="inline-flex items-center gap-2 bg-accent/10 text-accent px-4 py-1.5 rounded-full text-xs font-semibold mb-4">
+          <motion.div
+            className="inline-flex items-center gap-2 bg-accent/10 text-accent px-4 py-1.5 rounded-full text-xs font-semibold mb-4"
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.4, delay: 0.1 }}
+          >
             <Handshake className="w-3.5 h-3.5" />
             Parceiros & Certificações
-          </div>
+          </motion.div>
           <h2 className="font-heading text-2xl md:text-3xl font-bold text-foreground mb-2">
             Parceiros de Confiança
           </h2>
@@ -55,10 +62,11 @@ const PartnersSection = () => {
           {partners.map((partner, i) => (
             <motion.div
               key={partner.id}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.1 }}
+              initial={{ opacity: 0, y: 25, scale: 0.95 }}
+              whileInView={{ opacity: 1, y: 0, scale: 1 }}
+              viewport={{ once: true, margin: "-20px" }}
+              transition={{ delay: i * 0.08, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+              whileHover={{ y: -5, scale: 1.02, transition: { duration: 0.2 } }}
               className="group relative bg-background rounded-xl border border-border p-6 flex flex-col items-center text-center hover:shadow-card-hover hover:border-accent/20 transition-all duration-300"
             >
               {/* Logo */}
