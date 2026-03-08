@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { UserPlus } from "lucide-react";
+import { UserPlus, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -7,6 +7,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { CourseRow, EnrollmentSource } from "@/hooks/use-backoffice-data";
+
+const PROVINCES = [
+  "Maputo Cidade", "Maputo Província", "Gaza", "Inhambane",
+  "Sofala", "Manica", "Tete", "Zambézia",
+  "Nampula", "Cabo Delgado", "Niassa",
+];
 
 const sources: { value: EnrollmentSource; label: string }[] = [
   { value: "presencial", label: "Presencial" },
@@ -19,7 +25,7 @@ const sources: { value: EnrollmentSource; label: string }[] = [
 interface Props {
   courses: CourseRow[];
   onSubmit: (data: {
-    full_name: string; email: string; phone: string; company?: string; nuit?: string;
+    full_name: string; email: string; phone: string; company?: string; nuit: string; province: string;
     course_id: string; course_name: string; payment_plan: string;
     amount_due: number; total_price: number; source: EnrollmentSource;
     payment_method?: string; message?: string; admin_notes?: string;
@@ -30,7 +36,7 @@ export default function ManualEnrollmentForm({ courses, onSubmit }: Props) {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
-    full_name: "", email: "", phone: "", company: "", nuit: "",
+    full_name: "", email: "", phone: "", company: "", nuit: "", province: "",
     course_id: "", payment_plan: "full",
     amount_due: "", source: "presencial" as EnrollmentSource,
     payment_method: "", message: "", admin_notes: "",
@@ -41,14 +47,15 @@ export default function ManualEnrollmentForm({ courses, onSubmit }: Props) {
   const update = (field: string, value: string) => setForm((p) => ({ ...p, [field]: value }));
 
   const handleSubmit = async () => {
-    if (!form.full_name || !form.email || !form.phone || !form.course_id) return;
+    if (!form.full_name || !form.email || !form.phone || !form.course_id || !form.nuit || !form.province) return;
     setLoading(true);
     const ok = await onSubmit({
       full_name: form.full_name,
       email: form.email,
       phone: form.phone,
       company: form.company || undefined,
-      nuit: form.nuit || undefined,
+      nuit: form.nuit,
+      province: form.province,
       course_id: selectedCourse?.slug || form.course_id,
       course_name: selectedCourse?.title || "",
       payment_plan: form.payment_plan,
@@ -63,7 +70,7 @@ export default function ManualEnrollmentForm({ courses, onSubmit }: Props) {
     if (ok) {
       setOpen(false);
       setForm({
-        full_name: "", email: "", phone: "", company: "", nuit: "",
+        full_name: "", email: "", phone: "", company: "", nuit: "", province: "",
         course_id: "", payment_plan: "full",
         amount_due: "", source: "presencial",
         payment_method: "", message: "", admin_notes: "",
@@ -99,8 +106,19 @@ export default function ManualEnrollmentForm({ courses, onSubmit }: Props) {
               <Input value={form.company} onChange={(e) => update("company", e.target.value)} />
             </div>
             <div>
-              <Label>NUIT</Label>
-              <Input value={form.nuit} onChange={(e) => update("nuit", e.target.value)} />
+              <Label>NUIT *</Label>
+              <Input value={form.nuit} onChange={(e) => update("nuit", e.target.value)} placeholder="Número de Identificação Tributária" />
+            </div>
+            <div>
+              <Label className="flex items-center gap-1"><MapPin className="w-3.5 h-3.5" /> Província *</Label>
+              <Select value={form.province} onValueChange={(v) => update("province", v)}>
+                <SelectTrigger><SelectValue placeholder="Seleccione" /></SelectTrigger>
+                <SelectContent>
+                  {PROVINCES.map((p) => (
+                    <SelectItem key={p} value={p}>{p}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <div>
               <Label>Origem *</Label>
@@ -168,7 +186,7 @@ export default function ManualEnrollmentForm({ courses, onSubmit }: Props) {
             <Textarea value={form.admin_notes} onChange={(e) => update("admin_notes", e.target.value)} rows={2} placeholder="Notas internas..." />
           </div>
 
-          <Button onClick={handleSubmit} disabled={loading || !form.full_name || !form.email || !form.phone || !form.course_id} className="w-full">
+          <Button onClick={handleSubmit} disabled={loading || !form.full_name || !form.email || !form.phone || !form.course_id || !form.nuit || !form.province} className="w-full">
             {loading ? "A criar..." : "Criar Inscrição"}
           </Button>
         </div>

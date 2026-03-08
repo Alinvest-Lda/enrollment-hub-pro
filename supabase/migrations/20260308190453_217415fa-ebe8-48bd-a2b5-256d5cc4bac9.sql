@@ -1,0 +1,1 @@
+ALTER TABLE public.training_requests ADD COLUMN nuit text;

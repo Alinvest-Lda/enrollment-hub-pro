@@ -16,7 +16,8 @@ interface ProofUploadStepProps {
     email: string;
     phone: string;
     company?: string;
-    nuit?: string;
+    nuit: string;
+    province: string;
     message?: string;
     paymentPlanId: string;
   };
@@ -84,7 +85,8 @@ const ProofUploadStep = ({
       body.append("email", formData.email);
       body.append("phone", formData.phone);
       body.append("company", formData.company || "");
-      body.append("nuit", formData.nuit || "");
+      body.append("nuit", formData.nuit);
+      body.append("province", formData.province);
       body.append("message", formData.message || "");
       body.append("courseId", courseId);
       body.append("courseName", courseName);

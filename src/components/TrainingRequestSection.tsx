@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Send, User, Building, Phone, Mail, Users, BookOpen, CheckCircle, Sparkles } from "lucide-react";
+import { Send, User, Building, Phone, Mail, Users, BookOpen, CheckCircle, Sparkles, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,11 +13,19 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
+const PROVINCES = [
+  "Maputo Cidade", "Maputo Província", "Gaza", "Inhambane",
+  "Sofala", "Manica", "Tete", "Zambézia",
+  "Nampula", "Cabo Delgado", "Niassa",
+];
+
 const schema = z.object({
   clientType: z.enum(["individual", "empresa", "ong", "estado"]),
   fullName: z.string().trim().min(3, "Nome obrigatório").max(100),
   email: z.string().trim().email("Email inválido").max(255),
   phone: z.string().trim().min(9, "Telefone inválido").max(20),
+  nuit: z.string().trim().min(1, "NUIT obrigatório").max(20),
+  province: z.string().min(1, "Província obrigatória"),
   organizationName: z.string().max(200).optional(),
   organizationSector: z.string().max(100).optional(),
   numParticipants: z.string().optional(),
@@ -62,6 +70,8 @@ const TrainingRequestSection = () => {
         full_name: data.fullName,
         email: data.email,
         phone: data.phone,
+        nuit: data.nuit || null,
+        province: data.province,
         organization_name: data.organizationName || null,
         organization_sector: data.organizationSector || null,
         num_participants: data.numParticipants ? parseInt(data.numParticipants) : null,
@@ -187,6 +197,23 @@ const TrainingRequestSection = () => {
                     <Label htmlFor="tr-phone" className="flex items-center gap-1 mb-1.5"><Phone className="w-3.5 h-3.5" /> Telefone *</Label>
                     <Input id="tr-phone" {...register("phone")} placeholder="+258 84 999 9999" className="rounded-lg" />
                     {errors.phone && <p className="text-xs text-destructive mt-1">{errors.phone.message}</p>}
+                  </div>
+                  <div>
+                    <Label htmlFor="tr-nuit" className="flex items-center gap-1 mb-1.5">NUIT *</Label>
+                    <Input id="tr-nuit" {...register("nuit")} placeholder="Número Único de Identificação Tributária" className="rounded-lg" />
+                    {errors.nuit && <p className="text-xs text-destructive mt-1">{errors.nuit.message}</p>}
+                  </div>
+                  <div>
+                    <Label htmlFor="tr-province" className="flex items-center gap-1 mb-1.5"><MapPin className="w-3.5 h-3.5" /> Província *</Label>
+                    <Select value={watch("province") || ""} onValueChange={(val) => setValue("province", val, { shouldValidate: true })}>
+                      <SelectTrigger className="rounded-lg"><SelectValue placeholder="Seleccione a província" /></SelectTrigger>
+                      <SelectContent>
+                        {PROVINCES.map((p) => (
+                          <SelectItem key={p} value={p}>{p}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    {errors.province && <p className="text-xs text-destructive mt-1">{errors.province.message}</p>}
                   </div>
                   {isOrg && (
                     <div>
