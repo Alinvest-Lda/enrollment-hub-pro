@@ -25,13 +25,15 @@ import { useBackofficeData } from "@/hooks/use-backoffice-data";
 import RealtimeNotifications from "@/components/backoffice/RealtimeNotifications";
 import { supabase } from "@/integrations/supabase/client";
 
-type Section = "dashboard" | "enrollments" | "courses" | "training" | "whatsapp" | "settings";
+type Section = "dashboard" | "enrollments" | "courses" | "training" | "quotations" | "payment_plans" | "whatsapp" | "settings";
 
 const navItems: { id: Section; label: string; icon: React.ElementType; shortLabel: string }[] = [
   { id: "dashboard", label: "Dashboard", icon: BarChart3, shortLabel: "Dash" },
   { id: "enrollments", label: "Inscrições", icon: Users, shortLabel: "Inscr." },
   { id: "courses", label: "Cursos", icon: BookOpen, shortLabel: "Cursos" },
   { id: "training", label: "Formações", icon: GraduationCap, shortLabel: "Form." },
+  { id: "quotations", label: "Cotações", icon: FileText, shortLabel: "Cotaç." },
+  { id: "payment_plans", label: "Pagamentos", icon: DollarSign, shortLabel: "Pagam." },
   { id: "whatsapp", label: "WhatsApp", icon: MessageSquare, shortLabel: "WhatsApp" },
   { id: "settings", label: "Configurações", icon: Settings, shortLabel: "Config." },
 ];
