@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { Check, X, Eye, FileText, MessageCircle, Search, Trash2, Download, Filter, Banknote } from "lucide-react";
+import { Check, X, Eye, FileText, MessageCircle, Search, Trash2, Download, Filter, Banknote, Link2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
