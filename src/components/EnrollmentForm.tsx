@@ -78,7 +78,8 @@ const EnrollmentForm = ({ course }: EnrollmentFormProps) => {
       setValue("email", formData.email);
       setValue("phone", formData.phone);
       setValue("company", formData.company || "");
-      setValue("nuit", formData.nuit || "");
+      setValue("nuit", formData.nuit);
+      setValue("province", formData.province);
       setValue("message", formData.message || "");
       setValue("paymentPlanId", formData.paymentPlanId);
     }
