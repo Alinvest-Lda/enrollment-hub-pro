@@ -54,6 +54,7 @@ const budgetOptions = [
 ];
 
 const TrainingRequestSection = () => {
+  const { addNotification } = useAppNotifications();
   const [submitted, setSubmitted] = useState(false);
 
   const { register, handleSubmit, watch, setValue, formState: { errors, isSubmitting }, reset } = useForm<FormData>({
