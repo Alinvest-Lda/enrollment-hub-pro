@@ -71,6 +71,7 @@ const Backoffice = () => {
     enrollments: "Inscrições",
     courses: "Cursos",
     training: "Pedidos de Formação",
+    whatsapp: "Templates WhatsApp",
     settings: "Configurações",
   };
 
