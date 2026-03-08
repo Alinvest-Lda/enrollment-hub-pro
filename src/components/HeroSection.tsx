@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, GraduationCap, Shield, CheckCircle, Users, BookOpen, Award, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useSystemSettings, getWhatsAppLinkFromNumber } from "@/hooks/use-system-settings";
+import { useHeroStats } from "@/hooks/use-site-content";
 import heroBg from "@/assets/hero-bg.jpg";
 
 function AnimatedCounter({ target, suffix = "" }: { target: number; suffix?: string }) {
