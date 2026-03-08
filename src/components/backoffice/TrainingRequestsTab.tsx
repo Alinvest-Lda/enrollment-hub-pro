@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Textarea } from "@/components/ui/textarea";
 import { useSystemSettings, getWhatsAppLinkFromNumber } from "@/hooks/use-system-settings";
 import { exportToCSV, trainingRequestCSVColumns } from "@/lib/csv-export";
+import { supabase } from "@/integrations/supabase/client";
 
 export interface TrainingRequest {
   id: string;
