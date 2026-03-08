@@ -14,6 +14,129 @@ export type Database = {
   }
   public: {
     Tables: {
+      certificate_templates: {
+        Row: {
+          background_color: string
+          body_template: string
+          border_style: string
+          created_at: string
+          description: string
+          footer_text: string
+          header_text: string
+          id: string
+          is_active: boolean
+          is_default: boolean
+          logo_url: string | null
+          name: string
+          signature_label: string
+          signature_name: string
+          updated_at: string
+          variables: string[]
+        }
+        Insert: {
+          background_color?: string
+          body_template?: string
+          border_style?: string
+          created_at?: string
+          description?: string
+          footer_text?: string
+          header_text?: string
+          id?: string
+          is_active?: boolean
+          is_default?: boolean
+          logo_url?: string | null
+          name: string
+          signature_label?: string
+          signature_name?: string
+          updated_at?: string
+          variables?: string[]
+        }
+        Update: {
+          background_color?: string
+          body_template?: string
+          border_style?: string
+          created_at?: string
+          description?: string
+          footer_text?: string
+          header_text?: string
+          id?: string
+          is_active?: boolean
+          is_default?: boolean
+          logo_url?: string | null
+          name?: string
+          signature_label?: string
+          signature_name?: string
+          updated_at?: string
+          variables?: string[]
+        }
+        Relationships: []
+      }
+      certificates: {
+        Row: {
+          certificate_code: string
+          course_duration: string
+          course_name: string
+          created_at: string
+          custom_fields: Json
+          end_date: string | null
+          enrollment_id: string | null
+          id: string
+          issue_date: string
+          start_date: string | null
+          status: string
+          student_name: string
+          template_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          certificate_code: string
+          course_duration?: string
+          course_name: string
+          created_at?: string
+          custom_fields?: Json
+          end_date?: string | null
+          enrollment_id?: string | null
+          id?: string
+          issue_date?: string
+          start_date?: string | null
+          status?: string
+          student_name: string
+          template_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          certificate_code?: string
+          course_duration?: string
+          course_name?: string
+          created_at?: string
+          custom_fields?: Json
+          end_date?: string | null
+          enrollment_id?: string | null
+          id?: string
+          issue_date?: string
+          start_date?: string | null
+          status?: string
+          student_name?: string
+          template_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "certificates_enrollment_id_fkey"
+            columns: ["enrollment_id"]
+            isOneToOne: false
+            referencedRelation: "enrollments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "certificates_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "certificate_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       courses: {
         Row: {
           category: string
