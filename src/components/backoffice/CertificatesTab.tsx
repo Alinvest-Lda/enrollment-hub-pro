@@ -565,6 +565,7 @@ export default function CertificatesTab() {
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [editorTab, setEditorTab] = useState<"fields" | "texts">("fields");
+  const [selectedFieldId, setSelectedFieldId] = useState<string | null>(null);
 
   const fetchAll = useCallback(async () => {
     setLoading(true);
