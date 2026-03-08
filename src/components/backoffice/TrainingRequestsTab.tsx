@@ -8,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
-import { getWhatsAppLink } from "@/lib/courses-data";
+import { useSystemSettings, getWhatsAppLinkFromNumber } from "@/hooks/use-system-settings";
 import { exportToCSV, trainingRequestCSVColumns } from "@/lib/csv-export";
 
 export interface TrainingRequest {

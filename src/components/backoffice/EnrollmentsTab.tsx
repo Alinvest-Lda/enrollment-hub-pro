@@ -10,7 +10,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Enrollment, PaymentProof, PaymentStatus, statusConfig } from "@/hooks/use-backoffice-data";
-import { formatCurrency, getWhatsAppLink } from "@/lib/courses-data";
+import { formatCurrency } from "@/lib/courses-data";
+import { useSystemSettings, getWhatsAppLinkFromNumber } from "@/hooks/use-system-settings";
 import { exportToCSV, enrollmentCSVColumns } from "@/lib/csv-export";
 import { toast } from "@/hooks/use-toast";
 import InstallmentTracker from "@/components/backoffice/InstallmentTracker";
