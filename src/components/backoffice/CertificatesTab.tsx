@@ -1,8 +1,9 @@
 import { useState, useEffect, useCallback } from "react";
 import {
   Award, Plus, Pencil, Trash2, Save, X, Eye, Copy, Search,
-  FileText, Check, Loader2, Upload, Globe, Image,
+  FileText, Check, Loader2, Upload, Globe, Image, QrCode,
 } from "lucide-react";
+import { QRCodeSVG } from "qrcode.react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -107,93 +108,125 @@ function generateCode() {
   return `CERT-${new Date().getFullYear()}-${code}`;
 }
 
+function getVerificationUrl(code: string) {
+  const base = typeof window !== "undefined" ? window.location.origin : "";
+  return `${base}/verificar-certificado?code=${encodeURIComponent(code)}`;
+}
+
 // --- Certificate Preview Component ---
-function CertificatePreview({ template, studentName, courseName, date, trainerName }: {
+function CertificatePreview({ template, studentName, courseName, date, trainerName, certificateCode }: {
   template: Partial<CertTemplate>;
   studentName?: string;
   courseName?: string;
   date?: string;
   trainerName?: string;
+  certificateCode?: string;
 }) {
   const name = studentName || "Seu Nome Completo";
   const course = courseName || "Identificação do Treinamento";
+  const code = certificateCode || "CERT-2026-XXXXXX";
   const bodyText = (template.body_template || "").replace("{{course_name}}", course).replace("{{duration}}", "4 semanas").replace("{{start_date}}", "01/01/2026").replace("{{end_date}}", "28/01/2026");
-
-  const borderClass = template.border_style === "elegant" ? "border-[6px] border-double" : template.border_style === "modern" ? "border-2" : template.border_style === "minimal" ? "border" : "border-[5px] border-double";
+  const hasBackground = !!template.example_image_url;
 
   return (
     <div
-      className={`rounded-sm p-1 ${borderClass}`}
+      className="relative rounded-sm overflow-hidden"
       style={{
-        backgroundColor: template.background_color || "#ffffff",
-        borderColor: "#8b9dc3",
         aspectRatio: "1.414",
       }}
     >
-      <div className="border border-border/30 h-full flex flex-col p-6 md:p-8">
-        {/* Logo / Institution */}
-        <div className="text-center mb-4">
-          <h2 className="font-heading text-xl md:text-2xl font-extrabold tracking-wider" style={{ color: "#0F1D3A" }}>
-            ALINVEST <span className="text-primary">|||</span>
+      {/* Background image or fallback */}
+      {hasBackground ? (
+        <img
+          src={template.example_image_url!}
+          alt="Background"
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+      ) : (
+        <div className="absolute inset-0 bg-muted/30 border-2 border-dashed border-muted-foreground/20 flex items-center justify-center">
+          <div className="text-center text-muted-foreground">
+            <Upload className="w-8 h-8 mx-auto mb-2 opacity-40" />
+            <p className="text-xs">Carregue uma imagem de fundo para o certificado</p>
+          </div>
+        </div>
+      )}
+
+      {/* Text overlay */}
+      <div className="absolute inset-0 flex flex-col p-[8%]">
+        {/* Header */}
+        <div className="text-center mb-[2%]">
+          <h2 className="font-heading text-[1.2vw] md:text-base font-extrabold tracking-wider drop-shadow-sm" style={{ color: "#0F1D3A" }}>
+            {template.header_text}
           </h2>
         </div>
 
         {/* Course Title */}
-        <div className="text-center mb-4">
-          <h3 className="font-heading text-lg md:text-xl italic font-semibold" style={{ color: "#0F1D3A" }}>
+        <div className="text-center mb-[2%]">
+          <h3 className="font-heading text-[1vw] md:text-sm italic font-semibold drop-shadow-sm" style={{ color: "#0F1D3A" }}>
             {course}
           </h3>
         </div>
 
         {/* Intro Text */}
-        <p className="text-xs md:text-sm text-foreground/80 mb-4 leading-relaxed">
+        <p className="text-[0.7vw] md:text-xs text-foreground/80 mb-[2%] leading-relaxed drop-shadow-sm">
           {template.intro_text}
         </p>
 
         {/* Student Name */}
-        <div className="text-center my-3 md:my-4">
+        <div className="text-center my-[2%]">
           <div className="border-b-2 border-foreground/30 inline-block px-8 pb-1">
-            <p className="font-heading text-xl md:text-2xl font-bold italic" style={{ color: "#0F1D3A" }}>
+            <p className="font-heading text-[1.3vw] md:text-lg font-bold italic drop-shadow-sm" style={{ color: "#0F1D3A" }}>
               {name}
             </p>
           </div>
         </div>
 
         {/* Body */}
-        <p className="text-xs md:text-sm text-foreground/80 leading-relaxed mb-3">
+        <p className="text-[0.65vw] md:text-[11px] text-foreground/80 leading-relaxed mb-[1.5%] drop-shadow-sm">
           {bodyText}
         </p>
 
         {/* Closing */}
-        <p className="text-xs md:text-sm text-foreground/80 mb-6">
+        <p className="text-[0.65vw] md:text-[11px] text-foreground/80 mb-[3%] drop-shadow-sm">
           {template.closing_text}
         </p>
 
-        {/* Signatures */}
-        <div className="mt-auto grid grid-cols-3 gap-4 text-center pt-4">
+        {/* Signatures + QR Code */}
+        <div className="mt-auto grid grid-cols-4 gap-2 text-center pt-2">
           <div>
-            <div className="border-t border-foreground/40 pt-1 mx-2">
-              <p className="text-xs font-semibold">{template.signature_name || "Nome do Director"}</p>
-              <p className="text-[10px] text-muted-foreground">{template.signature_label}</p>
+            <div className="border-t border-foreground/40 pt-1 mx-1">
+              <p className="text-[0.55vw] md:text-[10px] font-semibold">{template.signature_name || "Nome do Director"}</p>
+              <p className="text-[0.45vw] md:text-[8px] text-muted-foreground">{template.signature_label}</p>
             </div>
           </div>
           <div>
-            <div className="border-t border-foreground/40 pt-1 mx-2">
-              <p className="text-xs font-semibold">Data de Emissão</p>
-              <p className="text-[10px] text-muted-foreground">{date || "DD-MM-AAAA"}</p>
+            <div className="border-t border-foreground/40 pt-1 mx-1">
+              <p className="text-[0.55vw] md:text-[10px] font-semibold">Data de Emissão</p>
+              <p className="text-[0.45vw] md:text-[8px] text-muted-foreground">{date || "DD-MM-AAAA"}</p>
             </div>
           </div>
           <div>
-            <div className="border-t border-foreground/40 pt-1 mx-2">
-              <p className="text-xs font-semibold">{trainerName || template.signature2_name || "Nome do(a) Formador(a)"}</p>
-              <p className="text-[10px] text-muted-foreground">{template.signature2_label}</p>
+            <div className="border-t border-foreground/40 pt-1 mx-1">
+              <p className="text-[0.55vw] md:text-[10px] font-semibold">{trainerName || template.signature2_name || "Nome do(a) Formador(a)"}</p>
+              <p className="text-[0.45vw] md:text-[8px] text-muted-foreground">{template.signature2_label}</p>
             </div>
+          </div>
+          {/* QR Code */}
+          <div className="flex flex-col items-center justify-center">
+            <QRCodeSVG
+              value={getVerificationUrl(code)}
+              size={48}
+              level="M"
+              includeMargin={false}
+              className="rounded"
+            />
+            <p className="text-[0.4vw] md:text-[7px] text-muted-foreground mt-0.5 font-mono">{code}</p>
           </div>
         </div>
 
         {/* Footer */}
         {template.footer_text && (
-          <p className="text-[9px] text-muted-foreground text-center mt-2">{template.footer_text}</p>
+          <p className="text-[0.4vw] md:text-[8px] text-muted-foreground text-center mt-1">{template.footer_text}</p>
         )}
       </div>
     </div>
@@ -241,9 +274,9 @@ export default function CertificatesTab() {
 
   useEffect(() => { fetchAll(); }, [fetchAll]);
 
-  const handleExampleUpload = async (file: File) => {
+  const handleBackgroundUpload = async (file: File) => {
     setUploading(true);
-    const filePath = `examples/${Date.now()}-${file.name}`;
+    const filePath = `backgrounds/${Date.now()}-${file.name}`;
     const { error } = await supabase.storage.from("certificate-examples").upload(filePath, file);
     if (error) {
       toast({ title: "Erro no upload", description: error.message, variant: "destructive" });
@@ -252,7 +285,7 @@ export default function CertificatesTab() {
     }
     const { data: urlData } = supabase.storage.from("certificate-examples").getPublicUrl(filePath);
     setEditTemplate((p) => ({ ...p!, example_image_url: urlData.publicUrl }));
-    toast({ title: "Imagem carregada" });
+    toast({ title: "Imagem de fundo carregada" });
     setUploading(false);
   };
 
@@ -484,41 +517,25 @@ export default function CertificatesTab() {
                     <Label className="text-xs">Nome da Instituição</Label>
                     <Input value={editTemplate.institution_name || ""} onChange={(e) => setEditTemplate((p) => ({ ...p!, institution_name: e.target.value }))} />
                   </div>
-                  <div>
-                    <Label className="text-xs">Estilo da Borda</Label>
-                    <Select value={editTemplate.border_style || "classic"} onValueChange={(v) => setEditTemplate((p) => ({ ...p!, border_style: v }))}>
-                      <SelectTrigger><SelectValue /></SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="classic">Clássico (dupla)</SelectItem>
-                        <SelectItem value="modern">Moderno</SelectItem>
-                        <SelectItem value="elegant">Elegante (dupla)</SelectItem>
-                        <SelectItem value="minimal">Minimalista</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div>
-                    <Label className="text-xs">Cor de Fundo</Label>
-                    <div className="flex gap-2">
-                      <Input type="color" value={editTemplate.background_color || "#ffffff"} onChange={(e) => setEditTemplate((p) => ({ ...p!, background_color: e.target.value }))} className="w-12 h-9 p-1" />
-                      <Input value={editTemplate.background_color || "#ffffff"} onChange={(e) => setEditTemplate((p) => ({ ...p!, background_color: e.target.value }))} className="flex-1" />
-                    </div>
-                  </div>
                 </div>
 
-                {/* Example image */}
+                {/* Background image upload */}
                 <div>
-                  <Label className="text-xs">Imagem de Referência</Label>
+                  <Label className="text-xs font-medium">Imagem de Fundo do Certificado</Label>
+                  <p className="text-[10px] text-muted-foreground mb-1">
+                    Carregue a imagem que serve de layout/fundo para o certificado. As informações serão sobrepostas.
+                  </p>
                   <div className="flex gap-3 items-start mt-1">
                     <label className="cursor-pointer">
-                      <input type="file" className="hidden" accept="image/*,.pdf" onChange={(e) => { const f = e.target.files?.[0]; if (f) handleExampleUpload(f); e.target.value = ""; }} />
+                      <input type="file" className="hidden" accept="image/*" onChange={(e) => { const f = e.target.files?.[0]; if (f) handleBackgroundUpload(f); e.target.value = ""; }} />
                       <Button size="sm" variant="outline" className="text-xs" asChild>
-                        <span><Upload className="w-3.5 h-3.5 mr-1" />{uploading ? "A enviar..." : "Carregar"}</span>
+                        <span><Upload className="w-3.5 h-3.5 mr-1" />{uploading ? "A enviar..." : "Carregar Fundo"}</span>
                       </Button>
                     </label>
                     {editTemplate.example_image_url && (
                       <div className="flex items-center gap-2">
-                        <div className="w-20 h-14 rounded border border-border overflow-hidden bg-muted">
-                          <img src={editTemplate.example_image_url} alt="Ref" className="w-full h-full object-cover" />
+                        <div className="w-24 h-16 rounded border border-border overflow-hidden bg-muted">
+                          <img src={editTemplate.example_image_url} alt="Fundo" className="w-full h-full object-cover" />
                         </div>
                         <Button size="sm" variant="ghost" className="h-7 text-xs text-destructive" onClick={() => setEditTemplate((p) => ({ ...p!, example_image_url: null }))}>
                           <Trash2 className="w-3 h-3" />
@@ -587,16 +604,6 @@ export default function CertificatesTab() {
                       <Globe className="w-2.5 h-2.5 mr-0.5" />{langLabel(editTemplate.language || "pt")}
                     </Badge>
                   </p>
-
-                  {editTemplate.example_image_url && (
-                    <div className="mb-3">
-                      <p className="text-[10px] text-muted-foreground mb-1">Modelo de referência:</p>
-                      <div className="rounded-lg border border-border overflow-hidden max-h-48">
-                        <img src={editTemplate.example_image_url} alt="Referência" className="w-full object-contain" />
-                      </div>
-                    </div>
-                  )}
-
                   <CertificatePreview template={editTemplate} />
                 </div>
 
@@ -620,7 +627,7 @@ export default function CertificatesTab() {
                     <div className="flex items-start gap-3">
                       {t.example_image_url && (
                         <div className="w-14 h-10 rounded border border-border overflow-hidden bg-muted shrink-0">
-                          <img src={t.example_image_url} alt="Ex" className="w-full h-full object-cover" />
+                          <img src={t.example_image_url} alt="Fundo" className="w-full h-full object-cover" />
                         </div>
                       )}
                       <div>
@@ -675,6 +682,7 @@ export default function CertificatesTab() {
                   courseName={previewCert.course_name}
                   date={new Date(previewCert.issue_date).toLocaleDateString("pt-PT")}
                   trainerName={previewCert.trainer_name}
+                  certificateCode={previewCert.certificate_code}
                 />
               )}
             </DialogContent>
@@ -719,6 +727,9 @@ export default function CertificatesTab() {
                             </Button>
                             <Button variant="ghost" size="icon" title="Copiar código" onClick={() => { navigator.clipboard.writeText(cert.certificate_code); toast({ title: "Código copiado!" }); }}>
                               <Copy className="w-3.5 h-3.5" />
+                            </Button>
+                            <Button variant="ghost" size="icon" title="Copiar link de verificação" onClick={() => { navigator.clipboard.writeText(getVerificationUrl(cert.certificate_code)); toast({ title: "Link de verificação copiado!" }); }}>
+                              <QrCode className="w-3.5 h-3.5" />
                             </Button>
                             {cert.status === "active" && (
                               <Button variant="ghost" size="icon" title="Revogar" onClick={() => revokeCertificate(cert.id)}>
