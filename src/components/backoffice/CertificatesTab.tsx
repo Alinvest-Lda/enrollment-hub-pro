@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import {
   Award, Plus, Pencil, Trash2, Save, X, Eye, Copy, Search,
   FileText, Loader2, Upload, Globe, QrCode, Image as ImageIcon,
@@ -189,8 +189,8 @@ function resolveText(text: string, template: Partial<CertTemplate>, data: {
     .replace("{{certificate_code}}", data.code || "CERT-2026-XXXXXX");
 }
 
-// --- Certificate Preview (Grid-based) ---
-function CertificatePreview({ template, layout, studentName, courseName, date, trainerName, certificateCode }: {
+// --- Certificate Preview (Grid-based, with optional interactive drag/resize) ---
+function CertificatePreview({ template, layout, studentName, courseName, date, trainerName, certificateCode, interactive, selectedFieldId, onSelectField, onFieldUpdate }: {
   template: Partial<CertTemplate>;
   layout: FieldLayout[];
   studentName?: string;
@@ -198,13 +198,132 @@ function CertificatePreview({ template, layout, studentName, courseName, date, t
   date?: string;
   trainerName?: string;
   certificateCode?: string;
+  interactive?: boolean;
+  selectedFieldId?: string | null;
+  onSelectField?: (id: string | null) => void;
+  onFieldUpdate?: (updated: FieldLayout) => void;
 }) {
   const code = certificateCode || "CERT-2026-XXXXXX";
   const hasBackground = !!template.example_image_url;
   const data = { studentName, courseName, date, trainerName, code };
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [dragState, setDragState] = useState<{
+    fieldId: string; mode: "move" | "resize";
+    startX: number; startY: number;
+    origRow: number; origCol: number; origRowSpan: number; origColSpan: number;
+  } | null>(null);
+  const [showGrid, setShowGrid] = useState(false);
+
+  // Compute cell size from container
+  const getCellSize = useCallback(() => {
+    const el = containerRef.current;
+    if (!el) return { cw: 0, ch: 0, padX: 0, padY: 0 };
+    const rect = el.getBoundingClientRect();
+    const padX = rect.width * 0.04;
+    const padY = rect.height * 0.04;
+    const cw = (rect.width - padX * 2) / GRID_COLS;
+    const ch = (rect.height - padY * 2) / GRID_ROWS;
+    return { cw, ch, padX, padY };
+  }, []);
+
+  const handleMouseDown = useCallback((e: React.MouseEvent, fieldId: string, mode: "move" | "resize") => {
+    if (!interactive) return;
+    e.stopPropagation();
+    e.preventDefault();
+    const field = layout.find(f => f.id === fieldId);
+    if (!field) return;
+    onSelectField?.(fieldId);
+    setDragState({
+      fieldId, mode,
+      startX: e.clientX, startY: e.clientY,
+      origRow: field.row, origCol: field.col,
+      origRowSpan: field.rowSpan, origColSpan: field.colSpan,
+    });
+    setShowGrid(true);
+  }, [interactive, layout, onSelectField]);
+
+  useEffect(() => {
+    if (!dragState) return;
+    const handleMouseMove = (e: MouseEvent) => {
+      const { cw, ch } = getCellSize();
+      if (cw === 0) return;
+      const dx = e.clientX - dragState.startX;
+      const dy = e.clientY - dragState.startY;
+      const dCols = Math.round(dx / cw);
+      const dRows = Math.round(dy / ch);
+      const field = layout.find(f => f.id === dragState.fieldId);
+      if (!field) return;
+
+      if (dragState.mode === "move") {
+        const newCol = Math.max(0, Math.min(GRID_COLS - dragState.origColSpan, dragState.origCol + dCols));
+        const newRow = Math.max(0, Math.min(GRID_ROWS - dragState.origRowSpan, dragState.origRow + dRows));
+        if (newCol !== field.col || newRow !== field.row) {
+          onFieldUpdate?.({ ...field, col: newCol, row: newRow });
+        }
+      } else {
+        const newColSpan = Math.max(1, Math.min(GRID_COLS - dragState.origCol, dragState.origColSpan + dCols));
+        const newRowSpan = Math.max(1, Math.min(GRID_ROWS - dragState.origRow, dragState.origRowSpan + dRows));
+        if (newColSpan !== field.colSpan || newRowSpan !== field.rowSpan) {
+          onFieldUpdate?.({ ...field, colSpan: newColSpan, rowSpan: newRowSpan });
+        }
+      }
+    };
+    const handleMouseUp = () => {
+      setDragState(null);
+      setShowGrid(false);
+    };
+    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mouseup", handleMouseUp);
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseup", handleMouseUp);
+    };
+  }, [dragState, getCellSize, layout, onFieldUpdate]);
+
+  const renderFieldContent = (field: FieldLayout) => {
+    if (field.type === "line") {
+      return <div className="w-full border-t-2" style={{ borderColor: field.color }} />;
+    }
+    if (field.type === "qrcode") {
+      return (
+        <>
+          <QRCodeSVG value={getVerificationUrl(code)} size={40} level="M" includeMargin={false} />
+          <span style={{ fontSize: "7px", fontFamily: "monospace" }}>{code}</span>
+        </>
+      );
+    }
+    if (field.type === "image") {
+      return field.imageUrl ? (
+        <img src={field.imageUrl} alt={field.label} className="max-w-full max-h-full object-contain" />
+      ) : (
+        <div className="w-full h-full bg-muted/20 border border-dashed border-muted-foreground/20 flex items-center justify-center">
+          <ImageIcon className="w-4 h-4 text-muted-foreground/40" />
+        </div>
+      );
+    }
+    if (field.type === "signature") {
+      const lines = resolveText(field.content, template, data).split("\n");
+      return (
+        <>
+          <div className="w-full border-t" style={{ borderColor: field.color, marginBottom: "4px" }} />
+          {lines.map((line, i) => (
+            <span key={i} style={{ fontSize: i === 0 ? `${field.fontSize}px` : `${field.fontSize - 2}px`, fontWeight: i === 0 ? 600 : 400, opacity: i === 0 ? 1 : 0.7 }}>
+              {line}
+            </span>
+          ))}
+        </>
+      );
+    }
+    return <span>{resolveText(field.content, template, data)}</span>;
+  };
 
   return (
-    <div className="relative rounded-sm overflow-hidden" style={{ aspectRatio: "1.414", fontFamily: "'Lora', serif" }}>
+    <div
+      ref={containerRef}
+      className="relative rounded-sm overflow-hidden select-none"
+      style={{ aspectRatio: "1.414", fontFamily: "'Lora', serif" }}
+      onClick={() => interactive && onSelectField?.(null)}
+    >
       {hasBackground ? (
         <img src={template.example_image_url!} alt="Background" className="absolute inset-0 w-full h-full object-cover" />
       ) : (
@@ -212,6 +331,22 @@ function CertificatePreview({ template, layout, studentName, courseName, date, t
           <div className="text-center text-muted-foreground">
             <Upload className="w-8 h-8 mx-auto mb-2 opacity-40" />
             <p className="text-xs">Carregue uma imagem de fundo</p>
+          </div>
+        </div>
+      )}
+
+      {/* Grid guide lines (visible during drag) */}
+      {interactive && showGrid && (
+        <div className="absolute inset-0 pointer-events-none" style={{ padding: "4%" }}>
+          <div className="w-full h-full relative">
+            {Array.from({ length: GRID_COLS - 1 }).map((_, i) => (
+              <div key={`vc${i}`} className="absolute top-0 bottom-0 border-l border-primary/10"
+                style={{ left: `${((i + 1) / GRID_COLS) * 100}%` }} />
+            ))}
+            {Array.from({ length: GRID_ROWS - 1 }).map((_, i) => (
+              <div key={`hr${i}`} className="absolute left-0 right-0 border-t border-primary/10"
+                style={{ top: `${((i + 1) / GRID_ROWS) * 100}%` }} />
+            ))}
           </div>
         </div>
       )}
@@ -224,6 +359,8 @@ function CertificatePreview({ template, layout, studentName, courseName, date, t
         padding: "4%",
       }}>
         {layout.filter(f => f.visible).map((field) => {
+          const isSelected = interactive && selectedFieldId === field.id;
+          const isDragging = dragState?.fieldId === field.id;
           const style: React.CSSProperties = {
             gridColumn: `${field.col + 1} / span ${field.colSpan}`,
             gridRow: `${field.row + 1} / span ${field.rowSpan}`,
@@ -234,62 +371,43 @@ function CertificatePreview({ template, layout, studentName, courseName, date, t
             color: field.color,
             overflow: "hidden",
             display: "flex",
-            alignItems: "center",
+            alignItems: field.type === "line" ? "center" : "center",
             justifyContent: field.textAlign === "center" ? "center" : field.textAlign === "right" ? "flex-end" : "flex-start",
             fontFamily: "'Lora', serif",
             lineHeight: 1.4,
+            flexDirection: (field.type === "qrcode" || field.type === "signature") ? "column" : undefined,
+            gap: field.type === "qrcode" ? "2px" : undefined,
+            position: "relative",
+            cursor: interactive ? (isDragging ? "grabbing" : "grab") : undefined,
+            outline: isSelected ? "2px solid hsl(var(--primary))" : undefined,
+            outlineOffset: "1px",
+            borderRadius: isSelected ? "2px" : undefined,
+            background: isSelected ? "hsl(var(--primary) / 0.05)" : undefined,
+            zIndex: isSelected || isDragging ? 10 : undefined,
           };
 
-          if (field.type === "line") {
-            return (
-              <div key={field.id} style={{ ...style, alignItems: "center" }}>
-                <div className="w-full border-t-2" style={{ borderColor: field.color }} />
-              </div>
-            );
-          }
-
-          if (field.type === "qrcode") {
-            return (
-              <div key={field.id} style={{ ...style, flexDirection: "column", gap: "2px" }}>
-                <QRCodeSVG value={getVerificationUrl(code)} size={40} level="M" includeMargin={false} />
-                <span style={{ fontSize: "7px", fontFamily: "monospace" }}>{code}</span>
-              </div>
-            );
-          }
-
-          if (field.type === "image") {
-            return (
-              <div key={field.id} style={style}>
-                {field.imageUrl ? (
-                  <img src={field.imageUrl} alt={field.label} className="max-w-full max-h-full object-contain" />
-                ) : (
-                  <div className="w-full h-full bg-muted/20 border border-dashed border-muted-foreground/20 flex items-center justify-center">
-                    <ImageIcon className="w-4 h-4 text-muted-foreground/40" />
-                  </div>
-                )}
-              </div>
-            );
-          }
-
-          if (field.type === "signature") {
-            const lines = resolveText(field.content, template, data).split("\n");
-            return (
-              <div key={field.id} style={{ ...style, flexDirection: "column" }}>
-                <div className="w-full border-t" style={{ borderColor: field.color, marginBottom: "4px" }} />
-                {lines.map((line, i) => (
-                  <span key={i} style={{ fontSize: i === 0 ? `${field.fontSize}px` : `${field.fontSize - 2}px`, fontWeight: i === 0 ? 600 : 400, opacity: i === 0 ? 1 : 0.7 }}>
-                    {line}
-                  </span>
-                ))}
-              </div>
-            );
-          }
-
-          // Text field
-          const resolved = resolveText(field.content, template, data);
           return (
-            <div key={field.id} style={style}>
-              <span>{resolved}</span>
+            <div
+              key={field.id}
+              style={style}
+              onClick={(e) => { if (interactive) { e.stopPropagation(); onSelectField?.(field.id); } }}
+              onMouseDown={(e) => handleMouseDown(e, field.id, "move")}
+            >
+              {renderFieldContent(field)}
+              {/* Resize handle */}
+              {isSelected && (
+                <div
+                  className="absolute bottom-0 right-0 w-3 h-3 bg-primary rounded-tl-sm cursor-se-resize z-20"
+                  onMouseDown={(e) => handleMouseDown(e, field.id, "resize")}
+                  style={{ opacity: 0.8 }}
+                />
+              )}
+              {/* Field label tooltip on hover in interactive mode */}
+              {interactive && isSelected && (
+                <div className="absolute -top-5 left-0 bg-primary text-primary-foreground text-[9px] px-1.5 py-0.5 rounded whitespace-nowrap z-20 pointer-events-none">
+                  {field.label}
+                </div>
+              )}
             </div>
           );
         })}
@@ -447,6 +565,7 @@ export default function CertificatesTab() {
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [editorTab, setEditorTab] = useState<"fields" | "texts">("fields");
+  const [selectedFieldId, setSelectedFieldId] = useState<string | null>(null);
 
   const fetchAll = useCallback(async () => {
     setLoading(true);
@@ -793,12 +912,22 @@ export default function CertificatesTab() {
                 <Separator />
                 <div>
                   <p className="text-xs font-medium mb-2 flex items-center gap-1">
-                    Pré-visualização (Fonte: Lora)
+                    Pré-visualização interactiva (Fonte: Lora)
                     <Badge variant="outline" className="text-[9px] ml-1">
                       <Globe className="w-2.5 h-2.5 mr-0.5" />{langLabel(editTemplate.language || "pt")}
                     </Badge>
+                    <Badge variant="secondary" className="text-[9px] ml-1">
+                      <GripVertical className="w-2.5 h-2.5 mr-0.5" />Arraste para mover
+                    </Badge>
                   </p>
-                  <CertificatePreview template={editTemplate} layout={layout} />
+                  <CertificatePreview
+                    template={editTemplate}
+                    layout={layout}
+                    interactive
+                    selectedFieldId={selectedFieldId}
+                    onSelectField={setSelectedFieldId}
+                    onFieldUpdate={updateField}
+                  />
                 </div>
 
                 <div className="flex gap-2">
