@@ -79,30 +79,25 @@ export default function StudentPayments() {
   const handleUpload = async (installmentNumber: number, file: File) => {
     if (!enrollmentId) return;
     setUploading(installmentNumber);
-    const filePath = `${enrollmentId}/installment-${installmentNumber}-${Date.now()}-${file.name}`;
 
-    const { error: uploadError } = await supabase.storage
-      .from("payment-proofs")
-      .upload(filePath, file);
+    try {
+      const body = new FormData();
+      body.append("enrollmentId", enrollmentId);
+      body.append("installmentNumber", installmentNumber.toString());
+      body.append("file", file);
 
-    if (uploadError) {
-      toast({ title: "Erro no upload", description: uploadError.message, variant: "destructive" });
-      setUploading(null);
-      return;
-    }
+      const { data, error: fnError } = await supabase.functions.invoke("upload-proof", { body });
 
-    const { error: dbError } = await supabase.from("payment_proofs").insert({
-      enrollment_id: enrollmentId,
-      file_path: filePath,
-      file_name: file.name,
-      file_type: file.type,
-      installment_number: installmentNumber,
-    } as any);
+      if (fnError) throw fnError;
+      if (!data?.success) throw new Error(data?.error || "Erro desconhecido");
 
-    if (!dbError) {
       toast({ title: "Comprovativo enviado com sucesso!" });
+    } catch (err: any) {
+      console.error("Upload error:", err);
+      toast({ title: "Erro no upload", description: err.message || "Tente novamente.", variant: "destructive" });
+    } finally {
+      setUploading(null);
     }
-    setUploading(null);
   };
 
   const totalPaid = installments.filter((i) => i.status === "paid").reduce((s, i) => s + Number(i.amount), 0);
