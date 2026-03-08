@@ -28,6 +28,7 @@ const navItems: { id: Section; label: string; icon: React.ElementType; shortLabe
   { id: "enrollments", label: "Inscrições", icon: Users, shortLabel: "Inscr." },
   { id: "courses", label: "Cursos", icon: BookOpen, shortLabel: "Cursos" },
   { id: "training", label: "Formações", icon: GraduationCap, shortLabel: "Form." },
+  { id: "whatsapp", label: "WhatsApp", icon: MessageSquare, shortLabel: "WhatsApp" },
   { id: "settings", label: "Configurações", icon: Settings, shortLabel: "Config." },
 ];
 
