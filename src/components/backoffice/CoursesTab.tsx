@@ -167,52 +167,6 @@ export default function CoursesTab({ courses, saveCourse, deleteCourse, toggleCo
                 <Textarea value={editing.description ?? ""} onChange={(e) => updateField("description", e.target.value)} rows={3} />
               </div>
 
-              <div>
-                <Label>Imagem do Curso</Label>
-                <div className="mt-1 space-y-2">
-                  {editing.image && (
-                    <div className="relative w-full h-36 rounded-lg overflow-hidden border border-border">
-                      <img src={editing.image} alt="Preview" className="w-full h-full object-cover" />
-                      <Button
-                        variant="destructive"
-                        size="icon"
-                        className="absolute top-2 right-2 h-7 w-7"
-                        onClick={() => updateField("image", "")}
-                      >
-                        <X className="w-3.5 h-3.5" />
-                      </Button>
-                    </div>
-                  )}
-                  <div className="flex gap-2">
-                    <input
-                      ref={fileInputRef}
-                      type="file"
-                      accept="image/*"
-                      className="hidden"
-                      onChange={handleImageUpload}
-                    />
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      disabled={uploading}
-                      onClick={() => fileInputRef.current?.click()}
-                    >
-                      {uploading ? (
-                        <span className="animate-pulse">A enviar...</span>
-                      ) : (
-                        <><Upload className="w-4 h-4 mr-1" /> Carregar Imagem</>
-                      )}
-                    </Button>
-                    <Input
-                      placeholder="Ou cole um URL de imagem"
-                      value={editing.image ?? ""}
-                      onChange={(e) => updateField("image", e.target.value)}
-                      className="text-xs"
-                    />
-                  </div>
-                </div>
-              </div>
 
               <div>
                 <Label>Destaques (um por linha)</Label>
