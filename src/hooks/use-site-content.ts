@@ -106,8 +106,7 @@ export function useAllTestimonials() {
   return useQuery({
     queryKey: ["testimonials-all"],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("testimonials")
+      const { data, error } = await (supabase.from("testimonials" as any) as any)
         .select("*")
         .order("display_order");
       if (error) throw error;
