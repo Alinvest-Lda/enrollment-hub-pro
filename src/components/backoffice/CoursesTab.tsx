@@ -236,6 +236,7 @@ export default function CoursesTab({ courses, saveCourse, deleteCourse, toggleCo
                 </div>
               </div>
 
+              <div>
                 <Label>Destaques (um por linha)</Label>
                 <Textarea value={highlightsText} onChange={(e) => setHighlightsText(e.target.value)} rows={4} placeholder="Certificado PECB&#10;Material incluído" />
               </div>
