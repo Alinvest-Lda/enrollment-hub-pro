@@ -11,6 +11,7 @@ import Backoffice from "./pages/Backoffice";
 import AboutUs from "./pages/AboutUs";
 import StudentPayments from "./pages/StudentPayments";
 import VerifyCertificate from "./pages/VerifyCertificate";
+import QuotationPayment from "./pages/QuotationPayment";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -28,6 +29,7 @@ const App = () => (
           <Route path="/sobre" element={<AboutUs />} />
           <Route path="/pagamentos/:enrollmentId" element={<StudentPayments />} />
           <Route path="/verificar-certificado" element={<VerifyCertificate />} />
+          <Route path="/cotacao/:quotationId" element={<QuotationPayment />} />
           <Route path="/admin" element={<AdminLogin />} />
           <Route path="/backoffice" element={<Backoffice />} />
           <Route path="*" element={<NotFound />} />

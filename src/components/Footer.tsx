@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { MessageCircle, Mail, MapPin, Phone } from "lucide-react";
 import { WHATSAPP_LINK } from "@/lib/courses-data";
+import logo from "@/assets/logo.png";
 
 const Footer = () => {
   return (
@@ -8,7 +9,7 @@ const Footer = () => {
       <div className="container mx-auto px-4 py-14">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
           <div>
-            <h3 className="font-heading text-xl font-extrabold mb-4">ALINVEST Academy</h3>
+            <img src={logo} alt="ALINVEST" className="h-8 mb-4 brightness-0 invert" />
             <p className="text-sm text-primary-foreground/60 leading-relaxed max-w-xs">
               Consultoria e formação especializada para o crescimento do seu negócio em Moçambique.
             </p>

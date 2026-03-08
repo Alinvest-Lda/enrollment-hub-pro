@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import {
   Plus, Trash2, Pencil, Save, X, RefreshCw, FileText,
-  Send, Copy, Eye, Printer, DollarSign, Percent, Calendar,
+  Send, Copy, Eye, Printer, DollarSign, Percent, Calendar, Link2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -343,6 +343,16 @@ export default function QuotationsTab({ trainingRequests }: Props) {
                       <div className="flex gap-1">
                         <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => printQuotation(q)} title="Pré-visualizar"><Eye className="w-4 h-4" /></Button>
                         <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => openEdit(q)} title="Editar"><Pencil className="w-4 h-4" /></Button>
+                        <Button
+                          variant="ghost" size="icon" className="h-8 w-8" title="Copiar link de pagamento"
+                          onClick={() => {
+                            const url = `${window.location.origin}/cotacao/${q.id}`;
+                            navigator.clipboard.writeText(url);
+                            toast({ title: "Link de pagamento copiado!" });
+                          }}
+                        >
+                          <Link2 className="w-4 h-4" />
+                        </Button>
                         <Select value={q.status} onValueChange={(v) => updateStatus(q.id, v)}>
                           <SelectTrigger className="h-8 w-[110px] text-xs"><SelectValue /></SelectTrigger>
                           <SelectContent>
@@ -495,7 +505,7 @@ export default function QuotationsTab({ trainingRequests }: Props) {
               <div className="flex items-start justify-between">
                 <div>
                   <h2 className="font-heading text-2xl font-extrabold text-primary">ALINVEST</h2>
-                  <p className="text-xs text-muted-foreground">Academy</p>
+                  <p className="text-xs text-muted-foreground">Consultoria & Formação</p>
                 </div>
                 <div className="text-right">
                   <h3 className="font-heading text-lg font-bold">COTAÇÃO</h3>

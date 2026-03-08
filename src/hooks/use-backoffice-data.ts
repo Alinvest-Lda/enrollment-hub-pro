@@ -167,7 +167,7 @@ export function useBackofficeData() {
       if (!session?.session?.access_token) return;
 
       const message = status === "approved"
-        ? `Olá ${enrollment.full_name}! 🎉\n\nA sua inscrição no curso *${enrollment.course_name}* foi *confirmada* com sucesso!\n\nValor: ${enrollment.amount_due} MZN\nRef: ${enrollment.id.substring(0, 8).toUpperCase()}\n\nObrigado por escolher a ALINVEST Academy! Entraremos em contacto com mais detalhes sobre o início do curso.`
+        ? `Olá ${enrollment.full_name}! 🎉\n\nA sua inscrição no curso *${enrollment.course_name}* foi *confirmada* com sucesso!\n\nValor: ${enrollment.amount_due} MZN\nRef: ${enrollment.id.substring(0, 8).toUpperCase()}\n\nObrigado por escolher a ALINVEST! Entraremos em contacto com mais detalhes sobre o início do curso.`
         : `Olá ${enrollment.full_name},\n\nEstado da sua inscrição no curso ${enrollment.course_name}: ${statusConfig[status].label}.\n\nRef: ${enrollment.id.substring(0, 8).toUpperCase()}`;
 
       const { data, error } = await supabase.functions.invoke("whatsapp-send", {

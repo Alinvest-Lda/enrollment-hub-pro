@@ -71,7 +71,7 @@ Deno.serve(async (req) => {
     const emailBody = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <div style="background: hsl(220, 55%, 16%); padding: 24px; text-align: center;">
-          <h1 style="color: #ffffff; margin: 0; font-size: 20px;">ALINVEST Academy</h1>
+          <h1 style="color: #ffffff; margin: 0; font-size: 20px;">ALINVEST</h1>
         </div>
         <div style="padding: 24px; background: #ffffff;">
           <h2 style="color: hsl(220, 40%, 13%); margin-top: 0;">Nova Inscrição Recebida</h2>
