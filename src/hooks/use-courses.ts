@@ -1,20 +1,51 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { PAYMENT_PLANS, type Course } from "@/lib/courses-data";
+import { type Course, type PaymentPlan } from "@/lib/courses-data";
+import type { DBPaymentPlanInstallment } from "@/hooks/use-payment-plans";
+
+/** Fetch active payment plans and convert to Course-compatible format */
+async function fetchActivePlans(): Promise<PaymentPlan[]> {
+  const { data, error } = await supabase
+    .from("payment_plans")
+    .select("*")
+    .eq("is_active", true)
+    .order("is_default", { ascending: false });
+
+  if (error) throw error;
+
+  return (data ?? []).map((row) => {
+    const installments = Array.isArray(row.installments)
+      ? (row.installments as unknown as DBPaymentPlanInstallment[])
+      : [];
+    return {
+      id: row.id,
+      label: row.name,
+      description: row.description,
+      installments: installments.map((inst) => ({
+        percentage: inst.percent,
+        dueDescription: inst.days_offset === 0 ? "Na inscrição" : `Em ${inst.days_offset} dias`,
+      })),
+    };
+  });
+}
 
 export function useCourses() {
   return useQuery({
     queryKey: ["public-courses"],
     queryFn: async (): Promise<Course[]> => {
-      const { data, error } = await supabase
-        .from("courses")
-        .select("*")
-        .eq("is_active", true)
-        .order("start_date", { ascending: true });
+      // Fetch courses and payment plans in parallel
+      const [coursesResult, plans] = await Promise.all([
+        supabase
+          .from("courses")
+          .select("*")
+          .eq("is_active", true)
+          .order("start_date", { ascending: true }),
+        fetchActivePlans(),
+      ]);
 
-      if (error) throw error;
+      if (coursesResult.error) throw coursesResult.error;
 
-      return (data ?? []).map((c) => ({
+      return (coursesResult.data ?? []).map((c) => ({
         id: c.slug,
         title: c.title,
         category: c.category,
@@ -26,7 +57,7 @@ export function useCourses() {
         startDate: c.start_date ?? "",
         image: c.image,
         highlights: c.highlights,
-        paymentPlans: PAYMENT_PLANS[c.payment_plan_group] ?? PAYMENT_PLANS["2-weeks"],
+        paymentPlans: plans,
       }));
     },
     staleTime: 1000 * 60 * 5,
