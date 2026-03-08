@@ -41,6 +41,8 @@ interface QuotationInfo {
 
 export default function QuotationPayment() {
   const { quotationId } = useParams<{ quotationId: string }>();
+  const { data: settings } = useSystemSettings();
+  const whatsappLink = getWhatsAppUrl(settings?.whatsappNumber || "");
   const [quotation, setQuotation] = useState<QuotationInfo | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
