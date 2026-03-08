@@ -331,7 +331,15 @@ const EnrollmentForm = ({ course }: EnrollmentFormProps) => {
                 phone={formData.phone}
                 amount={firstInstallment}
                 reference={course.id}
-                onSuccess={() => setStep("done")}
+                onSuccess={() => {
+                  addNotification({
+                    type: "success",
+                    title: "Inscrição Confirmada!",
+                    message: `A sua inscrição em ${course.title} foi submetida com sucesso. Pagamento M-Pesa confirmado.`,
+                    icon: "enrollment",
+                  });
+                  setStep("done");
+                }}
                 onError={(err) => toast({ title: "Erro M-Pesa", description: err, variant: "destructive" })}
               />
             </motion.div>
