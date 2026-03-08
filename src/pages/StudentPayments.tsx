@@ -1,13 +1,15 @@
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
-import { Calendar, Check, Clock, AlertCircle, X, Banknote, ArrowLeft, Upload, FileText, Eye } from "lucide-react";
+import { Calendar, Check, Clock, AlertCircle, X, Banknote, ArrowLeft, Upload, FileText, Eye, Smartphone, CreditCard } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { formatCurrency } from "@/lib/courses-data";
 import { toast } from "@/hooks/use-toast";
+import MpesaPaymentStep from "@/components/enrollment/MpesaPaymentStep";
 
 interface Installment {
   id: string;
@@ -27,6 +29,7 @@ interface EnrollmentInfo {
   amount_due: number;
   payment_plan: string;
   status: string;
+  phone: string;
 }
 
 const statusLabels: Record<string, { label: string; color: string; icon: React.ElementType }> = {
@@ -43,6 +46,7 @@ export default function StudentPayments() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [uploading, setUploading] = useState<number | null>(null);
+  const [payingInstallment, setPayingInstallment] = useState<number | null>(null);
 
   useEffect(() => {
     if (!enrollmentId) return;
@@ -223,25 +227,56 @@ export default function StudentPayments() {
                     )}
 
                     {inst.status !== "paid" && inst.status !== "cancelled" && (
-                      <div className="mt-3 pt-3 border-t border-border">
-                        <label className="cursor-pointer">
-                          <input
-                            type="file"
-                            className="hidden"
-                            accept="image/*,.pdf"
-                            onChange={(e) => {
-                              const file = e.target.files?.[0];
-                              if (file) handleUpload(inst.installment_number, file);
-                              e.target.value = "";
-                            }}
-                          />
-                          <Button size="sm" variant="outline" className="text-xs" asChild>
-                            <span>
-                              <Upload className="w-3.5 h-3.5 mr-1" />
-                              {uploading === inst.installment_number ? "A enviar..." : "Enviar Comprovativo"}
-                            </span>
-                          </Button>
-                        </label>
+                      <div className="mt-3 pt-3 border-t border-border space-y-3">
+                        {payingInstallment === inst.installment_number ? (
+                          <div className="space-y-2">
+                            <MpesaPaymentStep
+                              enrollmentId={enrollmentId!}
+                              phone={enrollment.phone || ""}
+                              amount={Number(inst.amount)}
+                              reference={`INST-${inst.installment_number}`}
+                              onSuccess={() => {
+                                toast({ title: "Pagamento confirmado!" });
+                                setPayingInstallment(null);
+                                // Refresh data
+                                supabase.functions.invoke("public-enrollment-data", {
+                                  body: { enrollment_id: enrollmentId },
+                                }).then(({ data: fn }) => {
+                                  if (fn) setInstallments(fn.installments || []);
+                                });
+                              }}
+                              onError={(err) => toast({ title: "Erro", description: err, variant: "destructive" })}
+                            />
+                            <Button size="sm" variant="ghost" className="text-xs w-full" onClick={() => setPayingInstallment(null)}>
+                              Cancelar
+                            </Button>
+                          </div>
+                        ) : (
+                          <div className="flex flex-wrap gap-2">
+                            <Button size="sm" variant="default" className="text-xs" onClick={() => setPayingInstallment(inst.installment_number)}>
+                              <Smartphone className="w-3.5 h-3.5 mr-1" />
+                              Pagar com M-Pesa
+                            </Button>
+                            <label className="cursor-pointer">
+                              <input
+                                type="file"
+                                className="hidden"
+                                accept="image/*,.pdf"
+                                onChange={(e) => {
+                                  const file = e.target.files?.[0];
+                                  if (file) handleUpload(inst.installment_number, file);
+                                  e.target.value = "";
+                                }}
+                              />
+                              <Button size="sm" variant="outline" className="text-xs" asChild>
+                                <span>
+                                  <Upload className="w-3.5 h-3.5 mr-1" />
+                                  {uploading === inst.installment_number ? "A enviar..." : "Enviar Comprovativo"}
+                                </span>
+                              </Button>
+                            </label>
+                          </div>
+                        )}
                       </div>
                     )}
                   </CardContent>
