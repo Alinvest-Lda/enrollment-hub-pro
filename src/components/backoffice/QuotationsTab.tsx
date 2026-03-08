@@ -589,95 +589,132 @@ export default function QuotationsTab({ trainingRequests }: Props) {
         </DialogContent>
       </Dialog>
 
-      {/* Preview/Print Dialog */}
+      {/* Preview/Print Dialog - Document Style */}
       <Dialog open={previewOpen} onOpenChange={setPreviewOpen}>
-        <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto print:shadow-none">
+        <DialogContent className="sm:max-w-3xl max-h-[95vh] overflow-y-auto p-0 print:shadow-none">
           {previewQuotation && (
-            <div className="space-y-4 print:text-black" id="quotation-print">
-              <div className="flex items-start justify-between">
-                <div>
-                  <h2 className="font-heading text-2xl font-extrabold text-primary">ALINVEST</h2>
-                  <p className="text-xs text-muted-foreground">Consultoria & Formação</p>
-                </div>
-                <div className="text-right">
-                  <h3 className="font-heading text-lg font-bold">COTAÇÃO</h3>
-                  <p className="font-mono text-sm">{previewQuotation.quotation_number}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {new Date(previewQuotation.created_at).toLocaleDateString("pt-PT")}
-                  </p>
-                </div>
-              </div>
-
-              <Separator />
-
-              <div className="grid grid-cols-2 gap-4 text-sm">
-                <div>
-                  <p className="text-xs text-muted-foreground font-semibold uppercase mb-1">Cliente</p>
-                  <p className="font-semibold">{previewQuotation.client_name}</p>
-                  {previewQuotation.organization_name && <p>{previewQuotation.organization_name}</p>}
-                  <p className="text-muted-foreground">{previewQuotation.client_email}</p>
-                  <p className="text-muted-foreground">{previewQuotation.client_phone}</p>
-                </div>
-                <div className="text-right">
-                  <p className="text-xs text-muted-foreground font-semibold uppercase mb-1">Detalhes</p>
-                  <p><strong>Tema:</strong> {previewQuotation.training_topic}</p>
-                  {previewQuotation.valid_until && (
-                    <p><strong>Válida até:</strong> {new Date(previewQuotation.valid_until).toLocaleDateString("pt-PT")}</p>
-                  )}
-                  <Badge variant={statusLabels[previewQuotation.status]?.variant || "outline"} className="mt-1">
+            <div className="flex flex-col">
+              {/* Action bar */}
+              <div className="flex flex-wrap gap-2 p-4 border-b bg-muted/30 print:hidden">
+                <Button size="sm" onClick={handlePrint}><Printer className="w-4 h-4 mr-1" />Imprimir</Button>
+                <Button size="sm" variant="outline" onClick={() => handleDownloadPDF(previewQuotation)}><Download className="w-4 h-4 mr-1" />PDF</Button>
+                <Button size="sm" variant="outline" className="text-green-600 border-green-200" onClick={() => handleShareWhatsApp(previewQuotation)}><MessageCircle className="w-4 h-4 mr-1" />WhatsApp</Button>
+                <Button size="sm" variant="outline" onClick={() => handleShareEmail(previewQuotation)}><Mail className="w-4 h-4 mr-1" />Email</Button>
+                <div className="ml-auto">
+                  <Badge variant={statusLabels[previewQuotation.status]?.variant || "outline"} className="text-xs">
                     {statusLabels[previewQuotation.status]?.label || previewQuotation.status}
                   </Badge>
                 </div>
               </div>
 
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Descrição</TableHead>
-                    <TableHead className="text-center">Qtd</TableHead>
-                    <TableHead className="text-right">Preço Unit.</TableHead>
-                    <TableHead className="text-right">Total</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {(previewQuotation.items || []).map((item, i) => (
-                    <TableRow key={i}>
-                      <TableCell>{item.description}</TableCell>
-                      <TableCell className="text-center">{item.quantity}</TableCell>
-                      <TableCell className="text-right">{formatCurrency(item.unit_price)}</TableCell>
-                      <TableCell className="text-right font-semibold">{formatCurrency(item.quantity * item.unit_price)}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-
-              <div className="flex justify-end">
-                <div className="w-64 space-y-1 text-sm">
-                  <div className="flex justify-between"><span>Subtotal</span><span>{formatCurrency(previewQuotation.subtotal)}</span></div>
-                  {previewQuotation.discount_percent > 0 && (
-                    <div className="flex justify-between text-muted-foreground"><span>Desconto ({previewQuotation.discount_percent}%)</span><span>-{formatCurrency(previewQuotation.subtotal * previewQuotation.discount_percent / 100)}</span></div>
-                  )}
-                  {previewQuotation.tax_percent > 0 && (
-                    <div className="flex justify-between text-muted-foreground"><span>IVA ({previewQuotation.tax_percent}%)</span><span>{formatCurrency((previewQuotation.subtotal - previewQuotation.subtotal * previewQuotation.discount_percent / 100) * previewQuotation.tax_percent / 100)}</span></div>
-                  )}
-                  <Separator />
-                  <div className="flex justify-between font-heading font-bold text-lg"><span>Total</span><span>{formatCurrency(previewQuotation.total)}</span></div>
+              {/* Document Preview */}
+              <div className="mx-auto w-full max-w-[210mm] bg-white text-black shadow-lg my-4 print:my-0 print:shadow-none" style={{ minHeight: "297mm", padding: "20mm 18mm" }}>
+                {/* Header with logo */}
+                <div className="flex items-start justify-between mb-8">
+                  <div className="flex items-center gap-3">
+                    <img src="/assets/logo.png" alt="ALINVEST" className="h-12 w-auto object-contain" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                    <div>
+                      <p className="text-[10px] text-gray-500 tracking-wider">Consultoria & Formação</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <h3 className="text-xl font-bold tracking-tight text-gray-900">COTAÇÃO</h3>
+                    <p className="font-mono text-sm text-gray-600 mt-0.5">{previewQuotation.quotation_number}</p>
+                    <p className="text-xs text-gray-400 mt-1">Data: {new Date(previewQuotation.created_at).toLocaleDateString("pt-PT")}</p>
+                    {previewQuotation.valid_until && (
+                      <p className="text-xs text-gray-400">Válida até: {new Date(previewQuotation.valid_until).toLocaleDateString("pt-PT")}</p>
+                    )}
+                  </div>
                 </div>
-              </div>
 
-              {previewQuotation.notes && (
-                <div><p className="text-xs font-semibold mb-1">Notas:</p><p className="text-xs text-muted-foreground">{previewQuotation.notes}</p></div>
-              )}
-              {previewQuotation.terms && (
-                <div><p className="text-xs font-semibold mb-1">Termos:</p><p className="text-xs text-muted-foreground">{previewQuotation.terms}</p></div>
-              )}
+                {/* Divider */}
+                <div className="border-t-2 border-gray-200 mb-6" />
 
-              <div className="flex flex-wrap gap-2 print:hidden pt-2">
-                <Button size="sm" onClick={handlePrint}><Printer className="w-4 h-4 mr-1" />Imprimir</Button>
-                <Button size="sm" variant="outline" onClick={() => handleDownloadPDF(previewQuotation)}><Download className="w-4 h-4 mr-1" />PDF</Button>
-                <Button size="sm" variant="outline" className="text-success border-success/30" onClick={() => handleShareWhatsApp(previewQuotation)}><MessageCircle className="w-4 h-4 mr-1" />WhatsApp</Button>
-                <Button size="sm" variant="outline" onClick={() => handleShareEmail(previewQuotation)}><Mail className="w-4 h-4 mr-1" />Email</Button>
-                <Button size="sm" variant="outline" onClick={() => setPreviewOpen(false)}>Fechar</Button>
+                {/* Client + Training topic */}
+                <div className="grid grid-cols-2 gap-8 mb-8">
+                  <div>
+                    <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400 mb-2">CLIENTE</p>
+                    <p className="font-semibold text-gray-900">{previewQuotation.client_name}</p>
+                    {previewQuotation.organization_name && <p className="text-sm text-gray-600">{previewQuotation.organization_name}</p>}
+                    {previewQuotation.client_email && <p className="text-sm text-gray-500">{previewQuotation.client_email}</p>}
+                    {previewQuotation.client_phone && <p className="text-sm text-gray-500">{previewQuotation.client_phone}</p>}
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400 mb-2">TEMA DA FORMAÇÃO</p>
+                    <p className="font-semibold text-gray-900">{previewQuotation.training_topic}</p>
+                  </div>
+                </div>
+
+                {/* Items table */}
+                <table className="w-full mb-6 text-sm">
+                  <thead>
+                    <tr className="bg-[#0a2463] text-white">
+                      <th className="text-left py-2.5 px-3 font-semibold text-xs">Descrição</th>
+                      <th className="text-center py-2.5 px-3 font-semibold text-xs w-16">Qtd</th>
+                      <th className="text-right py-2.5 px-3 font-semibold text-xs w-28">Preço Unit.</th>
+                      <th className="text-right py-2.5 px-3 font-semibold text-xs w-28">Total</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {(previewQuotation.items || []).map((item, i) => (
+                      <tr key={i} className={i % 2 === 0 ? "bg-gray-50" : "bg-white"}>
+                        <td className="py-2.5 px-3 text-gray-800">{item.description}</td>
+                        <td className="py-2.5 px-3 text-center text-gray-600">{item.quantity}</td>
+                        <td className="py-2.5 px-3 text-right text-gray-600">{formatCurrency(item.unit_price)}</td>
+                        <td className="py-2.5 px-3 text-right font-semibold text-gray-800">{formatCurrency(item.quantity * item.unit_price)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+
+                {/* Totals */}
+                <div className="flex justify-end mb-8">
+                  <div className="w-72 space-y-1.5 text-sm">
+                    <div className="flex justify-between text-gray-600 px-3">
+                      <span>Subtotal</span>
+                      <span>{formatCurrency(previewQuotation.subtotal)}</span>
+                    </div>
+                    {previewQuotation.discount_percent > 0 && (
+                      <div className="flex justify-between text-gray-500 px-3">
+                        <span>Desconto ({previewQuotation.discount_percent}%)</span>
+                        <span>-{formatCurrency(previewQuotation.subtotal * previewQuotation.discount_percent / 100)}</span>
+                      </div>
+                    )}
+                    {previewQuotation.tax_percent > 0 && (
+                      <div className="flex justify-between text-gray-500 px-3">
+                        <span>IVA ({previewQuotation.tax_percent}%)</span>
+                        <span>{formatCurrency((previewQuotation.subtotal - previewQuotation.subtotal * previewQuotation.discount_percent / 100) * previewQuotation.tax_percent / 100)}</span>
+                      </div>
+                    )}
+                    <div className="border-t border-gray-300 pt-2 mt-1 px-3">
+                      <div className="flex justify-between font-bold text-lg text-[#0a2463]">
+                        <span>Total</span>
+                        <span>{formatCurrency(previewQuotation.total)}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Notes */}
+                {previewQuotation.notes && (
+                  <div className="mb-4">
+                    <p className="text-xs font-bold text-gray-700 mb-1">Notas:</p>
+                    <p className="text-xs text-gray-500 whitespace-pre-wrap">{previewQuotation.notes}</p>
+                  </div>
+                )}
+
+                {/* Terms */}
+                {previewQuotation.terms && (
+                  <div className="mb-4">
+                    <p className="text-xs font-bold text-gray-700 mb-1">Termos e Condições:</p>
+                    <p className="text-xs text-gray-500 whitespace-pre-wrap">{previewQuotation.terms}</p>
+                  </div>
+                )}
+
+                {/* Footer */}
+                <div className="mt-auto pt-12 border-t border-gray-200 text-center">
+                  <p className="text-[10px] text-gray-400">ALINVEST — Consultoria & Formação</p>
+                </div>
               </div>
             </div>
           )}
