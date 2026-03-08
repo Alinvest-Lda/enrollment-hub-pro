@@ -149,7 +149,7 @@ const EnrollmentForm = ({ course }: EnrollmentFormProps) => {
             Editar
           </button>
         </div>
-        <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 text-xs">
           <p><span className="text-muted-foreground">Nome:</span> {formData.fullName}</p>
           <p><span className="text-muted-foreground">Tel:</span> {formData.phone}</p>
           <p><span className="text-muted-foreground">Email:</span> {formData.email}</p>

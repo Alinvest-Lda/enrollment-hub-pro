@@ -168,7 +168,7 @@ const HeroSection = () => {
               Inscreva-se online e escolha o plano de pagamento que melhor se adapta a si.
             </p>
 
-            <div className="flex flex-wrap gap-4 mb-10">
+            <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 mb-10">
               <a href="#cursos">
                 <Button variant="hero" size="xl" className="group">
                   Ver Cursos

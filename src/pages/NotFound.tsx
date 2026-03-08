@@ -18,6 +18,7 @@ const NotFound = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
+      <SEO title="Página Não Encontrada" noIndex />
       <Navbar />
       <div className="flex-1 flex items-center justify-center px-4">
         <div className="text-center max-w-md">
