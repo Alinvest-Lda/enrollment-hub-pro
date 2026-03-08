@@ -130,7 +130,7 @@ const Backoffice = () => {
         </div>
 
         {/* Nav items */}
-        <nav className="flex-1 py-4 px-2 space-y-1">
+        <nav className="flex-1 py-3 px-2.5 space-y-0.5 overflow-y-auto">
           {navItems.map((item) => {
             const isActive = section === item.id;
             const Icon = item.icon;
@@ -138,17 +138,17 @@ const Backoffice = () => {
               <button
                 key={item.id}
                 onClick={() => handleNavClick(item.id)}
-                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
+                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-200 ${
                   isActive
-                    ? "bg-sidebar-accent text-sidebar-primary"
-                    : "text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
+                    ? "bg-sidebar-primary/15 text-sidebar-primary shadow-sm"
+                    : "text-sidebar-foreground/60 hover:bg-sidebar-accent/40 hover:text-sidebar-foreground"
                 }`}
                 title={sidebarCollapsed ? item.label : undefined}
               >
                 <Icon className={`w-[18px] h-[18px] shrink-0 ${isActive ? "text-sidebar-primary" : ""}`} />
                 {!sidebarCollapsed && <span>{item.label}</span>}
                 {!sidebarCollapsed && item.id === "enrollments" && enrollmentCounts.pending > 0 && (
-                  <Badge className="ml-auto text-[10px] h-5 px-1.5 bg-sidebar-primary text-sidebar-primary-foreground">
+                  <Badge className="ml-auto text-[10px] h-5 px-1.5 bg-sidebar-primary text-sidebar-primary-foreground rounded-full">
                     {enrollmentCounts.pending}
                   </Badge>
                 )}
