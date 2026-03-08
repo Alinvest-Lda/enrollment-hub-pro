@@ -705,6 +705,48 @@ export default function QuotationsTab({ trainingRequests }: Props) {
                   </div>
                 </div>
 
+                {/* Bank Details & QR Code */}
+                {(() => {
+                  const bank = getBankDetails();
+                  const hasBankInfo = bank.bankName || bank.bankAccountNumber || bank.bankNIB;
+                  const hasEmola = bank.emolaNumber;
+                  const paymentUrl = `${window.location.origin}/cotacao/${previewQuotation.id}`;
+                  return (hasBankInfo || hasEmola) ? (
+                    <div className="mb-6">
+                      <p className="text-xs font-bold text-[#0a2463] mb-2 uppercase tracking-wider border-b border-[#0a2463]/20 pb-1">Dados para Pagamento</p>
+                      <div className="flex justify-between gap-6">
+                        <div className="text-xs text-gray-600 space-y-2 flex-1">
+                          {hasBankInfo && (
+                            <div>
+                              <p className="font-semibold text-gray-700 mb-1">Transferência Bancária:</p>
+                              {bank.bankName && <p>Banco: {bank.bankName}</p>}
+                              {bank.bankAccountName && <p>Titular: {bank.bankAccountName}</p>}
+                              {bank.bankAccountNumber && <p>Nº Conta: {bank.bankAccountNumber}</p>}
+                              {bank.bankNIB && <p>NIB: {bank.bankNIB}</p>}
+                            </div>
+                          )}
+                          {hasEmola && (
+                            <div>
+                              <p className="font-semibold text-gray-700 mb-1">e-Mola:</p>
+                              {bank.emolaNumber && <p>Número: {bank.emolaNumber}</p>}
+                              {bank.emolaName && <p>Nome: {bank.emolaName}</p>}
+                            </div>
+                          )}
+                        </div>
+                        <div className="flex flex-col items-center shrink-0">
+                          <QRCodeSVG value={paymentUrl} size={80} fgColor="#0a2463" />
+                          <p className="text-[8px] text-gray-400 mt-1">Digitalize para pagar</p>
+                        </div>
+                      </div>
+                    </div>
+                  ) : paymentUrl ? (
+                    <div className="mb-6 flex flex-col items-center">
+                      <QRCodeSVG value={paymentUrl} size={80} fgColor="#0a2463" />
+                      <p className="text-[8px] text-gray-400 mt-1">Digitalize para pagar</p>
+                    </div>
+                  ) : null;
+                })()}
+
                 {/* Notes */}
                 {previewQuotation.notes && (
                   <div className="mb-4">
