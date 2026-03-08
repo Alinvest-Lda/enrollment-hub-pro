@@ -33,6 +33,7 @@ export const enrollmentCSVColumns = [
   { key: "phone", label: "Telefone" },
   { key: "company", label: "Empresa" },
   { key: "nuit", label: "NUIT" },
+  { key: "province", label: "Província" },
   { key: "course_name", label: "Curso" },
   { key: "payment_plan", label: "Plano" },
   { key: "amount_due", label: "Valor Devido" },
