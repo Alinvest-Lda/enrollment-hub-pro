@@ -611,11 +611,9 @@ export default function QuotationsTab({ trainingRequests }: Props) {
               <div className="mx-auto w-full max-w-[210mm] bg-white text-black shadow-lg my-4 print:my-0 print:shadow-none" style={{ minHeight: "297mm", padding: "20mm 18mm" }}>
                 {/* Header with logo */}
                 <div className="flex items-start justify-between mb-8">
-                  <div className="flex items-center gap-3">
-                    <img src="/assets/logo.png" alt="ALINVEST" className="h-12 w-auto object-contain" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
-                    <div>
-                      <p className="text-[10px] text-gray-500 tracking-wider">Consultoria & Formação</p>
-                    </div>
+                  <div>
+                    <img src="/assets/logo.png" alt="ALINVEST" className="h-8 w-auto object-contain" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                    <p className="text-[9px] text-gray-500 tracking-wider mt-1">Consultoria & Formação</p>
                   </div>
                   <div className="text-right">
                     <h3 className="text-xl font-bold tracking-tight text-gray-900">COTAÇÃO</h3>
