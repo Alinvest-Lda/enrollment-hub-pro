@@ -128,19 +128,43 @@ const HeroSection = () => {
           animate={{ x: ["20%", "30%", "20%"], y: ["60%", "50%", "60%"], scale: [1, 1.4, 1] }}
           transition={{ duration: 12, repeat: Infinity, ease: "easeInOut", delay: 3 }}
         />
-        {/* Sweeping light beams */}
+        {/* Single subtle sweeping beam */}
         <motion.div
-          className="absolute w-[200%] h-[2px]"
-          style={{ background: "linear-gradient(90deg, transparent 0%, hsl(var(--accent) / 0.2) 50%, transparent 100%)", top: "40%", left: "-50%" }}
+          className="absolute w-[200%] h-[1px]"
+          style={{ background: "linear-gradient(90deg, transparent 0%, hsl(var(--accent) / 0.15) 50%, transparent 100%)", top: "50%", left: "-50%" }}
           animate={{ x: ["-50%", "50%"] }}
-          transition={{ duration: 6, repeat: Infinity, ease: "linear" }}
+          transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
         />
-        <motion.div
-          className="absolute w-[200%] h-[2px]"
-          style={{ background: "linear-gradient(90deg, transparent 0%, hsl(var(--primary-foreground) / 0.12) 50%, transparent 100%)", top: "65%", left: "50%" }}
-          animate={{ x: ["50%", "-50%"] }}
-          transition={{ duration: 9, repeat: Infinity, ease: "linear", delay: 2 }}
-        />
+
+        {/* Floating rings */}
+        {[
+          { x: "10%", y: "18%", size: 80, border: 2, delay: 0, dur: 8 },
+          { x: "75%", y: "25%", size: 60, border: 1.5, delay: 1.5, dur: 10 },
+          { x: "50%", y: "70%", size: 100, border: 2, delay: 3, dur: 9 },
+          { x: "85%", y: "65%", size: 50, border: 1, delay: 2, dur: 7 },
+          { x: "30%", y: "50%", size: 70, border: 1.5, delay: 4, dur: 11 },
+          { x: "65%", y: "10%", size: 45, border: 1, delay: 5, dur: 8.5 },
+        ].map((r, i) => (
+          <motion.div
+            key={`ring-${i}`}
+            className="absolute rounded-full"
+            style={{
+              left: r.x,
+              top: r.y,
+              width: r.size,
+              height: r.size,
+              border: `${r.border}px solid hsl(var(--primary-foreground) / 0.12)`,
+            }}
+            animate={{
+              y: [0, -25, 0],
+              x: [0, 15, 0],
+              rotate: [0, 180, 360],
+              opacity: [0.15, 0.4, 0.15],
+              scale: [1, 1.15, 1],
+            }}
+            transition={{ duration: r.dur, repeat: Infinity, ease: "easeInOut", delay: r.delay }}
+          />
+        ))}
       </div>
 
       {/* Random appearing/disappearing circles */}
@@ -149,20 +173,17 @@ const HeroSection = () => {
       {/* Floating particles */}
       <div className="absolute inset-0 pointer-events-none">
         {[
-          { x: "12%", y: "20%", size: 8, delay: 0, dur: 5 },
-          { x: "72%", y: "30%", size: 6, delay: 0.8, dur: 7 },
-          { x: "42%", y: "65%", size: 7, delay: 2, dur: 6 },
-          { x: "82%", y: "60%", size: 5, delay: 2.5, dur: 8 },
-          { x: "22%", y: "75%", size: 6, delay: 3.5, dur: 5.5 },
-          { x: "58%", y: "12%", size: 7, delay: 1.2, dur: 6.5 },
-          { x: "90%", y: "20%", size: 5, delay: 4, dur: 7 },
-          { x: "35%", y: "40%", size: 4, delay: 1.8, dur: 8 },
+          { x: "12%", y: "20%", size: 6, delay: 0, dur: 5 },
+          { x: "72%", y: "30%", size: 5, delay: 0.8, dur: 7 },
+          { x: "42%", y: "65%", size: 6, delay: 2, dur: 6 },
+          { x: "82%", y: "60%", size: 4, delay: 2.5, dur: 8 },
+          { x: "58%", y: "12%", size: 5, delay: 1.2, dur: 6.5 },
         ].map((p, i) => (
           <motion.div
             key={i}
-            className="absolute rounded-full bg-primary-foreground/30"
+            className="absolute rounded-full bg-primary-foreground/25"
             style={{ left: p.x, top: p.y, width: p.size, height: p.size }}
-            animate={{ y: [0, -30, 0], opacity: [0.2, 0.8, 0.2], scale: [1, 1.5, 1] }}
+            animate={{ y: [0, -25, 0], opacity: [0.15, 0.6, 0.15], scale: [1, 1.4, 1] }}
             transition={{ duration: p.dur, repeat: Infinity, ease: "easeInOut", delay: p.delay }}
           />
         ))}
