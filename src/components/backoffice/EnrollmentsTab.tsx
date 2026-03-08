@@ -135,7 +135,7 @@ export default function EnrollmentsTab({ enrollments, proofs, fetchProofs, updat
                 </TableHeader>
                 <TableBody>
                   {filtered.length === 0 ? (
-                    <TableRow><TableCell colSpan={6} className="text-center py-8 text-muted-foreground">Sem resultados</TableCell></TableRow>
+                    <TableRow><TableCell colSpan={7} className="text-center py-8 text-muted-foreground">Sem resultados</TableCell></TableRow>
                   ) : (
                     filtered.map((enrollment) => (
                       <TableRow key={enrollment.id}>
