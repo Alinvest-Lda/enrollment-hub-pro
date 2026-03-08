@@ -19,27 +19,29 @@ import ScrollToTop from "./components/ScrollToTop";
 const queryClient = new QueryClient();
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <ScrollToTop />
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/cursos" element={<AllCourses />} />
-          <Route path="/curso/:id" element={<CourseDetail />} />
-          <Route path="/sobre" element={<AboutUs />} />
-          <Route path="/pagamentos/:enrollmentId" element={<StudentPayments />} />
-          <Route path="/verificar-certificado" element={<VerifyCertificate />} />
-          <Route path="/cotacao/:quotationId" element={<QuotationPayment />} />
-          <Route path="/admin" element={<AdminLogin />} />
-          <Route path="/backoffice" element={<Backoffice />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
+  <HelmetProvider>
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <ScrollToTop />
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/cursos" element={<AllCourses />} />
+            <Route path="/curso/:id" element={<CourseDetail />} />
+            <Route path="/sobre" element={<AboutUs />} />
+            <Route path="/pagamentos/:enrollmentId" element={<StudentPayments />} />
+            <Route path="/verificar-certificado" element={<VerifyCertificate />} />
+            <Route path="/cotacao/:quotationId" element={<QuotationPayment />} />
+            <Route path="/admin" element={<AdminLogin />} />
+            <Route path="/backoffice" element={<Backoffice />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
+  </HelmetProvider>
 );
 
 export default App;
