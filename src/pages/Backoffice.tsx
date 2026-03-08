@@ -4,7 +4,7 @@ import {
   LogOut, Loader2, BookOpen, Users, RefreshCw, GraduationCap,
   BarChart3, Settings, Bell, UserPlus, FileSpreadsheet,
   ChevronLeft, ChevronRight, Menu, MessageSquare, FileText,
-  DollarSign, ExternalLink, Award, Handshake, PieChart,
+  DollarSign, ExternalLink, Award, Handshake, PieChart, Palette,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -26,9 +26,10 @@ import PartnersTab from "@/components/backoffice/PartnersTab";
 import ReportsTab from "@/components/backoffice/ReportsTab";
 import { useBackofficeData } from "@/hooks/use-backoffice-data";
 import RealtimeNotifications from "@/components/backoffice/RealtimeNotifications";
+import ContentManagerTab from "@/components/backoffice/ContentManagerTab";
 import { supabase } from "@/integrations/supabase/client";
 
-type Section = "dashboard" | "enrollments" | "courses" | "training" | "quotations" | "certificates" | "partners" | "reports" | "payment_plans" | "whatsapp" | "settings";
+type Section = "dashboard" | "enrollments" | "courses" | "training" | "quotations" | "certificates" | "partners" | "content" | "reports" | "payment_plans" | "whatsapp" | "settings";
 
 const navItems: { id: Section; label: string; icon: React.ElementType; shortLabel: string }[] = [
   { id: "dashboard", label: "Dashboard", icon: BarChart3, shortLabel: "Dash" },
@@ -38,6 +39,7 @@ const navItems: { id: Section; label: string; icon: React.ElementType; shortLabe
   { id: "quotations", label: "Cotações", icon: FileText, shortLabel: "Cotaç." },
   { id: "certificates", label: "Certificados", icon: Award, shortLabel: "Certif." },
   { id: "partners", label: "Parceiros", icon: Handshake, shortLabel: "Parceiros" },
+  { id: "content", label: "Conteúdos", icon: Palette, shortLabel: "Cont." },
   { id: "reports", label: "Relatórios", icon: PieChart, shortLabel: "Relat." },
   { id: "payment_plans", label: "Pagamentos", icon: DollarSign, shortLabel: "Pagam." },
   { id: "whatsapp", label: "WhatsApp", icon: MessageSquare, shortLabel: "WhatsApp" },
@@ -86,6 +88,7 @@ const Backoffice = () => {
     quotations: "Cotações",
     certificates: "Certificados",
     partners: "Parceiros",
+    content: "Conteúdos do Site",
     reports: "Relatórios",
     payment_plans: "Modelos de Pagamento",
     whatsapp: "Templates WhatsApp",
@@ -231,6 +234,7 @@ const Backoffice = () => {
                 {section === "training" && `${data.trainingRequests.length} pedidos`}
                 {section === "quotations" && "Gere cotações para formações"}
                 {section === "certificates" && "Gestão de templates e emissão"}
+                {section === "content" && "Testemunhos, FAQs, equipa, estatísticas"}
                 {section === "reports" && "Análise de dados e exportação"}
                 {section === "payment_plans" && "Configure modelos de pagamento"}
                 {section === "whatsapp" && "Templates de mensagens"}
@@ -325,6 +329,7 @@ const Backoffice = () => {
               )}
               {section === "certificates" && <CertificatesTab />}
               {section === "partners" && <PartnersTab />}
+              {section === "content" && <ContentManagerTab />}
               {section === "reports" && (
                 <ReportsTab enrollments={data.enrollments} trainingRequests={data.trainingRequests} courses={data.courses} />
               )}

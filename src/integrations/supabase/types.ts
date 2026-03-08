@@ -284,6 +284,72 @@ export type Database = {
         }
         Relationships: []
       }
+      faqs: {
+        Row: {
+          answer: string
+          created_at: string
+          display_order: number
+          id: string
+          is_active: boolean
+          question: string
+          updated_at: string
+        }
+        Insert: {
+          answer: string
+          created_at?: string
+          display_order?: number
+          id?: string
+          is_active?: boolean
+          question: string
+          updated_at?: string
+        }
+        Update: {
+          answer?: string
+          created_at?: string
+          display_order?: number
+          id?: string
+          is_active?: boolean
+          question?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      hero_stats: {
+        Row: {
+          created_at: string
+          display_order: number
+          icon: string
+          id: string
+          is_active: boolean
+          label: string
+          suffix: string
+          updated_at: string
+          value: number
+        }
+        Insert: {
+          created_at?: string
+          display_order?: number
+          icon?: string
+          id?: string
+          is_active?: boolean
+          label: string
+          suffix?: string
+          updated_at?: string
+          value?: number
+        }
+        Update: {
+          created_at?: string
+          display_order?: number
+          icon?: string
+          id?: string
+          is_active?: boolean
+          label?: string
+          suffix?: string
+          updated_at?: string
+          value?: number
+        }
+        Relationships: []
+      }
       installments: {
         Row: {
           admin_notes: string | null
@@ -563,6 +629,84 @@ export type Database = {
           label?: string
           updated_at?: string
           value?: string
+        }
+        Relationships: []
+      }
+      team_members: {
+        Row: {
+          bio: string
+          created_at: string
+          display_order: number
+          id: string
+          is_active: boolean
+          name: string
+          photo_url: string | null
+          role: string
+          updated_at: string
+        }
+        Insert: {
+          bio?: string
+          created_at?: string
+          display_order?: number
+          id?: string
+          is_active?: boolean
+          name: string
+          photo_url?: string | null
+          role?: string
+          updated_at?: string
+        }
+        Update: {
+          bio?: string
+          created_at?: string
+          display_order?: number
+          id?: string
+          is_active?: boolean
+          name?: string
+          photo_url?: string | null
+          role?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      testimonials: {
+        Row: {
+          course: string
+          created_at: string
+          display_order: number
+          id: string
+          initials: string
+          is_active: boolean
+          name: string
+          rating: number
+          role: string
+          text: string
+          updated_at: string
+        }
+        Insert: {
+          course?: string
+          created_at?: string
+          display_order?: number
+          id?: string
+          initials?: string
+          is_active?: boolean
+          name: string
+          rating?: number
+          role?: string
+          text?: string
+          updated_at?: string
+        }
+        Update: {
+          course?: string
+          created_at?: string
+          display_order?: number
+          id?: string
+          initials?: string
+          is_active?: boolean
+          name?: string
+          rating?: number
+          role?: string
+          text?: string
+          updated_at?: string
         }
         Relationships: []
       }

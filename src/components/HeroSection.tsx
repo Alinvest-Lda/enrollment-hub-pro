@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, GraduationCap, Shield, CheckCircle, Users, BookOpen, Award, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useSystemSettings, getWhatsAppLinkFromNumber } from "@/hooks/use-system-settings";
+import { useHeroStats } from "@/hooks/use-site-content";
 import heroBg from "@/assets/hero-bg.jpg";
 
 function AnimatedCounter({ target, suffix = "" }: { target: number; suffix?: string }) {
@@ -84,8 +85,11 @@ function RandomCircles() {
   );
 }
 
+const iconMap: Record<string, React.ElementType> = { Users, BookOpen, Award, Shield };
+
 const HeroSection = () => {
   const { data: settings } = useSystemSettings();
+  const { data: heroStats = [] } = useHeroStats();
   const whatsappNumber = settings?.whatsappNumber || "";
   return (
     <section className="relative min-h-[85vh] sm:min-h-[92vh] flex items-center overflow-hidden">
@@ -234,29 +238,32 @@ const HeroSection = () => {
                 {/* Stats */}
                 <div className="p-6">
                   <div className="grid grid-cols-2 gap-4 mb-6">
-                    {[
-                      { value: 500, suffix: "+", label: "Profissionais Formados", icon: Users },
-                      { value: 25, suffix: "+", label: "Cursos Disponíveis", icon: BookOpen },
-                      { value: 98, suffix: "%", label: "Taxa de Aprovação", icon: Award },
-                      { value: 5, suffix: "+", label: "Anos de Experiência", icon: Shield },
-                    ].map((stat, i) => (
-                      <motion.div
-                        key={i}
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ delay: 0.8 + i * 0.1 }}
-                        whileHover={{ scale: 1.05, borderColor: "hsl(var(--accent) / 0.3)" }}
-                        className="bg-primary-foreground/5 rounded-xl p-3 text-center border border-primary-foreground/5 transition-colors cursor-default"
-                      >
-                        <stat.icon className="w-4 h-4 text-accent mx-auto mb-1.5" />
-                        <p className="text-xl font-extrabold text-primary-foreground font-heading">
-                          <AnimatedCounter target={stat.value} suffix={stat.suffix} />
-                        </p>
-                        <p className="text-[9px] text-primary-foreground/50 font-medium mt-0.5 leading-tight">
-                          {stat.label}
-                        </p>
-                      </motion.div>
-                    ))}
+                    {(heroStats.length > 0 ? heroStats : [
+                      { id: "1", value: 500, suffix: "+", label: "Profissionais Formados", icon: "Users", display_order: 1, is_active: true },
+                      { id: "2", value: 25, suffix: "+", label: "Cursos Disponíveis", icon: "BookOpen", display_order: 2, is_active: true },
+                      { id: "3", value: 98, suffix: "%", label: "Taxa de Aprovação", icon: "Award", display_order: 3, is_active: true },
+                      { id: "4", value: 5, suffix: "+", label: "Anos de Experiência", icon: "Shield", display_order: 4, is_active: true },
+                    ]).map((stat, i) => {
+                      const StatIcon = iconMap[stat.icon] || Users;
+                      return (
+                        <motion.div
+                          key={stat.id}
+                          initial={{ opacity: 0, scale: 0.8 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          transition={{ delay: 0.8 + i * 0.1 }}
+                          whileHover={{ scale: 1.05, borderColor: "hsl(var(--accent) / 0.3)" }}
+                          className="bg-primary-foreground/5 rounded-xl p-3 text-center border border-primary-foreground/5 transition-colors cursor-default"
+                        >
+                          <StatIcon className="w-4 h-4 text-accent mx-auto mb-1.5" />
+                          <p className="text-xl font-extrabold text-primary-foreground font-heading">
+                            <AnimatedCounter target={stat.value} suffix={stat.suffix} />
+                          </p>
+                          <p className="text-[9px] text-primary-foreground/50 font-medium mt-0.5 leading-tight">
+                            {stat.label}
+                          </p>
+                        </motion.div>
+                      );
+                    })}
                   </div>
 
                   {/* CTA inside card */}

@@ -1,43 +1,30 @@
 import { motion } from "framer-motion";
 import { Star, Quote } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
-
-const testimonials = [
-  {
-    name: "Joana Macuácua",
-    role: "Gestora de Qualidade — Cervejas de Moçambique",
-    course: "ISO 9001 – Implementação",
-    text: "A formação da ALINVEST foi transformadora. Consegui implementar o SGQ na minha empresa em menos de 3 meses após o curso. Os formadores são excepcionais.",
-    rating: 5,
-    initials: "JM",
-  },
-  {
-    name: "Fernando Sitoe",
-    role: "Coordenador HSE — Sasol Moçambique",
-    course: "ISO 45001 – Saúde e Segurança",
-    text: "O nível de profundidade e os exercícios práticos superaram as minhas expectativas. Recomendo a todos os profissionais de HSEQ em Moçambique.",
-    rating: 5,
-    initials: "FS",
-  },
-  {
-    name: "Marta Cossa",
-    role: "Directora Executiva — TechStart Moz",
-    course: "Gestão de Projectos",
-    text: "As metodologias ágeis que aprendi aplicam-se directamente ao dia-a-dia da minha startup. Investimento que valeu cada metical.",
-    rating: 5,
-    initials: "MC",
-  },
-  {
-    name: "Alberto Mondlane",
-    role: "Auditor Interno — Banco BCI",
-    course: "Auditoria Interna – ISO 19011",
-    text: "A certificação que obtive abriu portas para novas oportunidades. Os templates e ferramentas fornecidos são de uso diário no meu trabalho.",
-    rating: 4,
-    initials: "AM",
-  },
-];
+import { useTestimonials } from "@/hooks/use-site-content";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const TestimonialsSection = () => {
+  const { data: testimonials = [], isLoading } = useTestimonials();
+
+  if (isLoading) {
+    return (
+      <section className="py-20 bg-muted/30">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-14">
+            <Skeleton className="h-8 w-64 mx-auto mb-4" />
+            <Skeleton className="h-5 w-96 mx-auto" />
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto">
+            {[1, 2].map((i) => <Skeleton key={i} className="h-52 rounded-xl" />)}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (testimonials.length === 0) return null;
+
   return (
     <section className="py-20 bg-muted/30">
       <div className="container mx-auto px-4">
@@ -69,7 +56,7 @@ const TestimonialsSection = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto">
           {testimonials.map((t, i) => (
             <motion.div
-              key={t.name}
+              key={t.id}
               initial={{ opacity: 0, y: 30, scale: 0.96 }}
               whileInView={{ opacity: 1, y: 0, scale: 1 }}
               viewport={{ once: true, margin: "-30px" }}
@@ -110,7 +97,7 @@ const TestimonialsSection = () => {
                   </div>
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-heading font-bold text-sm">
-                      {t.initials}
+                      {t.initials || t.name.charAt(0)}
                     </div>
                     <div>
                       <p className="font-heading font-bold text-sm">{t.name}</p>
