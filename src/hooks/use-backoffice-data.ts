@@ -148,6 +148,44 @@ export function useBackofficeData() {
     } else {
       setEnrollments((prev) => prev.map((e) => (e.id === id ? { ...e, status } : e)));
       toast({ title: "Actualizado", description: `Estado alterado para ${statusConfig[status].label}.` });
+
+      // Send WhatsApp notification on approval
+      if (status === "approved") {
+        const enrollment = enrollments.find((e) => e.id === id);
+        if (enrollment) {
+          sendWhatsAppNotification(enrollment, status).catch((err) =>
+            console.error("WhatsApp notification error:", err)
+          );
+        }
+      }
+    }
+  };
+
+  const sendWhatsAppNotification = async (enrollment: Enrollment, status: PaymentStatus) => {
+    try {
+      const { data: session } = await supabase.auth.getSession();
+      if (!session?.session?.access_token) return;
+
+      const message = status === "approved"
+        ? `Olá ${enrollment.full_name}! 🎉\n\nA sua inscrição no curso *${enrollment.course_name}* foi *confirmada* com sucesso!\n\nValor: ${enrollment.amount_due} MZN\nRef: ${enrollment.id.substring(0, 8).toUpperCase()}\n\nObrigado por escolher a ALINVEST Academy! Entraremos em contacto com mais detalhes sobre o início do curso.`
+        : `Olá ${enrollment.full_name},\n\nEstado da sua inscrição no curso ${enrollment.course_name}: ${statusConfig[status].label}.\n\nRef: ${enrollment.id.substring(0, 8).toUpperCase()}`;
+
+      const { data, error } = await supabase.functions.invoke("whatsapp-send", {
+        body: {
+          to: enrollment.phone,
+          textMessage: message,
+        },
+      });
+
+      if (error) throw error;
+      if (data?.success) {
+        toast({ title: "WhatsApp enviado", description: `Mensagem enviada para ${enrollment.full_name}.` });
+      } else {
+        toast({ title: "WhatsApp", description: data?.error || "Não foi possível enviar.", variant: "destructive" });
+      }
+    } catch (err: any) {
+      console.error("WhatsApp send error:", err);
+      toast({ title: "WhatsApp", description: "Falha ao enviar notificação. Verifique as configurações.", variant: "destructive" });
     }
   };
 
