@@ -32,6 +32,7 @@ export default function EnrollmentsTab({ enrollments, proofs, fetchProofs, updat
   const [activeTab, setActiveTab] = useState("all");
   const [noteDraft, setNoteDraft] = useState<Record<string, string>>({});
   const [courseFilter, setCourseFilter] = useState("all");
+  const [provinceFilter, setProvinceFilter] = useState("all");
   const [dateFilter, setDateFilter] = useState("all");
   const [showFilters, setShowFilters] = useState(false);
 
