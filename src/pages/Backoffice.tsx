@@ -237,7 +237,6 @@ const Backoffice = () => {
                 {section === "reports" && "Análise de dados e exportação"}
                 {section === "payment_plans" && "Configure modelos de pagamento"}
                 {section === "whatsapp" && "Templates de mensagens"}
-                {section === "settings" && "Gerencie a plataforma"}
               </p>
             </div>
           </div>
