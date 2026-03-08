@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import {
   LogOut, Loader2, BookOpen, Users, RefreshCw, GraduationCap,
   BarChart3, Settings, Bell, UserPlus, FileSpreadsheet,
-  ChevronLeft, ChevronRight, Menu,
+  ChevronLeft, ChevronRight, Menu, MessageSquare,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -17,17 +17,19 @@ import DashboardTab from "@/components/backoffice/DashboardTab";
 import ManualEnrollmentForm from "@/components/backoffice/ManualEnrollmentForm";
 import CSVImportDialog from "@/components/backoffice/CSVImportDialog";
 import SettingsTab from "@/components/backoffice/SettingsTab";
+import WhatsAppTemplatesTab from "@/components/backoffice/WhatsAppTemplatesTab";
 import { useBackofficeData } from "@/hooks/use-backoffice-data";
 import RealtimeNotifications from "@/components/backoffice/RealtimeNotifications";
 import { supabase } from "@/integrations/supabase/client";
 
-type Section = "dashboard" | "enrollments" | "courses" | "training" | "settings";
+type Section = "dashboard" | "enrollments" | "courses" | "training" | "whatsapp" | "settings";
 
 const navItems: { id: Section; label: string; icon: React.ElementType; shortLabel: string }[] = [
   { id: "dashboard", label: "Dashboard", icon: BarChart3, shortLabel: "Dash" },
   { id: "enrollments", label: "Inscrições", icon: Users, shortLabel: "Inscr." },
   { id: "courses", label: "Cursos", icon: BookOpen, shortLabel: "Cursos" },
   { id: "training", label: "Formações", icon: GraduationCap, shortLabel: "Form." },
+  { id: "whatsapp", label: "WhatsApp", icon: MessageSquare, shortLabel: "WhatsApp" },
   { id: "settings", label: "Configurações", icon: Settings, shortLabel: "Config." },
 ];
 
@@ -70,6 +72,7 @@ const Backoffice = () => {
     enrollments: "Inscrições",
     courses: "Cursos",
     training: "Pedidos de Formação",
+    whatsapp: "Templates WhatsApp",
     settings: "Configurações",
   };
 
@@ -290,6 +293,7 @@ const Backoffice = () => {
                   deleteRequest={data.deleteTrainingRequest}
                 />
               )}
+              {section === "whatsapp" && <WhatsAppTemplatesTab />}
               {section === "settings" && <SettingsTab />}
             </motion.div>
           )}
