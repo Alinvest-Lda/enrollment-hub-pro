@@ -256,6 +256,28 @@ export default function QuotationsTab({ trainingRequests }: Props) {
     window.print();
   };
 
+  const handleDownloadPDF = (q: Quotation) => {
+    downloadQuotationPDF(q as any);
+    toast({ title: "PDF descarregado!" });
+  };
+
+  const getPaymentUrl = (q: Quotation) => `${window.location.origin}/cotacao/${q.id}`;
+
+  const handleShareWhatsApp = (q: Quotation) => {
+    const paymentUrl = getPaymentUrl(q);
+    const msg = getQuotationWhatsAppMessage(q as any, paymentUrl);
+    const url = `https://wa.me/${q.client_phone.replace(/\D/g, "")}?text=${encodeURIComponent(msg)}`;
+    window.open(url, "_blank");
+  };
+
+  const handleShareEmail = (q: Quotation) => {
+    const paymentUrl = getPaymentUrl(q);
+    const subject = getQuotationEmailSubject(q);
+    const body = getQuotationEmailBody(q as any, paymentUrl);
+    const mailto = `mailto:${encodeURIComponent(q.client_email)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    window.open(mailto, "_blank");
+  };
+
   const { subtotal: formSubtotal, total: formTotal } = calculateTotals(form.items, form.discount_percent, form.tax_percent);
 
   const filtered = quotations.filter((q) => {
