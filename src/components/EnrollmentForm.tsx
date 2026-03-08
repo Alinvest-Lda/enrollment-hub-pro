@@ -100,7 +100,8 @@ const EnrollmentForm = ({ course }: EnrollmentFormProps) => {
         body.append("email", formData.email);
         body.append("phone", formData.phone);
         body.append("company", formData.company || "");
-        body.append("nuit", formData.nuit || "");
+        body.append("nuit", formData.nuit);
+        body.append("province", formData.province);
         body.append("message", formData.message || "");
         body.append("courseId", course.id);
         body.append("courseName", course.title);
