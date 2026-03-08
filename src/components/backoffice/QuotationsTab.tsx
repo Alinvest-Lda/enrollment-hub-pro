@@ -94,6 +94,7 @@ export default function QuotationsTab({ trainingRequests }: Props) {
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewQuotation, setPreviewQuotation] = useState<Quotation | null>(null);
   const [search, setSearch] = useState("");
+  const { data: sysSettings } = useSystemSettings();
 
   // Form state
   const [form, setForm] = useState({
