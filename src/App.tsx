@@ -13,6 +13,7 @@ import StudentPayments from "./pages/StudentPayments";
 import VerifyCertificate from "./pages/VerifyCertificate";
 import QuotationPayment from "./pages/QuotationPayment";
 import NotFound from "./pages/NotFound";
+import ScrollToTop from "./components/ScrollToTop";
 
 const queryClient = new QueryClient();
 
@@ -22,6 +23,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
+        <ScrollToTop />
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/cursos" element={<AllCourses />} />
