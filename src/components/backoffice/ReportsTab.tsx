@@ -365,6 +365,10 @@ export default function ReportsTab({ enrollments, trainingRequests, courses }: P
       </div>
 
       {/* Charts */}
+      <CollapsibleSection
+        title="Gráficos de Análise"
+        icon={<BarChart3 className="w-5 h-5 text-accent" />}
+      >
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Revenue timeline */}
         <Card className="lg:col-span-2">
