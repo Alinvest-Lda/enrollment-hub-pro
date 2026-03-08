@@ -108,25 +108,38 @@ const HeroSection = () => {
       {/* Animated floating orbs */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <motion.div
-          className="absolute w-[500px] h-[500px] rounded-full"
-          style={{ background: "radial-gradient(circle, hsl(var(--accent) / 0.15) 0%, transparent 70%)" }}
-          initial={{ x: "60%", y: "-20%" }}
-          animate={{ x: "65%", y: "-15%", scale: [1, 1.15, 1] }}
-          transition={{ duration: 12, repeat: Infinity, repeatType: "reverse", ease: "easeInOut" }}
+          className="absolute w-[600px] h-[600px] rounded-full"
+          style={{ background: "radial-gradient(circle, hsl(var(--accent) / 0.18) 0%, transparent 65%)" }}
+          initial={{ x: "55%", y: "-25%" }}
+          animate={{ x: ["55%", "62%", "55%"], y: ["-25%", "-18%", "-25%"], scale: [1, 1.2, 1] }}
+          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
         />
         <motion.div
-          className="absolute w-[350px] h-[350px] rounded-full"
-          style={{ background: "radial-gradient(circle, hsl(var(--primary) / 0.12) 0%, transparent 70%)" }}
-          initial={{ x: "-10%", y: "60%" }}
-          animate={{ x: "-5%", y: "55%", scale: [1, 1.2, 1] }}
-          transition={{ duration: 15, repeat: Infinity, repeatType: "reverse", ease: "easeInOut", delay: 2 }}
+          className="absolute w-[450px] h-[450px] rounded-full"
+          style={{ background: "radial-gradient(circle, hsl(var(--accent) / 0.12) 0%, transparent 65%)" }}
+          initial={{ x: "-15%", y: "55%" }}
+          animate={{ x: ["-15%", "-8%", "-15%"], y: ["55%", "48%", "55%"], scale: [1, 1.25, 1] }}
+          transition={{ duration: 14, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
         />
         <motion.div
-          className="absolute w-[200px] h-[200px] rounded-full"
-          style={{ background: "radial-gradient(circle, hsl(var(--accent) / 0.1) 0%, transparent 70%)" }}
-          initial={{ x: "30%", y: "70%" }}
-          animate={{ x: "35%", y: "65%", scale: [1, 1.3, 1] }}
-          transition={{ duration: 10, repeat: Infinity, repeatType: "reverse", ease: "easeInOut", delay: 4 }}
+          className="absolute w-[300px] h-[300px] rounded-full"
+          style={{ background: "radial-gradient(circle, hsl(var(--navy-light) / 0.2) 0%, transparent 65%)" }}
+          initial={{ x: "25%", y: "65%" }}
+          animate={{ x: ["25%", "32%", "25%"], y: ["65%", "58%", "65%"], scale: [1, 1.35, 1] }}
+          transition={{ duration: 12, repeat: Infinity, ease: "easeInOut", delay: 3 }}
+        />
+        {/* Sweeping light beam */}
+        <motion.div
+          className="absolute w-[200%] h-[1px]"
+          style={{ background: "linear-gradient(90deg, transparent 0%, hsl(var(--accent) / 0.08) 50%, transparent 100%)", top: "40%", left: "-50%" }}
+          animate={{ x: ["-50%", "50%"] }}
+          transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+        />
+        <motion.div
+          className="absolute w-[200%] h-[1px]"
+          style={{ background: "linear-gradient(90deg, transparent 0%, hsl(var(--primary-foreground) / 0.05) 50%, transparent 100%)", top: "65%", left: "50%" }}
+          animate={{ x: ["50%", "-50%"] }}
+          transition={{ duration: 11, repeat: Infinity, ease: "linear", delay: 3 }}
         />
       </div>
 
@@ -221,7 +234,7 @@ const HeroSection = () => {
                 animate={{ opacity: [0.5, 0.8, 0.5] }}
                 transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
               />
-              <div className="relative bg-card rounded-2xl border border-border/60 overflow-hidden shadow-card">
+              <div className="relative bg-card/80 backdrop-blur-lg rounded-2xl border border-primary-foreground/15 overflow-hidden shadow-card">
                 {/* Featured highlight banner */}
                 <div className="bg-navy-gradient px-6 py-3 border-b border-primary-foreground/10">
                   <div className="flex items-center gap-2 justify-center">
