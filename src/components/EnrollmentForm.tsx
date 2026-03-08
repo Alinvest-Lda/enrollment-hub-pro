@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { motion, AnimatePresence } from "framer-motion";
-import { CheckCircle, Send, MessageCircle, User, Phone, Mail, Building, ArrowLeft, CreditCard, Edit2 } from "lucide-react";
+import { CheckCircle, Send, MessageCircle, User, Phone, Mail, Building, ArrowLeft, CreditCard, Edit2, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
