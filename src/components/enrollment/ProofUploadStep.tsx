@@ -47,8 +47,8 @@ const ProofUploadStep = ({
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const paymentInstructions: Record<string, { label: string; details: string } | null> = {
-    bank_transfer: settings?.bankAccount
-      ? { label: "Dados Bancários", details: `${settings.bankName || "Banco"} — Conta: ${settings.bankAccount}${settings.bankNIB ? ` | NIB: ${settings.bankNIB}` : ""}` }
+    bank_transfer: settings?.bankAccountNumber
+      ? { label: "Dados Bancários", details: `${settings.bankName || "Banco"} — Conta: ${settings.bankAccountNumber}${settings.bankNIB ? ` | NIB: ${settings.bankNIB}` : ""}` }
       : null,
     emola: settings?.emolaNumber
       ? { label: "Dados e-Mola", details: `Número e-Mola: ${settings.emolaNumber}${settings.emolaName ? ` | Nome: ${settings.emolaName}` : ""}` }
