@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { WHATSAPP_LINK } from "@/lib/courses-data";
+import { useSystemSettings, getWhatsAppUrl } from "@/hooks/use-system-settings";
 
 const values = [
   { icon: Award, title: "Excelência", description: "Compromisso com os mais altos padrões de qualidade em formação e consultoria." },
