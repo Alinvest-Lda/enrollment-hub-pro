@@ -269,8 +269,8 @@ export default function QuotationsTab({ trainingRequests }: Props) {
     window.print();
   };
 
-  const handleDownloadPDF = (q: Quotation) => {
-    downloadQuotationPDF(q as any);
+  const handleDownloadPDF = async (q: Quotation) => {
+    await downloadQuotationPDF(q as any);
     toast({ title: "PDF descarregado!" });
   };
 
