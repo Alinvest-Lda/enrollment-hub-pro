@@ -316,6 +316,7 @@ const Backoffice = () => {
               {section === "quotations" && (
                 <QuotationsTab trainingRequests={data.trainingRequests} />
               )}
+              {section === "certificates" && <CertificatesTab />}
               {section === "payment_plans" && <PaymentPlansTab />}
               {section === "whatsapp" && <WhatsAppTemplatesTab />}
               {section === "settings" && <SettingsTab />}
