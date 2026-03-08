@@ -14,6 +14,7 @@ import EnrollmentForm from "@/components/EnrollmentForm";
 const CourseDetail = () => {
   const { id } = useParams<{ id: string }>();
   const { course, isLoading } = useCourse(id);
+  const { data: settings } = useSystemSettings();
 
   if (isLoading) {
     return (
