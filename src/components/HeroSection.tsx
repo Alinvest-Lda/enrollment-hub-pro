@@ -23,14 +23,80 @@ function AnimatedCounter({ target, suffix = "" }: { target: number; suffix?: str
 const HeroSection = () => {
   return (
     <section className="relative min-h-[92vh] flex items-center overflow-hidden">
-      <img src={heroBg} alt="Formação profissional ALINVEST" className="absolute inset-0 w-full h-full object-cover" loading="eager" />
+      {/* Background with subtle zoom animation */}
+      <motion.img
+        src={heroBg}
+        alt="Formação profissional ALINVEST"
+        className="absolute inset-0 w-full h-full object-cover"
+        loading="eager"
+        initial={{ scale: 1.1 }}
+        animate={{ scale: 1 }}
+        transition={{ duration: 8, ease: "easeOut" }}
+      />
       <div className="absolute inset-0 bg-hero-overlay" />
 
-      {/* Decorative circles */}
-      <div className="absolute top-0 right-0 w-1/2 h-full opacity-[0.04] pointer-events-none">
-        <div className="absolute top-20 right-20 w-72 h-72 rounded-full border-2 border-primary-foreground" />
-        <div className="absolute bottom-32 right-40 w-48 h-48 rounded-full border border-primary-foreground" />
-        <div className="absolute top-1/2 right-10 w-96 h-96 rounded-full border border-primary-foreground" />
+      {/* Animated floating orbs */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <motion.div
+          className="absolute w-[500px] h-[500px] rounded-full"
+          style={{ background: "radial-gradient(circle, hsl(var(--accent) / 0.08) 0%, transparent 70%)" }}
+          initial={{ x: "60%", y: "-20%" }}
+          animate={{ x: "65%", y: "-15%", scale: [1, 1.15, 1] }}
+          transition={{ duration: 12, repeat: Infinity, repeatType: "reverse", ease: "easeInOut" }}
+        />
+        <motion.div
+          className="absolute w-[350px] h-[350px] rounded-full"
+          style={{ background: "radial-gradient(circle, hsl(var(--primary) / 0.06) 0%, transparent 70%)" }}
+          initial={{ x: "-10%", y: "60%" }}
+          animate={{ x: "-5%", y: "55%", scale: [1, 1.2, 1] }}
+          transition={{ duration: 15, repeat: Infinity, repeatType: "reverse", ease: "easeInOut", delay: 2 }}
+        />
+        <motion.div
+          className="absolute w-[200px] h-[200px] rounded-full"
+          style={{ background: "radial-gradient(circle, hsl(var(--accent) / 0.05) 0%, transparent 70%)" }}
+          initial={{ x: "30%", y: "70%" }}
+          animate={{ x: "35%", y: "65%", scale: [1, 1.3, 1] }}
+          transition={{ duration: 10, repeat: Infinity, repeatType: "reverse", ease: "easeInOut", delay: 4 }}
+        />
+      </div>
+
+      {/* Animated decorative circles */}
+      <div className="absolute top-0 right-0 w-1/2 h-full pointer-events-none">
+        <motion.div
+          className="absolute top-20 right-20 w-72 h-72 rounded-full border-2 border-primary-foreground/[0.04]"
+          animate={{ scale: [1, 1.05, 1], rotate: [0, 3, 0] }}
+          transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
+        />
+        <motion.div
+          className="absolute bottom-32 right-40 w-48 h-48 rounded-full border border-primary-foreground/[0.04]"
+          animate={{ scale: [1, 1.08, 1], rotate: [0, -5, 0] }}
+          transition={{ duration: 16, repeat: Infinity, ease: "easeInOut", delay: 3 }}
+        />
+        <motion.div
+          className="absolute top-1/2 right-10 w-96 h-96 rounded-full border border-primary-foreground/[0.03]"
+          animate={{ scale: [1, 1.03, 1], rotate: [0, 2, 0] }}
+          transition={{ duration: 24, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+        />
+      </div>
+
+      {/* Floating particles */}
+      <div className="absolute inset-0 pointer-events-none">
+        {[
+          { x: "15%", y: "25%", size: 3, delay: 0, dur: 6 },
+          { x: "75%", y: "35%", size: 2, delay: 1, dur: 8 },
+          { x: "45%", y: "70%", size: 2.5, delay: 2.5, dur: 7 },
+          { x: "85%", y: "65%", size: 2, delay: 3, dur: 9 },
+          { x: "25%", y: "80%", size: 1.5, delay: 4, dur: 6.5 },
+          { x: "55%", y: "15%", size: 2, delay: 1.5, dur: 7.5 },
+        ].map((p, i) => (
+          <motion.div
+            key={i}
+            className="absolute rounded-full bg-primary-foreground/[0.08]"
+            style={{ left: p.x, top: p.y, width: p.size, height: p.size }}
+            animate={{ y: [0, -20, 0], opacity: [0.3, 0.7, 0.3] }}
+            transition={{ duration: p.dur, repeat: Infinity, ease: "easeInOut", delay: p.delay }}
+          />
+        ))}
       </div>
 
       <div className="container mx-auto px-4 relative z-10 py-16 lg:py-20">
@@ -95,12 +161,22 @@ const HeroSection = () => {
             className="hidden lg:flex flex-col items-center gap-6"
           >
             <div className="relative w-full max-w-sm">
-              <div className="absolute -inset-1 rounded-2xl bg-gradient-to-br from-accent/30 to-primary/20 blur-xl" />
+              {/* Animated glow behind card */}
+              <motion.div
+                className="absolute -inset-1 rounded-2xl bg-gradient-to-br from-accent/30 to-primary/20 blur-xl"
+                animate={{ opacity: [0.5, 0.8, 0.5] }}
+                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+              />
               <div className="relative bg-primary-foreground/10 backdrop-blur-xl rounded-2xl border border-primary-foreground/10 overflow-hidden">
                 {/* Featured highlight banner */}
                 <div className="bg-accent/20 backdrop-blur-sm px-6 py-3 border-b border-primary-foreground/5">
                   <div className="flex items-center gap-2 justify-center">
-                    <Sparkles className="w-4 h-4 text-accent" />
+                    <motion.div
+                      animate={{ rotate: [0, 15, -15, 0] }}
+                      transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+                    >
+                      <Sparkles className="w-4 h-4 text-accent" />
+                    </motion.div>
                     <span className="text-primary-foreground text-sm font-semibold">Porquê a ALINVEST?</span>
                   </div>
                 </div>
@@ -119,7 +195,8 @@ const HeroSection = () => {
                         initial={{ opacity: 0, scale: 0.8 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ delay: 0.8 + i * 0.1 }}
-                        className="bg-primary-foreground/5 rounded-xl p-3 text-center border border-primary-foreground/5 hover:border-accent/20 transition-colors"
+                        whileHover={{ scale: 1.05, borderColor: "hsl(var(--accent) / 0.3)" }}
+                        className="bg-primary-foreground/5 rounded-xl p-3 text-center border border-primary-foreground/5 transition-colors cursor-default"
                       >
                         <stat.icon className="w-4 h-4 text-accent mx-auto mb-1.5" />
                         <p className="text-xl font-extrabold text-primary-foreground font-heading">
