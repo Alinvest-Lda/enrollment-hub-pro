@@ -21,50 +21,23 @@ const CourseCard = ({ course, index }: CourseCardProps) => {
       whileHover={{ y: -8, transition: { duration: 0.25 } }}
     >
       <Card className="group overflow-hidden border-border bg-card hover:shadow-card-hover transition-all duration-300 h-full flex flex-col rounded-xl relative">
-        {/* Course Image */}
-        {course.image ? (
-          <div className="relative h-48 overflow-hidden">
-            <img
-              src={course.image}
-              alt={course.title}
-              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-              loading="lazy"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-card via-transparent to-transparent opacity-60" />
-            <Badge variant="secondary" className="absolute top-3 left-3 text-xs font-semibold uppercase tracking-wide backdrop-blur-md bg-card/80 border-0">
-              {course.category}
-            </Badge>
-            <motion.div
-              className="absolute top-3 right-3 bg-card/90 backdrop-blur-md text-accent font-heading font-extrabold text-lg px-3.5 py-1.5 rounded-xl shadow-sm"
-              initial={{ opacity: 0, x: 10 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.4, delay: index * 0.08 + 0.2 }}
-            >
-              {formatCurrency(course.price)}
-            </motion.div>
-          </div>
-        ) : (
-          <>
-            <div className="h-1.5 bg-gradient-to-r from-accent via-brand-red-light to-primary rounded-t-xl" />
-            <div className="flex items-start justify-between p-5 pb-0 sm:p-6 sm:pb-0">
-              <Badge variant="secondary" className="text-xs font-semibold uppercase tracking-wide">
-                {course.category}
-              </Badge>
-              <motion.span
-                className="text-accent font-heading font-extrabold text-xl"
-                initial={{ opacity: 0, x: 10 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: index * 0.08 + 0.2 }}
-              >
-                {formatCurrency(course.price)}
-              </motion.span>
-            </div>
-          </>
-        )}
+        <div className="h-1.5 bg-gradient-to-r from-accent via-brand-red-light to-primary rounded-t-xl" />
+        <div className="flex items-start justify-between p-5 pb-0 sm:p-6 sm:pb-0">
+          <Badge variant="secondary" className="text-xs font-semibold uppercase tracking-wide">
+            {course.category}
+          </Badge>
+          <motion.span
+            className="text-accent font-heading font-extrabold text-xl"
+            initial={{ opacity: 0, x: 10 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.4, delay: index * 0.08 + 0.2 }}
+          >
+            {formatCurrency(course.price)}
+          </motion.span>
+        </div>
 
-        <CardContent className={`flex flex-col flex-1 ${course.image ? 'p-5 sm:p-6' : 'p-5 pt-4 sm:p-6 sm:pt-4'}`}>
+        <CardContent className="flex flex-col flex-1 p-5 pt-4 sm:p-6 sm:pt-4">
           <h3 className="font-heading text-base sm:text-lg font-bold text-foreground mb-2.5 leading-snug group-hover:text-accent transition-colors duration-300 line-clamp-2">
             {course.title}
           </h3>

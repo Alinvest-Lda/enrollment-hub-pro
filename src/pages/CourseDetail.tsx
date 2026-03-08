@@ -62,18 +62,12 @@ const CourseDetail = () => {
         title={course.title}
         description={`${course.description.substring(0, 150)}. Inscreva-se online na ALINVEST.`}
         path={`/curso/${id}`}
-        ogImage={course.image || undefined}
+        ogImage={undefined}
       />
       <Navbar />
 
       {/* Hero with image background */}
       <section className="relative bg-navy-gradient text-primary-foreground py-20 overflow-hidden">
-        {course.image && (
-          <div className="absolute inset-0">
-            <img src={course.image} alt={course.title} className="w-full h-full object-cover opacity-15" />
-            <div className="absolute inset-0 bg-gradient-to-r from-primary/95 via-primary/85 to-primary/70" />
-          </div>
-        )}
 
         {/* Decorative orb */}
         <div className="absolute top-10 right-10 w-[300px] h-[300px] rounded-full opacity-10 bg-accent blur-3xl" />
