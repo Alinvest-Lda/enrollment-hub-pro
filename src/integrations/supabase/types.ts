@@ -172,6 +172,42 @@ export type Database = {
           },
         ]
       }
+      system_settings: {
+        Row: {
+          category: string
+          created_at: string
+          description: string
+          id: string
+          is_secret: boolean
+          key: string
+          label: string
+          updated_at: string
+          value: string
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          description?: string
+          id?: string
+          is_secret?: boolean
+          key: string
+          label?: string
+          updated_at?: string
+          value?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string
+          id?: string
+          is_secret?: boolean
+          key?: string
+          label?: string
+          updated_at?: string
+          value?: string
+        }
+        Relationships: []
+      }
       training_requests: {
         Row: {
           admin_notes: string | null

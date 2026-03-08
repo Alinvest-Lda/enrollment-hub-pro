@@ -13,13 +13,7 @@ interface MpesaC2BRequest {
   reference: string;
 }
 
-/**
- * Generates bearer token for M-Pesa API using RSA public key encryption.
- * Vodacom M-Pesa Mozambique uses the public key to encrypt the API key,
- * which is then base64-encoded and sent as a Bearer token.
- */
 async function generateBearerToken(apiKey: string, publicKey: string): Promise<string> {
-  // Decode the PEM public key
   const pemHeader = "-----BEGIN PUBLIC KEY-----";
   const pemFooter = "-----END PUBLIC KEY-----";
   const pemContents = publicKey
@@ -59,7 +53,7 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Validate phone: must be 258XXXXXXXXX (12 digits) or 84/85/86/87 XXXXXXX
+    // Validate phone
     const cleanPhone = phone.replace(/\D/g, "");
     let msisdn = cleanPhone;
     if (cleanPhone.length === 9 && /^8[4-7]/.test(cleanPhone)) {
@@ -78,18 +72,44 @@ Deno.serve(async (req) => {
     const serviceProviderCode = Deno.env.get("MPESA_SERVICE_PROVIDER_CODE");
 
     if (!apiKey || !publicKey || !serviceProviderCode) {
-      console.error("Missing M-Pesa configuration");
+      console.error("Missing M-Pesa configuration:", {
+        hasApiKey: !!apiKey,
+        hasPublicKey: !!publicKey,
+        hasServiceProviderCode: !!serviceProviderCode,
+      });
       return new Response(
-        JSON.stringify({ success: false, error: "Configuração M-Pesa em falta" }),
+        JSON.stringify({ success: false, error: "Configuração M-Pesa em falta. Verifique as chaves API nas configurações." }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    const bearerToken = await generateBearerToken(apiKey, publicKey);
+    // Get environment setting from DB
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    // M-Pesa C2B (Customer to Business) API call
-    // Using Vodacom Mozambique sandbox/production endpoint
-    const mpesaUrl = "https://api.sandbox.vm.co.mz:18352/ipg/v1x/c2bPayment/singleStage/";
+    const { data: settingsData } = await supabase
+      .from("system_settings")
+      .select("key, value")
+      .in("key", ["mpesa_environment"]);
+
+    const mpesaEnv = settingsData?.find((s: any) => s.key === "mpesa_environment")?.value || "sandbox";
+
+    let bearerToken: string;
+    try {
+      bearerToken = await generateBearerToken(apiKey, publicKey);
+    } catch (cryptoError) {
+      console.error("RSA encryption error:", cryptoError);
+      return new Response(
+        JSON.stringify({ success: false, error: "Erro na encriptação da chave M-Pesa. Verifique a Public Key." }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Select endpoint based on environment
+    const mpesaUrl = mpesaEnv === "production"
+      ? "https://api.vm.co.mz:18352/ipg/v1x/c2bPayment/singleStage/"
+      : "https://api.sandbox.vm.co.mz:18352/ipg/v1x/c2bPayment/singleStage/";
 
     const transactionRef = `ENR-${enrollmentId.substring(0, 8).toUpperCase()}`;
     const thirdPartyRef = reference.substring(0, 20);
@@ -102,44 +122,71 @@ Deno.serve(async (req) => {
       input_ServiceProviderCode: serviceProviderCode,
     };
 
-    console.log("M-Pesa request:", { ...mpesaPayload, input_CustomerMSISDN: "***" });
+    console.log("M-Pesa request:", { ...mpesaPayload, input_CustomerMSISDN: "***", url: mpesaUrl, env: mpesaEnv });
 
-    const mpesaResponse = await fetch(mpesaUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${bearerToken}`,
-        Origin: "*",
-      },
-      body: JSON.stringify(mpesaPayload),
-    });
+    let mpesaResponse: Response;
+    try {
+      mpesaResponse = await fetch(mpesaUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${bearerToken}`,
+          Origin: "*",
+        },
+        body: JSON.stringify(mpesaPayload),
+      });
+    } catch (fetchError) {
+      console.error("M-Pesa network error:", fetchError);
+      return new Response(
+        JSON.stringify({ success: false, error: "Não foi possível contactar o servidor M-Pesa. Tente novamente." }),
+        { status: 502, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
 
-    const mpesaData = await mpesaResponse.json();
-    console.log("M-Pesa response:", mpesaData);
+    let mpesaData: any;
+    const responseText = await mpesaResponse.text();
+    try {
+      mpesaData = JSON.parse(responseText);
+    } catch {
+      console.error("M-Pesa non-JSON response:", mpesaResponse.status, responseText.substring(0, 500));
+      return new Response(
+        JSON.stringify({ success: false, error: `Resposta inesperada do M-Pesa (HTTP ${mpesaResponse.status})` }),
+        { status: 502, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
 
-    // M-Pesa response codes: INS-0 = success
+    console.log("M-Pesa response:", mpesaResponse.status, JSON.stringify(mpesaData));
+
+    // Check HTTP status first
+    if (!mpesaResponse.ok) {
+      console.error("M-Pesa HTTP error:", mpesaResponse.status, mpesaData);
+
+      await supabase
+        .from("enrollments")
+        .update({
+          admin_notes: `M-Pesa HTTP ${mpesaResponse.status}. Resposta: ${JSON.stringify(mpesaData).substring(0, 200)}`,
+        })
+        .eq("id", enrollmentId);
+
+      return new Response(
+        JSON.stringify({ success: false, error: `Erro M-Pesa (HTTP ${mpesaResponse.status}). Tente novamente.` }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     const isSuccess =
       mpesaData.output_ResponseCode === "INS-0" ||
-      mpesaData.output_ResponseCode === "INS-0 ";
-
-    // Update enrollment in database
-    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+      mpesaData.output_ResponseCode?.trim() === "INS-0";
 
     if (isSuccess) {
-      const { error: updateError } = await supabase
+      await supabase
         .from("enrollments")
         .update({
           status: "approved",
           payment_method: "mpesa",
-          admin_notes: `M-Pesa Ref: ${mpesaData.output_TransactionID || transactionRef}. Código: ${mpesaData.output_ResponseCode}`,
+          admin_notes: `M-Pesa OK. Ref: ${mpesaData.output_TransactionID || transactionRef}. Conv: ${mpesaData.output_ConversationID || "N/A"}`,
         })
         .eq("id", enrollmentId);
-
-      if (updateError) {
-        console.error("Error updating enrollment:", updateError);
-      }
 
       return new Response(
         JSON.stringify({
@@ -151,34 +198,28 @@ Deno.serve(async (req) => {
         { headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     } else {
-      // Payment failed — keep enrollment as pending
-      const { error: updateError } = await supabase
+      await supabase
         .from("enrollments")
         .update({
           admin_notes: `M-Pesa falhou. Código: ${mpesaData.output_ResponseCode}. Desc: ${mpesaData.output_ResponseDesc || "N/A"}`,
         })
         .eq("id", enrollmentId);
 
-      if (updateError) {
-        console.error("Error updating enrollment:", updateError);
-      }
-
-      // Map common M-Pesa error codes to user-friendly messages
       const errorMessages: Record<string, string> = {
         "INS-1": "Erro interno no M-Pesa. Tente novamente.",
         "INS-5": "Transação cancelada pelo utilizador.",
         "INS-6": "Falha na transação. Verifique o saldo.",
         "INS-9": "Tempo de espera esgotado. Tente novamente.",
-        "INS-10": "Valor duplicado. Já existe uma transação similar.",
+        "INS-10": "Transação duplicada.",
         "INS-13": "Shortcode inválido.",
         "INS-15": "Valor inválido.",
         "INS-17": "Terceiro inválido.",
-        "INS-20": "Referência de transação inválida.",
+        "INS-20": "Referência inválida.",
         "INS-21": "Utilizador não encontrado.",
         "INS-22": "PIN M-Pesa incorreto.",
         "INS-23": "Saldo insuficiente.",
         "INS-24": "Valor abaixo do mínimo.",
-        "INS-25": "Valor acima do limite permitido.",
+        "INS-25": "Valor acima do limite.",
       };
 
       const userMessage =
@@ -191,9 +232,9 @@ Deno.serve(async (req) => {
       );
     }
   } catch (error) {
-    console.error("M-Pesa error:", error);
+    console.error("M-Pesa unexpected error:", error);
     return new Response(
-      JSON.stringify({ success: false, error: "Erro ao processar pagamento M-Pesa" }),
+      JSON.stringify({ success: false, error: "Erro inesperado ao processar pagamento M-Pesa" }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
