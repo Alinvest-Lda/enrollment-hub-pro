@@ -51,8 +51,14 @@ const CourseDetail = () => {
     <div className="min-h-screen flex flex-col bg-background">
       <Navbar />
 
-      <section className="bg-navy-gradient text-primary-foreground py-16">
-        <div className="container mx-auto px-4">
+      <section className="relative bg-navy-gradient text-primary-foreground py-16 overflow-hidden">
+        {course.image && (
+          <div className="absolute inset-0">
+            <img src={course.image} alt={course.title} className="w-full h-full object-cover opacity-20" />
+            <div className="absolute inset-0 bg-gradient-to-r from-primary/90 via-primary/80 to-primary/60" />
+          </div>
+        )}
+        <div className="container mx-auto px-4 relative z-10">
           <Link to="/" className="inline-flex items-center gap-1 text-sm text-primary-foreground/70 hover:text-primary-foreground mb-6 transition-colors">
             <ArrowLeft className="w-4 h-4" />
             Voltar aos cursos
