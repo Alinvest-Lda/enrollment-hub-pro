@@ -27,6 +27,7 @@ interface Props {
 }
 
 export default function EnrollmentsTab({ enrollments, proofs, fetchProofs, updateStatus, updateNotes, deleteEnrollment, getProofUrl }: Props) {
+  const { data: settings } = useSystemSettings();
   const [search, setSearch] = useState("");
   const [activeTab, setActiveTab] = useState("all");
   const [noteDraft, setNoteDraft] = useState<Record<string, string>>({});
