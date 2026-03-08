@@ -6,41 +6,25 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-
-const faqs = [
-  {
-    question: "Como funciona o processo de inscrição?",
-    answer:
-      "Escolha o curso desejado, preencha o formulário de inscrição com os seus dados e seleccione o plano de pagamento. Após submeter, receberá as instruções de pagamento. A sua inscrição será confirmada assim que o pagamento for verificado pela nossa equipa.",
-  },
-  {
-    question: "Quais são os métodos de pagamento aceites?",
-    answer:
-      "Aceitamos M-Pesa (pagamento online instantâneo), transferência bancária e e-Mola. O M-Pesa permite pagamento directo no acto da inscrição. Para os demais métodos, envie o comprovativo pelo formulário.",
-  },
-  {
-    question: "Posso pagar em prestações?",
-    answer:
-      "Sim! Disponibilizamos planos de pagamento flexíveis dependendo da duração do curso. Pode optar por pagamento integral ou dividir em 2 ou 3 prestações conforme o plano disponível para cada curso.",
-  },
-  {
-    question: "Os cursos oferecem certificado?",
-    answer:
-      "Sim, todos os nossos cursos emitem um certificado de conclusão reconhecido, desde que o participante cumpra os requisitos mínimos de assiduidade e avaliação definidos para cada programa.",
-  },
-  {
-    question: "Os cursos são presenciais ou online?",
-    answer:
-      "Oferecemos cursos em ambas as modalidades. Consulte a página de cada curso para verificar o formato disponível. Para treinamentos personalizados, podemos adaptar o formato às necessidades da sua equipa.",
-  },
-  {
-    question: "Como solicitar um treinamento personalizado?",
-    answer:
-      "Utilize o formulário na secção 'Treinamento Personalizado' mais abaixo nesta página. Informe o tema, número de participantes e detalhes da sua necessidade. A nossa equipa entrará em contacto em até 48 horas com uma proposta à medida.",
-  },
-];
+import { useFAQs } from "@/hooks/use-site-content";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const FAQSection = () => {
+  const { data: faqs = [], isLoading } = useFAQs();
+
+  if (isLoading) {
+    return (
+      <section id="faq" className="py-20 bg-background">
+        <div className="container mx-auto px-4 max-w-3xl">
+          <Skeleton className="h-8 w-64 mx-auto mb-10" />
+          {[1, 2, 3].map((i) => <Skeleton key={i} className="h-16 mb-3 rounded-xl" />)}
+        </div>
+      </section>
+    );
+  }
+
+  if (faqs.length === 0) return null;
+
   return (
     <section id="faq" className="py-20 bg-background">
       <div className="container mx-auto px-4">
@@ -78,14 +62,14 @@ const FAQSection = () => {
           <Accordion type="single" collapsible className="space-y-3">
             {faqs.map((faq, index) => (
               <motion.div
-                key={index}
+                key={faq.id}
                 initial={{ opacity: 0, x: -20 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.4, delay: index * 0.08, ease: [0.22, 1, 0.36, 1] }}
               >
                 <AccordionItem
-                  value={`faq-${index}`}
+                  value={`faq-${faq.id}`}
                   className="bg-card border border-border rounded-xl px-6 data-[state=open]:shadow-card transition-shadow"
                 >
                   <AccordionTrigger className="text-left font-heading font-semibold text-sm md:text-base hover:no-underline py-5">

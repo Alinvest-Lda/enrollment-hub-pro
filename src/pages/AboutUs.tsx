@@ -7,18 +7,14 @@ import { Card, CardContent } from "@/components/ui/card";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useSystemSettings, getWhatsAppUrl } from "@/hooks/use-system-settings";
+import { useTeamMembers } from "@/hooks/use-site-content";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const values = [
   { icon: Award, title: "Excelência", description: "Compromisso com os mais altos padrões de qualidade em formação e consultoria." },
   { icon: Users, title: "Colaboração", description: "Trabalhamos lado a lado com os nossos clientes para alcançar resultados concretos." },
   { icon: BookOpen, title: "Inovação", description: "Metodologias actualizadas e alinhadas com as melhores práticas internacionais." },
   { icon: Heart, title: "Integridade", description: "Ética e transparência em todas as nossas relações profissionais." },
-];
-
-const team = [
-  { name: "Dr. António Machava", role: "Director Executivo", bio: "Mais de 15 anos de experiência em consultoria e gestão empresarial em Moçambique e região austral de África." },
-  { name: "Eng.ª Márcia Tembe", role: "Directora de Formação", bio: "Especialista em sistemas de gestão ISO com certificação PECB e vasta experiência em formação corporativa." },
-  { name: "Dr. Carlos Nhantumbo", role: "Consultor Sénior HSEQ", bio: "Auditor líder certificado com experiência em projectos de petróleo, gás e construção civil." },
 ];
 
 const fadeInUp = {
@@ -30,7 +26,9 @@ const fadeInUp = {
 
 const AboutUs = () => {
   const { data: settings } = useSystemSettings();
+  const { data: team = [], isLoading: teamLoading } = useTeamMembers();
   const whatsappLink = getWhatsAppUrl(settings?.whatsappNumber || "");
+
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <SEO title="Sobre Nós" description="Conheça a ALINVEST — missão, visão, valores e equipa. Consultoria e formação profissional certificada em Moçambique." path="/sobre" />
@@ -117,31 +115,40 @@ const AboutUs = () => {
       </section>
 
       {/* Team */}
-      <section className="py-16">
-        <div className="container mx-auto px-4">
-          <motion.div {...fadeInUp} className="text-center mb-12">
-            <h2 className="font-heading text-3xl font-extrabold mb-3">A Nossa Equipa</h2>
-            <p className="text-muted-foreground max-w-lg mx-auto">Profissionais experientes e dedicados ao sucesso dos nossos formandos.</p>
-          </motion.div>
+      {(teamLoading || team.length > 0) && (
+        <section className="py-16">
+          <div className="container mx-auto px-4">
+            <motion.div {...fadeInUp} className="text-center mb-12">
+              <h2 className="font-heading text-3xl font-extrabold mb-3">A Nossa Equipa</h2>
+              <p className="text-muted-foreground max-w-lg mx-auto">Profissionais experientes e dedicados ao sucesso dos nossos formandos.</p>
+            </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-            {team.map((member, i) => (
-              <motion.div key={member.name} {...fadeInUp} transition={{ duration: 0.5, delay: i * 0.12 }}>
-                <Card className="h-full border-border shadow-card">
-                  <CardContent className="p-6 text-center">
-                    <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
-                      <Users className="w-8 h-8 text-primary" />
-                    </div>
-                    <h3 className="font-heading font-bold text-lg">{member.name}</h3>
-                    <p className="text-sm text-accent font-medium mb-3">{member.role}</p>
-                    <p className="text-sm text-muted-foreground">{member.bio}</p>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+              {teamLoading
+                ? [1, 2, 3].map((i) => <Skeleton key={i} className="h-64 rounded-xl" />)
+                : team.map((member, i) => (
+                    <motion.div key={member.id} {...fadeInUp} transition={{ duration: 0.5, delay: i * 0.12 }}>
+                      <Card className="h-full border-border shadow-card">
+                        <CardContent className="p-6 text-center">
+                          <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4 overflow-hidden">
+                            {member.photo_url ? (
+                              <img src={member.photo_url} alt={member.name} className="w-full h-full object-cover" />
+                            ) : (
+                              <Users className="w-8 h-8 text-primary" />
+                            )}
+                          </div>
+                          <h3 className="font-heading font-bold text-lg">{member.name}</h3>
+                          <p className="text-sm text-accent font-medium mb-3">{member.role}</p>
+                          <p className="text-sm text-muted-foreground">{member.bio}</p>
+                        </CardContent>
+                      </Card>
+                    </motion.div>
+                  ))
+              }
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* CTA */}
       <section className="py-16 bg-navy-gradient text-primary-foreground">
