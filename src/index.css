@@ -34,7 +34,7 @@
     --input: 220 20% 88%;
     --ring: 220 55% 16%;
 
-    --radius: 0.625rem;
+    --radius: 0.75rem;
 
     --sidebar-background: 220 55% 12%;
     --sidebar-foreground: 220 10% 90%;
@@ -101,12 +101,28 @@
     font-family: 'Montserrat', sans-serif;
     @apply font-bold tracking-tight;
   }
+
+  /* Smooth scrolling */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Better selection color */
+  ::selection {
+    background: hsl(var(--accent) / 0.2);
+    color: hsl(var(--foreground));
+  }
 }
 
 @layer utilities {
   .text-gradient {
     @apply bg-clip-text text-transparent;
     background-image: linear-gradient(135deg, hsl(var(--accent)), hsl(var(--red-brand-light)));
+  }
+
+  .text-gradient-gold {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(135deg, hsl(var(--gold)), hsl(40 70% 65%));
   }
 
   .bg-navy-gradient {
@@ -117,11 +133,56 @@
     background: linear-gradient(135deg, hsl(var(--navy-dark) / 0.92), hsl(var(--navy) / 0.75));
   }
 
+  .bg-section-subtle {
+    background: linear-gradient(180deg, hsl(var(--muted) / 0.3) 0%, hsl(var(--background)) 100%);
+  }
+
   .shadow-card {
     box-shadow: 0 4px 24px -4px hsl(var(--navy) / 0.08), 0 1px 4px hsl(var(--navy) / 0.04);
   }
 
   .shadow-card-hover {
-    box-shadow: 0 12px 40px -8px hsl(var(--navy) / 0.15), 0 4px 12px hsl(var(--navy) / 0.06);
+    box-shadow: 0 20px 50px -12px hsl(var(--navy) / 0.18), 0 4px 12px hsl(var(--navy) / 0.06);
   }
+
+  .shadow-glow-accent {
+    box-shadow: 0 0 30px -5px hsl(var(--accent) / 0.25);
+  }
+
+  .glass {
+    background: hsl(var(--card) / 0.7);
+    backdrop-filter: blur(16px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+  }
+
+  .glass-dark {
+    background: hsl(var(--navy-dark) / 0.6);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+  }
+
+  /* Section divider */
+  .section-divider {
+    @apply relative;
+  }
+  .section-divider::before {
+    content: '';
+    @apply absolute top-0 left-1/2 -translate-x-1/2 w-16 h-1 rounded-full;
+    background: linear-gradient(90deg, hsl(var(--accent)), hsl(var(--red-brand-light)));
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: hsl(var(--muted));
+}
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted-foreground) / 0.3);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground) / 0.5);
 }
