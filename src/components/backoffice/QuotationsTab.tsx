@@ -277,8 +277,6 @@ export default function QuotationsTab({ trainingRequests }: Props) {
     bankAccountName: sysSettings?.bankAccountName || "",
     bankAccountNumber: sysSettings?.bankAccountNumber || "",
     bankNIB: sysSettings?.bankNIB || "",
-    emolaNumber: sysSettings?.emolaNumber || "",
-    emolaName: sysSettings?.emolaName || "",
   });
 
   const handleDownloadPDF = async (q: Quotation) => {
