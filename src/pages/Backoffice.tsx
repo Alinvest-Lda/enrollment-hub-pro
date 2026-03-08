@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { LogOut, Loader2, BookOpen, Users, RefreshCw, GraduationCap, BarChart3, Bell } from "lucide-react";
+import { LogOut, Loader2, BookOpen, Users, RefreshCw, GraduationCap, BarChart3, Settings } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -13,6 +13,7 @@ import TrainingRequestsTab from "@/components/backoffice/TrainingRequestsTab";
 import DashboardTab from "@/components/backoffice/DashboardTab";
 import ManualEnrollmentForm from "@/components/backoffice/ManualEnrollmentForm";
 import CSVImportDialog from "@/components/backoffice/CSVImportDialog";
+import SettingsTab from "@/components/backoffice/SettingsTab";
 import { useBackofficeData } from "@/hooks/use-backoffice-data";
 import RealtimeNotifications from "@/components/backoffice/RealtimeNotifications";
 import { supabase } from "@/integrations/supabase/client";
@@ -94,11 +95,12 @@ const Backoffice = () => {
             </div>
           ) : (
             <Tabs value={section} onValueChange={setSection}>
-              <TabsList className="mb-4">
+              <TabsList className="mb-4 flex-wrap">
                 <TabsTrigger value="dashboard"><BarChart3 className="w-4 h-4 mr-1" /> Dashboard</TabsTrigger>
                 <TabsTrigger value="enrollments"><Users className="w-4 h-4 mr-1" /> Inscrições</TabsTrigger>
                 <TabsTrigger value="courses"><BookOpen className="w-4 h-4 mr-1" /> Cursos</TabsTrigger>
                 <TabsTrigger value="training"><GraduationCap className="w-4 h-4 mr-1" /> Formações</TabsTrigger>
+                <TabsTrigger value="settings"><Settings className="w-4 h-4 mr-1" /> Configurações</TabsTrigger>
               </TabsList>
 
               <TabsContent value="dashboard">
@@ -133,6 +135,10 @@ const Backoffice = () => {
                   updateNotes={data.updateTrainingRequestNotes}
                   deleteRequest={data.deleteTrainingRequest}
                 />
+              </TabsContent>
+
+              <TabsContent value="settings">
+                <SettingsTab />
               </TabsContent>
             </Tabs>
           )}

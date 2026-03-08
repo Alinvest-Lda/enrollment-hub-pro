@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { motion, AnimatePresence } from "framer-motion";
-import { CheckCircle, Send, MessageCircle, User, Phone, Mail, Building, ArrowLeft, CreditCard } from "lucide-react";
+import { CheckCircle, Send, MessageCircle, User, Phone, Mail, Building, ArrowLeft, CreditCard, Edit2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -46,7 +46,7 @@ const EnrollmentForm = ({ course }: EnrollmentFormProps) => {
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | null>(null);
   const [enrollmentId, setEnrollmentId] = useState<string | null>(null);
 
-  const { register, handleSubmit, watch, formState: { errors, isSubmitting } } = useForm<EnrollmentFormData>({
+  const { register, handleSubmit, watch, setValue, getValues, formState: { errors, isSubmitting } } = useForm<EnrollmentFormData>({
     resolver: zodResolver(enrollmentSchema),
     defaultValues: { paymentPlanId: course.paymentPlans[0]?.id || "" },
   });
@@ -59,6 +59,20 @@ const EnrollmentForm = ({ course }: EnrollmentFormProps) => {
     setFormData(data);
     setStep("payment-method");
     toast({ title: "Dados guardados!", description: "Escolha o método de pagamento." });
+  };
+
+  const goBackToForm = () => {
+    // Restore form values from saved formData
+    if (formData) {
+      setValue("fullName", formData.fullName);
+      setValue("email", formData.email);
+      setValue("phone", formData.phone);
+      setValue("company", formData.company || "");
+      setValue("nuit", formData.nuit || "");
+      setValue("message", formData.message || "");
+      setValue("paymentPlanId", formData.paymentPlanId);
+    }
+    setStep("form");
   };
 
   const handlePaymentMethodSelect = (method: PaymentMethod) => {
@@ -106,9 +120,42 @@ const EnrollmentForm = ({ course }: EnrollmentFormProps) => {
     done: "Inscrição Confirmada",
   };
 
-  const canGoBack = step === "payment-method" || step === "upload";
-  
+  const canGoBack = step === "payment-method" || step === "upload" || step === "mpesa";
+
+  const handleGoBack = () => {
+    if (step === "mpesa" || step === "upload") {
+      setStep("payment-method");
+    } else if (step === "payment-method") {
+      goBackToForm();
+    }
+  };
+
   const currentStepIndex = step === "form" ? 0 : step === "done" ? 2 : 1;
+
+  // Summary of user data for payment steps
+  const DataSummary = () => {
+    if (!formData) return null;
+    return (
+      <div className="bg-muted/50 rounded-xl p-4 mb-4">
+        <div className="flex items-center justify-between mb-2">
+          <p className="text-xs font-heading font-semibold text-muted-foreground uppercase tracking-wide">Seus Dados</p>
+          <button
+            onClick={goBackToForm}
+            className="text-xs text-accent hover:underline flex items-center gap-1"
+          >
+            <Edit2 className="w-3 h-3" />
+            Editar
+          </button>
+        </div>
+        <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs">
+          <p><span className="text-muted-foreground">Nome:</span> {formData.fullName}</p>
+          <p><span className="text-muted-foreground">Tel:</span> {formData.phone}</p>
+          <p><span className="text-muted-foreground">Email:</span> {formData.email}</p>
+          {formData.company && <p><span className="text-muted-foreground">Empresa:</span> {formData.company}</p>}
+        </div>
+      </div>
+    );
+  };
 
   return (
     <Card className="shadow-card border-border rounded-xl overflow-hidden">
@@ -132,7 +179,7 @@ const EnrollmentForm = ({ course }: EnrollmentFormProps) => {
         <CardTitle className="font-heading text-lg flex items-center gap-2">
           {canGoBack && (
             <button
-              onClick={() => setStep(step === "upload" ? "payment-method" : "form")}
+              onClick={handleGoBack}
               className="p-1.5 rounded-lg hover:bg-muted transition-colors"
             >
               <ArrowLeft className="w-4 h-4" />
@@ -223,6 +270,8 @@ const EnrollmentForm = ({ course }: EnrollmentFormProps) => {
 
           {step === "payment-method" && (
             <motion.div key="payment-method" initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 10 }} transition={{ duration: 0.2 }} className="space-y-5">
+              <DataSummary />
+
               <div className="bg-muted rounded-xl p-4">
                 <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide mb-1">Valor a pagar</p>
                 <p className="text-2xl font-heading font-extrabold text-accent">{formatCurrency(firstInstallment)}</p>
@@ -244,31 +293,35 @@ const EnrollmentForm = ({ course }: EnrollmentFormProps) => {
           )}
 
           {step === "mpesa" && formData && enrollmentId && (
-            <MpesaPaymentStep
-              key="mpesa"
-              enrollmentId={enrollmentId}
-              phone={formData.phone}
-              amount={firstInstallment}
-              reference={course.id}
-              onSuccess={() => setStep("done")}
-              onError={(err) => toast({ title: "Erro M-Pesa", description: err, variant: "destructive" })}
-            />
+            <motion.div key="mpesa" initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 10 }} transition={{ duration: 0.2 }}>
+              <DataSummary />
+              <MpesaPaymentStep
+                enrollmentId={enrollmentId}
+                phone={formData.phone}
+                amount={firstInstallment}
+                reference={course.id}
+                onSuccess={() => setStep("done")}
+                onError={(err) => toast({ title: "Erro M-Pesa", description: err, variant: "destructive" })}
+              />
+            </motion.div>
           )}
 
           {step === "upload" && formData && paymentMethod && (
-            <ProofUploadStep
-              key="upload"
-              paymentMethod={paymentMethod}
-              amount={firstInstallment}
-              formData={formData as { fullName: string; email: string; phone: string; company?: string; nuit?: string; message?: string; paymentPlanId: string }}
-              courseId={course.id}
-              courseName={course.title}
-              totalPrice={course.price}
-              onSuccess={(id) => {
-                setEnrollmentId(id);
-                setStep("done");
-              }}
-            />
+            <motion.div key="upload" initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 10 }} transition={{ duration: 0.2 }}>
+              <DataSummary />
+              <ProofUploadStep
+                paymentMethod={paymentMethod}
+                amount={firstInstallment}
+                formData={formData as { fullName: string; email: string; phone: string; company?: string; nuit?: string; message?: string; paymentPlanId: string }}
+                courseId={course.id}
+                courseName={course.title}
+                totalPrice={course.price}
+                onSuccess={(id) => {
+                  setEnrollmentId(id);
+                  setStep("done");
+                }}
+              />
+            </motion.div>
           )}
 
           {step === "done" && (
