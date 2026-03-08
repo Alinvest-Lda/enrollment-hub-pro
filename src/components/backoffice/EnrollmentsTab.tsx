@@ -156,7 +156,7 @@ export default function EnrollmentsTab({ enrollments, proofs, fetchProofs, updat
                                   <Eye className="w-4 h-4" />
                                 </Button>
                               </DialogTrigger>
-                              <DialogContent className="max-w-lg">
+                              <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
                                 <DialogHeader><DialogTitle>{enrollment.full_name}</DialogTitle></DialogHeader>
                                 <div className="space-y-3 text-sm">
                                   <div className="grid grid-cols-2 gap-2">
