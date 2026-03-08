@@ -549,6 +549,7 @@ export default function ReportsTab({ enrollments, trainingRequests, courses }: P
           </div>
         </CardContent>
       </Card>
+      </CollapsibleSection>
     </div>
   );
 }
