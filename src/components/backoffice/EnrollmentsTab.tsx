@@ -146,8 +146,9 @@ export default function EnrollmentsTab({ enrollments, proofs, fetchProofs, updat
                             <Badge variant="outline" className="text-[10px] mt-0.5 px-1.5 py-0">{enrollment.source}</Badge>
                           )}
                         </TableCell>
-                        <TableCell className="hidden md:table-cell text-sm">{enrollment.course_name}</TableCell>
-                        <TableCell className="hidden sm:table-cell text-sm">{enrollment.payment_plan}</TableCell>
+                         <TableCell className="hidden md:table-cell text-sm">{enrollment.course_name}</TableCell>
+                         <TableCell className="hidden lg:table-cell text-sm">{(enrollment as any).province || "—"}</TableCell>
+                         <TableCell className="hidden sm:table-cell text-sm">{enrollment.payment_plan}</TableCell>
                         <TableCell className="font-heading font-semibold text-sm">{formatCurrency(enrollment.amount_due)}</TableCell>
                         <TableCell>
                           <Badge variant={statusConfig[enrollment.status].variant}>{statusConfig[enrollment.status].label}</Badge>
