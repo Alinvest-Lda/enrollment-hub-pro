@@ -85,8 +85,11 @@ function RandomCircles() {
   );
 }
 
+const iconMap: Record<string, React.ElementType> = { Users, BookOpen, Award, Shield };
+
 const HeroSection = () => {
   const { data: settings } = useSystemSettings();
+  const { data: heroStats = [] } = useHeroStats();
   const whatsappNumber = settings?.whatsappNumber || "";
   return (
     <section className="relative min-h-[85vh] sm:min-h-[92vh] flex items-center overflow-hidden">
