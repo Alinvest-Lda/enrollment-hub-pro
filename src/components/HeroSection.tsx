@@ -251,8 +251,8 @@ const HeroSection = () => {
                           initial={{ opacity: 0, scale: 0.8 }}
                           animate={{ opacity: 1, scale: 1 }}
                           transition={{ delay: 0.8 + i * 0.1 }}
-                          whileHover={{ scale: 1.05, borderColor: "hsl(var(--accent) / 0.3)" }}
-                          className="bg-primary-foreground/5 rounded-xl p-3 text-center border border-primary-foreground/5 transition-colors cursor-default"
+                          whileHover={{ scale: 1.05 }}
+                          className="bg-muted/50 rounded-xl p-3 text-center border border-border/40 transition-colors cursor-default"
                         >
                           <StatIcon className="w-4 h-4 text-accent mx-auto mb-1.5" />
                           <p className="text-xl font-extrabold text-primary-foreground font-heading">
