@@ -43,6 +43,8 @@ const statusLabels: Record<string, { label: string; color: string; icon: React.E
 
 export default function StudentPayments() {
   const { enrollmentId } = useParams<{ enrollmentId: string }>();
+  const { data: settings } = useSystemSettings();
+  const whatsappLink = getWhatsAppUrl(settings?.whatsappNumber || "");
   const [enrollment, setEnrollment] = useState<EnrollmentInfo | null>(null);
   const [installments, setInstallments] = useState<Installment[]>([]);
   const [loading, setLoading] = useState(true);
