@@ -4,7 +4,7 @@ import {
   LogOut, Loader2, BookOpen, Users, RefreshCw, GraduationCap,
   BarChart3, Settings, Bell, UserPlus, FileSpreadsheet,
   ChevronLeft, ChevronRight, Menu, MessageSquare, FileText,
-  DollarSign, ExternalLink, Award,
+  DollarSign, ExternalLink, Award, Handshake,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -22,11 +22,12 @@ import WhatsAppTemplatesTab from "@/components/backoffice/WhatsAppTemplatesTab";
 import QuotationsTab from "@/components/backoffice/QuotationsTab";
 import PaymentPlansTab from "@/components/backoffice/PaymentPlansTab";
 import CertificatesTab from "@/components/backoffice/CertificatesTab";
+import PartnersTab from "@/components/backoffice/PartnersTab";
 import { useBackofficeData } from "@/hooks/use-backoffice-data";
 import RealtimeNotifications from "@/components/backoffice/RealtimeNotifications";
 import { supabase } from "@/integrations/supabase/client";
 
-type Section = "dashboard" | "enrollments" | "courses" | "training" | "quotations" | "certificates" | "payment_plans" | "whatsapp" | "settings";
+type Section = "dashboard" | "enrollments" | "courses" | "training" | "quotations" | "certificates" | "partners" | "payment_plans" | "whatsapp" | "settings";
 
 const navItems: { id: Section; label: string; icon: React.ElementType; shortLabel: string }[] = [
   { id: "dashboard", label: "Dashboard", icon: BarChart3, shortLabel: "Dash" },
@@ -35,6 +36,7 @@ const navItems: { id: Section; label: string; icon: React.ElementType; shortLabe
   { id: "training", label: "Formações", icon: GraduationCap, shortLabel: "Form." },
   { id: "quotations", label: "Cotações", icon: FileText, shortLabel: "Cotaç." },
   { id: "certificates", label: "Certificados", icon: Award, shortLabel: "Certif." },
+  { id: "partners", label: "Parceiros", icon: Handshake, shortLabel: "Parceiros" },
   { id: "payment_plans", label: "Pagamentos", icon: DollarSign, shortLabel: "Pagam." },
   { id: "whatsapp", label: "WhatsApp", icon: MessageSquare, shortLabel: "WhatsApp" },
   { id: "settings", label: "Configurações", icon: Settings, shortLabel: "Config." },
@@ -81,6 +83,7 @@ const Backoffice = () => {
     training: "Pedidos de Formação",
     quotations: "Cotações",
     certificates: "Certificados",
+    partners: "Parceiros",
     payment_plans: "Modelos de Pagamento",
     whatsapp: "Templates WhatsApp",
     settings: "Configurações",
@@ -317,6 +320,7 @@ const Backoffice = () => {
                 <QuotationsTab trainingRequests={data.trainingRequests} />
               )}
               {section === "certificates" && <CertificatesTab />}
+              {section === "partners" && <PartnersTab />}
               {section === "payment_plans" && <PaymentPlansTab />}
               {section === "whatsapp" && <WhatsAppTemplatesTab />}
               {section === "settings" && <SettingsTab />}
