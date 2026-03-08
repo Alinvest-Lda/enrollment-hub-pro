@@ -9,6 +9,8 @@ import AllCourses from "./pages/AllCourses";
 import AdminLogin from "./pages/AdminLogin";
 import Backoffice from "./pages/Backoffice";
 import AboutUs from "./pages/AboutUs";
+import StudentPayments from "./pages/StudentPayments";
+import VerifyCertificate from "./pages/VerifyCertificate";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -24,6 +26,8 @@ const App = () => (
           <Route path="/cursos" element={<AllCourses />} />
           <Route path="/curso/:id" element={<CourseDetail />} />
           <Route path="/sobre" element={<AboutUs />} />
+          <Route path="/pagamentos/:enrollmentId" element={<StudentPayments />} />
+          <Route path="/verificar-certificado" element={<VerifyCertificate />} />
           <Route path="/admin" element={<AdminLogin />} />
           <Route path="/backoffice" element={<Backoffice />} />
           <Route path="*" element={<NotFound />} />
