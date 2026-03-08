@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { MessageCircle, Menu, X } from "lucide-react";
+import { MessageCircle, Menu, X, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { WHATSAPP_LINK } from "@/lib/courses-data";
 import { useState } from "react";
