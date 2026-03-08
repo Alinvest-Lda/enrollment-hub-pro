@@ -36,7 +36,7 @@ const AboutUs = () => {
       <section className="bg-navy-gradient text-primary-foreground py-20">
         <div className="container mx-auto px-4 text-center">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
-            <h1 className="font-heading text-4xl md:text-5xl font-extrabold mb-4">Sobre a ALINVEST Academy</h1>
+            <h1 className="font-heading text-4xl md:text-5xl font-extrabold mb-4">Sobre a ALINVEST</h1>
             <p className="text-primary-foreground/80 max-w-2xl mx-auto text-lg">
               Capacitamos profissionais e organizações em Moçambique através de formação especializada e consultoria de excelência.
             </p>

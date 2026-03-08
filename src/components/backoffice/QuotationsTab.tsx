@@ -495,7 +495,7 @@ export default function QuotationsTab({ trainingRequests }: Props) {
               <div className="flex items-start justify-between">
                 <div>
                   <h2 className="font-heading text-2xl font-extrabold text-primary">ALINVEST</h2>
-                  <p className="text-xs text-muted-foreground">Academy</p>
+                  <p className="text-xs text-muted-foreground">Consultoria & Formação</p>
                 </div>
                 <div className="text-right">
                   <h3 className="font-heading text-lg font-bold">COTAÇÃO</h3>

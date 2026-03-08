@@ -3,11 +3,12 @@ import { MessageCircle, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { WHATSAPP_LINK } from "@/lib/courses-data";
 import { useState } from "react";
+import logo from "@/assets/logo.png";
 
 const navLinks = [
   { to: "/", label: "Cursos" },
   { to: "/sobre", label: "Sobre Nós" },
-  { to: "/backoffice", label: "Backoffice" },
+  { to: "/verificar-certificado", label: "Certificados" },
 ];
 
 const Navbar = () => {
@@ -18,12 +19,7 @@ const Navbar = () => {
     <nav className="sticky top-0 z-50 bg-card/95 backdrop-blur-md border-b border-border shadow-sm">
       <div className="container mx-auto flex items-center justify-between h-16 px-4">
         <Link to="/" className="flex items-center gap-2.5">
-          <span className="font-heading text-2xl font-extrabold tracking-tight text-primary">
-            ALINVEST
-          </span>
-          <span className="hidden sm:inline-block text-[10px] text-muted-foreground font-bold uppercase tracking-[0.2em] border border-border px-2 py-0.5 rounded">
-            Academy
-          </span>
+          <img src={logo} alt="ALINVEST" className="h-8" />
         </Link>
 
         {/* Desktop Nav */}
