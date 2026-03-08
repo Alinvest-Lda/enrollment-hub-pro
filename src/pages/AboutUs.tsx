@@ -84,30 +84,32 @@ const AboutUs = () => {
 
       {/* Values */}
       <section className="py-16 bg-muted/50">
-        <div className="container mx-auto px-4">
-          <motion.div {...fadeInUp} className="text-center mb-12">
-            <h2 className="font-heading text-3xl font-extrabold mb-3">Os Nossos Valores</h2>
-            <p className="text-muted-foreground max-w-lg mx-auto">Princípios que orientam cada acção e decisão na ALINVEST.</p>
-          </motion.div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto">
-            {values.map((v, i) => {
-              const Icon = v.icon;
-              return (
-                <motion.div key={v.title} {...fadeInUp} transition={{ duration: 0.5, delay: i * 0.1 }}>
-                  <Card className="h-full text-center border-border shadow-card hover:shadow-card-hover transition-shadow">
-                    <CardContent className="p-6">
-                      <div className="mx-auto w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center mb-4">
-                        <Icon className="w-6 h-6 text-accent" />
-                      </div>
-                      <h3 className="font-heading font-bold text-lg mb-2">{v.title}</h3>
-                      <p className="text-sm text-muted-foreground">{v.description}</p>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              );
-            })}
-          </div>
+        <div className="container mx-auto px-4 max-w-5xl">
+          <CollapsibleSection
+            title="Os Nossos Valores"
+            icon={<Award className="w-5 h-5 text-accent" />}
+            className="mb-8"
+          >
+            <p className="text-muted-foreground max-w-lg mb-8">Princípios que orientam cada acção e decisão na ALINVEST.</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {values.map((v, i) => {
+                const Icon = v.icon;
+                return (
+                  <motion.div key={v.title} {...fadeInUp} transition={{ duration: 0.5, delay: i * 0.1 }}>
+                    <Card className="h-full text-center border-border shadow-card hover:shadow-card-hover transition-shadow">
+                      <CardContent className="p-6">
+                        <div className="mx-auto w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center mb-4">
+                          <Icon className="w-6 h-6 text-accent" />
+                        </div>
+                        <h3 className="font-heading font-bold text-lg mb-2">{v.title}</h3>
+                        <p className="text-sm text-muted-foreground">{v.description}</p>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                );
+              })}
+            </div>
+          </CollapsibleSection>
         </div>
       </section>
 
