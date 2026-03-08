@@ -46,6 +46,7 @@ export default function StudentPayments() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [uploading, setUploading] = useState<number | null>(null);
+  const [payingInstallment, setPayingInstallment] = useState<number | null>(null);
 
   useEffect(() => {
     if (!enrollmentId) return;
