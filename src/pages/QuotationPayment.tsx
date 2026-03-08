@@ -94,8 +94,23 @@ export default function QuotationPayment() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="animate-pulse text-muted-foreground">A carregar...</div>
+      <div className="min-h-screen bg-background">
+        <header className="border-b border-border bg-card">
+          <div className="max-w-3xl mx-auto px-4 py-4 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Skeleton className="h-7 w-7 rounded" />
+              <div>
+                <Skeleton className="h-4 w-36" />
+                <Skeleton className="h-3 w-24 mt-1" />
+              </div>
+            </div>
+            <Skeleton className="h-8 w-16" />
+          </div>
+        </header>
+        <main className="max-w-3xl mx-auto px-4 py-6 space-y-6">
+          <Skeleton className="h-64 w-full rounded-lg" />
+          <Skeleton className="h-40 w-full rounded-lg" />
+        </main>
       </div>
     );
   }
