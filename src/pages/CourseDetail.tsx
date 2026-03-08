@@ -1,4 +1,5 @@
 import { useParams, Link } from "react-router-dom";
+import SEO from "@/components/SEO";
 import { ArrowLeft, Clock, Calendar, CheckCircle, MessageCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import { formatCurrency } from "@/lib/courses-data";
