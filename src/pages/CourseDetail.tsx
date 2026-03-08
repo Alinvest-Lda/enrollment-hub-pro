@@ -1,7 +1,8 @@
 import { useParams, Link } from "react-router-dom";
 import { ArrowLeft, Clock, Calendar, CheckCircle, MessageCircle } from "lucide-react";
 import { motion } from "framer-motion";
-import { formatCurrency, getWhatsAppLink } from "@/lib/courses-data";
+import { formatCurrency } from "@/lib/courses-data";
+import { useSystemSettings, getWhatsAppLinkFromNumber } from "@/hooks/use-system-settings";
 import { useCourse } from "@/hooks/use-courses";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -13,6 +14,7 @@ import EnrollmentForm from "@/components/EnrollmentForm";
 const CourseDetail = () => {
   const { id } = useParams<{ id: string }>();
   const { course, isLoading } = useCourse(id);
+  const { data: settings } = useSystemSettings();
 
   if (isLoading) {
     return (
@@ -106,7 +108,7 @@ const CourseDetail = () => {
               </div>
             </div>
 
-            <a href={getWhatsAppLink(whatsappMsg)} target="_blank" rel="noopener noreferrer">
+            <a href={getWhatsAppLinkFromNumber(settings?.whatsappNumber || "", whatsappMsg)} target="_blank" rel="noopener noreferrer">
               <Button variant="whatsapp" className="w-full mt-4">
                 <MessageCircle className="w-4 h-4" />
                 Tirar dúvidas no WhatsApp

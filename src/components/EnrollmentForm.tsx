@@ -10,7 +10,8 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Course, formatCurrency, getWhatsAppLink } from "@/lib/courses-data";
+import { Course, formatCurrency } from "@/lib/courses-data";
+import { useSystemSettings, getWhatsAppLinkFromNumber } from "@/hooks/use-system-settings";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import PaymentMethodStep, { type PaymentMethod } from "@/components/enrollment/PaymentMethodStep";
@@ -45,6 +46,7 @@ const EnrollmentForm = ({ course }: EnrollmentFormProps) => {
   const [formData, setFormData] = useState<EnrollmentFormData | null>(null);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | null>(null);
   const [enrollmentId, setEnrollmentId] = useState<string | null>(null);
+  const { data: settings } = useSystemSettings();
 
   const { register, handleSubmit, watch, setValue, getValues, formState: { errors, isSubmitting } } = useForm<EnrollmentFormData>({
     resolver: zodResolver(enrollmentSchema),
@@ -337,7 +339,7 @@ const EnrollmentForm = ({ course }: EnrollmentFormProps) => {
                   : "O seu comprovativo será analisado pela nossa equipa. Receberá confirmação via WhatsApp em até 24 horas."}
               </p>
               <a
-                href={getWhatsAppLink(`Olá, acabei de submeter a minha inscrição para o curso: ${course.title}. Ref: ${enrollmentId?.substring(0, 8).toUpperCase()}`)}
+                href={getWhatsAppLinkFromNumber(settings?.whatsappNumber || "", `Olá, acabei de submeter a minha inscrição para o curso: ${course.title}. Ref: ${enrollmentId?.substring(0, 8).toUpperCase()}`)}
                 target="_blank"
                 rel="noopener noreferrer"
               >

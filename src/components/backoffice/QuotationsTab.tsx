@@ -22,7 +22,7 @@ import {
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
-import { formatCurrency, getWhatsAppLink, WHATSAPP_NUMBER } from "@/lib/courses-data";
+import { formatCurrency } from "@/lib/courses-data";
 import { downloadQuotationPDF, getQuotationWhatsAppMessage, getQuotationEmailSubject, getQuotationEmailBody } from "@/lib/quotation-pdf";
 
 interface QuotationItem {

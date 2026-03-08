@@ -8,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
-import { getWhatsAppLink } from "@/lib/courses-data";
+import { useSystemSettings, getWhatsAppLinkFromNumber } from "@/hooks/use-system-settings";
 import { exportToCSV, trainingRequestCSVColumns } from "@/lib/csv-export";
 
 export interface TrainingRequest {
@@ -51,6 +51,7 @@ interface Props {
 }
 
 export default function TrainingRequestsTab({ requests, updateStatus, updateNotes, deleteRequest }: Props) {
+  const { data: settings } = useSystemSettings();
   const [search, setSearch] = useState("");
   const [activeTab, setActiveTab] = useState("all");
   const [noteDraft, setNoteDraft] = useState<Record<string, string>>({});
@@ -183,7 +184,7 @@ export default function TrainingRequestsTab({ requests, updateStatus, updateNote
                               </DialogContent>
                             </Dialog>
 
-                            <a href={getWhatsAppLink(`Olá ${req.full_name}, referente ao seu pedido de formação em "${req.training_topic}"...`)} target="_blank" rel="noopener noreferrer">
+                            <a href={getWhatsAppLinkFromNumber(settings?.whatsappNumber || "", `Olá ${req.full_name}, referente ao seu pedido de formação em "${req.training_topic}"...`)} target="_blank" rel="noopener noreferrer">
                               <Button variant="ghost" size="icon"><MessageCircle className="w-4 h-4" /></Button>
                             </a>
 

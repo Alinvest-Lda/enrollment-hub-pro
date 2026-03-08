@@ -10,7 +10,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Enrollment, PaymentProof, PaymentStatus, statusConfig } from "@/hooks/use-backoffice-data";
-import { formatCurrency, getWhatsAppLink } from "@/lib/courses-data";
+import { formatCurrency } from "@/lib/courses-data";
+import { useSystemSettings, getWhatsAppLinkFromNumber } from "@/hooks/use-system-settings";
 import { exportToCSV, enrollmentCSVColumns } from "@/lib/csv-export";
 import { toast } from "@/hooks/use-toast";
 import InstallmentTracker from "@/components/backoffice/InstallmentTracker";
@@ -26,6 +27,7 @@ interface Props {
 }
 
 export default function EnrollmentsTab({ enrollments, proofs, fetchProofs, updateStatus, updateNotes, deleteEnrollment, getProofUrl }: Props) {
+  const { data: settings } = useSystemSettings();
   const [search, setSearch] = useState("");
   const [activeTab, setActiveTab] = useState("all");
   const [noteDraft, setNoteDraft] = useState<Record<string, string>>({});
@@ -261,7 +263,7 @@ export default function EnrollmentsTab({ enrollments, proofs, fetchProofs, updat
                               </>
                             )}
 
-                            <a href={getWhatsAppLink(`Olá ${enrollment.full_name}, referente à sua inscrição no curso ${enrollment.course_name}...`)} target="_blank" rel="noopener noreferrer">
+                            <a href={getWhatsAppLinkFromNumber(settings?.whatsappNumber || "", `Olá ${enrollment.full_name}, referente à sua inscrição no curso ${enrollment.course_name}...`)} target="_blank" rel="noopener noreferrer">
                               <Button variant="ghost" size="icon"><MessageCircle className="w-4 h-4" /></Button>
                             </a>
 

@@ -7,7 +7,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
-import { formatCurrency, WHATSAPP_LINK } from "@/lib/courses-data";
+import { formatCurrency } from "@/lib/courses-data";
+import { useSystemSettings, getWhatsAppUrl } from "@/hooks/use-system-settings";
 import { toast } from "@/hooks/use-toast";
 import MpesaPaymentStep from "@/components/enrollment/MpesaPaymentStep";
 import logo from "@/assets/logo.png";
@@ -40,6 +41,8 @@ interface QuotationInfo {
 
 export default function QuotationPayment() {
   const { quotationId } = useParams<{ quotationId: string }>();
+  const { data: settings } = useSystemSettings();
+  const whatsappLink = getWhatsAppUrl(settings?.whatsappNumber || "");
   const [quotation, setQuotation] = useState<QuotationInfo | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -128,7 +131,7 @@ export default function QuotationPayment() {
               <Link to="/">
                 <Button variant="outline"><ArrowLeft className="w-4 h-4 mr-2" />Voltar ao site</Button>
               </Link>
-              <a href={WHATSAPP_LINK} target="_blank" rel="noopener noreferrer">
+              <a href={whatsappLink} target="_blank" rel="noopener noreferrer">
                 <Button variant="whatsapp"><MessageCircle className="w-4 h-4 mr-2" />Precisa de ajuda?</Button>
               </a>
             </div>

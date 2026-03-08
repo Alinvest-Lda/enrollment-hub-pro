@@ -1,7 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import { MessageCircle, Menu, X, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { WHATSAPP_LINK } from "@/lib/courses-data";
+import { useSystemSettings, getWhatsAppUrl } from "@/hooks/use-system-settings";
 import { useState } from "react";
 import logo from "@/assets/logo.png";
 
@@ -14,6 +14,8 @@ const navLinks = [
 const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
+  const { data: settings } = useSystemSettings();
+  const whatsappLink = getWhatsAppUrl(settings?.whatsappNumber || "");
 
   return (
     <nav className="sticky top-0 z-50 bg-card/95 backdrop-blur-md border-b border-border shadow-sm">
@@ -41,7 +43,7 @@ const Navbar = () => {
             );
           })}
           <div className="ml-3 flex items-center gap-2">
-            <a href={WHATSAPP_LINK} target="_blank" rel="noopener noreferrer">
+            <a href={whatsappLink} target="_blank" rel="noopener noreferrer">
               <Button variant="whatsapp" size="sm" className="rounded-lg">
                 <MessageCircle className="w-4 h-4" />
                 WhatsApp
@@ -83,7 +85,7 @@ const Navbar = () => {
             );
           })}
           <div className="pt-2 space-y-2">
-            <a href={WHATSAPP_LINK} target="_blank" rel="noopener noreferrer">
+            <a href={whatsappLink} target="_blank" rel="noopener noreferrer">
               <Button variant="whatsapp" size="sm" className="w-full rounded-lg">
                 <MessageCircle className="w-4 h-4" />
                 WhatsApp

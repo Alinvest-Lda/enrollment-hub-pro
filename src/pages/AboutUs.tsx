@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { WHATSAPP_LINK } from "@/lib/courses-data";
+import { useSystemSettings, getWhatsAppUrl } from "@/hooks/use-system-settings";
 
 const values = [
   { icon: Award, title: "Excelência", description: "Compromisso com os mais altos padrões de qualidade em formação e consultoria." },
@@ -28,6 +28,8 @@ const fadeInUp = {
 };
 
 const AboutUs = () => {
+  const { data: settings } = useSystemSettings();
+  const whatsappLink = getWhatsAppUrl(settings?.whatsappNumber || "");
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <Navbar />
@@ -153,7 +155,7 @@ const AboutUs = () => {
                   Ver Cursos <ArrowRight className="w-4 h-4 ml-1" />
                 </Button>
               </Link>
-              <a href={WHATSAPP_LINK} target="_blank" rel="noopener noreferrer">
+              <a href={whatsappLink} target="_blank" rel="noopener noreferrer">
                 <Button size="lg" variant="whatsapp">
                   <MessageCircle className="w-4 h-4" /> Falar Connosco
                 </Button>

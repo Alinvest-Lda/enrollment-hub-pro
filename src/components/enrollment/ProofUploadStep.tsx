@@ -6,6 +6,7 @@ import { formatCurrency } from "@/lib/courses-data";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { PaymentMethod } from "./PaymentMethodStep";
+import { useSystemSettings } from "@/hooks/use-system-settings";
 
 interface ProofUploadStepProps {
   paymentMethod: PaymentMethod;
@@ -31,17 +32,6 @@ const methodLabels: Record<PaymentMethod, string> = {
   bank_transfer: "Transferência Bancária",
 };
 
-const paymentInstructions: Record<string, { label: string; details: string }> = {
-  bank_transfer: {
-    label: "Dados Bancários",
-    details: "Millennium BIM — Conta: 000 000 000 000 | NIB: 0001 0000 0000 0000 000 00",
-  },
-  emola: {
-    label: "Dados e-Mola",
-    details: "Número e-Mola: 86 999 9999 | Nome: Empresa XYZ",
-  },
-};
-
 const ProofUploadStep = ({
   paymentMethod,
   amount,
@@ -51,9 +41,19 @@ const ProofUploadStep = ({
   totalPrice,
   onSuccess,
 }: ProofUploadStepProps) => {
+  const { data: settings } = useSystemSettings();
   const [uploading, setUploading] = useState(false);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const paymentInstructions: Record<string, { label: string; details: string } | null> = {
+    bank_transfer: settings?.bankAccountNumber
+      ? { label: "Dados Bancários", details: `${settings.bankName || "Banco"} — Conta: ${settings.bankAccountNumber}${settings.bankNIB ? ` | NIB: ${settings.bankNIB}` : ""}` }
+      : null,
+    emola: settings?.emolaNumber
+      ? { label: "Dados e-Mola", details: `Número e-Mola: ${settings.emolaNumber}${settings.emolaName ? ` | Nome: ${settings.emolaName}` : ""}` }
+      : null,
+  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];

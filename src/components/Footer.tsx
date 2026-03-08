@@ -1,9 +1,12 @@
 import { Link } from "react-router-dom";
-import { MessageCircle, Mail, MapPin, Phone } from "lucide-react";
-import { WHATSAPP_LINK } from "@/lib/courses-data";
+import { MessageCircle, Mail, MapPin } from "lucide-react";
+import { useSystemSettings, getWhatsAppUrl } from "@/hooks/use-system-settings";
 import logo from "@/assets/logo.png";
 
 const Footer = () => {
+  const { data: settings } = useSystemSettings();
+  const whatsappLink = getWhatsAppUrl(settings?.whatsappNumber || "");
+
   return (
     <footer className="bg-navy-gradient text-primary-foreground">
       <div className="container mx-auto px-4 py-14">
@@ -20,14 +23,14 @@ const Footer = () => {
             <ul className="space-y-3 text-sm text-primary-foreground/60">
               <li className="flex items-center gap-2.5">
                 <MapPin className="w-4 h-4 shrink-0 text-accent" />
-                Maputo, Moçambique
+                {settings?.companyAddress || "Maputo, Moçambique"}
               </li>
               <li className="flex items-center gap-2.5">
                 <Mail className="w-4 h-4 shrink-0 text-accent" />
-                info@alinvest-group.com
+                {settings?.companyEmail || "info@alinvest-group.com"}
               </li>
               <li>
-                <a href={WHATSAPP_LINK} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2.5 hover:text-primary-foreground transition-colors">
+                <a href={whatsappLink} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2.5 hover:text-primary-foreground transition-colors">
                   <MessageCircle className="w-4 h-4 shrink-0 text-success" />
                   WhatsApp
                 </a>

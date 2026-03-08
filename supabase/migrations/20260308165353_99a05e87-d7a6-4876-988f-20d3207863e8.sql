@@ -1,0 +1,1 @@
+CREATE POLICY "Anyone can view non-secret settings" ON public.system_settings FOR SELECT USING (is_secret = false);

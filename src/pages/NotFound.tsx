@@ -2,12 +2,14 @@ import { useLocation, Link } from "react-router-dom";
 import { useEffect } from "react";
 import { ArrowLeft, MessageCircle, SearchX } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { WHATSAPP_LINK } from "@/lib/courses-data";
+import { useSystemSettings, getWhatsAppUrl } from "@/hooks/use-system-settings";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
 const NotFound = () => {
   const location = useLocation();
+  const { data: settings } = useSystemSettings();
+  const whatsappLink = getWhatsAppUrl(settings?.whatsappNumber || "");
 
   useEffect(() => {
     console.error("404 Error: User attempted to access non-existent route:", location.pathname);
@@ -33,7 +35,7 @@ const NotFound = () => {
                 Voltar ao Início
               </Button>
             </Link>
-            <a href={WHATSAPP_LINK} target="_blank" rel="noopener noreferrer">
+            <a href={whatsappLink} target="_blank" rel="noopener noreferrer">
               <Button variant="whatsapp" size="lg">
                 <MessageCircle className="w-4 h-4" />
                 Precisa de Ajuda?
