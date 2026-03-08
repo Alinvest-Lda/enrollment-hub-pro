@@ -40,13 +40,16 @@ const Navbar = () => {
               </Link>
             );
           })}
-          <div className="ml-3">
+          <div className="ml-3 flex items-center gap-2">
             <a href={WHATSAPP_LINK} target="_blank" rel="noopener noreferrer">
               <Button variant="whatsapp" size="sm" className="rounded-lg">
                 <MessageCircle className="w-4 h-4" />
                 WhatsApp
               </Button>
             </a>
+            <Link to="/admin" title="Área Administrativa" className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors">
+              <Lock className="w-4 h-4" />
+            </Link>
           </div>
         </div>
 
