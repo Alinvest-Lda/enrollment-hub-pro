@@ -29,7 +29,7 @@ import RealtimeNotifications from "@/components/backoffice/RealtimeNotifications
 import ContentManagerTab from "@/components/backoffice/ContentManagerTab";
 import { supabase } from "@/integrations/supabase/client";
 
-type Section = "dashboard" | "enrollments" | "courses" | "training" | "quotations" | "certificates" | "partners" | "reports" | "payment_plans" | "whatsapp" | "settings";
+type Section = "dashboard" | "enrollments" | "courses" | "training" | "quotations" | "certificates" | "partners" | "content" | "reports" | "payment_plans" | "whatsapp" | "settings";
 
 const navItems: { id: Section; label: string; icon: React.ElementType; shortLabel: string }[] = [
   { id: "dashboard", label: "Dashboard", icon: BarChart3, shortLabel: "Dash" },
