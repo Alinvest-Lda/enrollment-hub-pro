@@ -15,8 +15,6 @@ interface BankDetails {
   bankAccountName?: string;
   bankAccountNumber?: string;
   bankNIB?: string;
-  emolaNumber?: string;
-  emolaName?: string;
 }
 
 interface QuotationData {
