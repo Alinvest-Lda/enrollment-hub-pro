@@ -13,7 +13,6 @@ const PROVINCES = [
   "Sofala", "Manica", "Tete", "Zambézia",
   "Nampula", "Cabo Delgado", "Niassa",
 ];
-import { CourseRow, EnrollmentSource } from "@/hooks/use-backoffice-data";
 
 const sources: { value: EnrollmentSource; label: string }[] = [
   { value: "presencial", label: "Presencial" },
