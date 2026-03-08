@@ -221,9 +221,9 @@ const HeroSection = () => {
                 animate={{ opacity: [0.5, 0.8, 0.5] }}
                 transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
               />
-              <div className="relative bg-primary-foreground/10 backdrop-blur-xl rounded-2xl border border-primary-foreground/10 overflow-hidden">
+              <div className="relative bg-card rounded-2xl border border-border/60 overflow-hidden shadow-card">
                 {/* Featured highlight banner */}
-                <div className="bg-accent/20 backdrop-blur-sm px-6 py-3 border-b border-primary-foreground/5">
+                <div className="bg-navy-gradient px-6 py-3 border-b border-primary-foreground/10">
                   <div className="flex items-center gap-2 justify-center">
                     <motion.div
                       animate={{ rotate: [0, 15, -15, 0] }}
@@ -251,14 +251,14 @@ const HeroSection = () => {
                           initial={{ opacity: 0, scale: 0.8 }}
                           animate={{ opacity: 1, scale: 1 }}
                           transition={{ delay: 0.8 + i * 0.1 }}
-                          whileHover={{ scale: 1.05, borderColor: "hsl(var(--accent) / 0.3)" }}
-                          className="bg-primary-foreground/5 rounded-xl p-3 text-center border border-primary-foreground/5 transition-colors cursor-default"
+                          whileHover={{ scale: 1.05 }}
+                          className="bg-muted/50 rounded-xl p-3 text-center border border-border/40 transition-colors cursor-default"
                         >
                           <StatIcon className="w-4 h-4 text-accent mx-auto mb-1.5" />
-                          <p className="text-xl font-extrabold text-primary-foreground font-heading">
+                          <p className="text-xl font-extrabold text-foreground font-heading">
                             <AnimatedCounter target={stat.value} suffix={stat.suffix} />
                           </p>
-                          <p className="text-[9px] text-primary-foreground/50 font-medium mt-0.5 leading-tight">
+                          <p className="text-[9px] text-muted-foreground font-medium mt-0.5 leading-tight">
                             {stat.label}
                           </p>
                         </motion.div>
