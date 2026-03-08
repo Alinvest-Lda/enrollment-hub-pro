@@ -515,6 +515,8 @@ const SettingsTab = () => {
                     )}
                   </div>
                 )}
+                )}
+                </CollapsibleSection>
               </CardContent>
             </Card>
           );
