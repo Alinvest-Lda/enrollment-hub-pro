@@ -309,6 +309,10 @@ const Backoffice = () => {
                   deleteRequest={data.deleteTrainingRequest}
                 />
               )}
+              {section === "quotations" && (
+                <QuotationsTab trainingRequests={data.trainingRequests} />
+              )}
+              {section === "payment_plans" && <PaymentPlansTab />}
               {section === "whatsapp" && <WhatsAppTemplatesTab />}
               {section === "settings" && <SettingsTab />}
             </motion.div>
