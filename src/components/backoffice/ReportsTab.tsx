@@ -505,8 +505,14 @@ export default function ReportsTab({ enrollments, trainingRequests, courses }: P
           </CardContent>
         </Card>
       </div>
+      </CollapsibleSection>
 
       {/* Top students table */}
+      <CollapsibleSection
+        title="Top Estudantes por Receita"
+        icon={<Users className="w-5 h-5 text-accent" />}
+        defaultOpen={false}
+      >
       <Card>
         <CardHeader className="pb-2">
           <div className="flex items-center justify-between">
