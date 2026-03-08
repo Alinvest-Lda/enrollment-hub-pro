@@ -91,7 +91,7 @@ const HeroSection = () => {
         ].map((p, i) => (
           <motion.div
             key={i}
-            className="absolute rounded-full bg-primary-foreground/[0.08]"
+            className="absolute rounded-full bg-primary-foreground/[0.15]"
             style={{ left: p.x, top: p.y, width: p.size, height: p.size }}
             animate={{ y: [0, -20, 0], opacity: [0.3, 0.7, 0.3] }}
             transition={{ duration: p.dur, repeat: Infinity, ease: "easeInOut", delay: p.delay }}
