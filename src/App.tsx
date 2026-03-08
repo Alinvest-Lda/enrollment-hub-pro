@@ -29,6 +29,7 @@ const App = () => (
           <Route path="/sobre" element={<AboutUs />} />
           <Route path="/pagamentos/:enrollmentId" element={<StudentPayments />} />
           <Route path="/verificar-certificado" element={<VerifyCertificate />} />
+          <Route path="/cotacao/:quotationId" element={<QuotationPayment />} />
           <Route path="/admin" element={<AdminLogin />} />
           <Route path="/backoffice" element={<Backoffice />} />
           <Route path="*" element={<NotFound />} />
