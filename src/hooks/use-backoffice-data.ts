@@ -349,6 +349,62 @@ export function useBackofficeData() {
 
   useEffect(() => { fetchAll(); }, []);
 
+  // Realtime subscriptions – keep data in sync across all open backoffice sessions
+  useEffect(() => {
+    const channel = supabase
+      .channel("backoffice-data-sync")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "enrollments" },
+        (payload) => {
+          if (payload.eventType === "INSERT") {
+            setEnrollments((prev) => [payload.new as Enrollment, ...prev]);
+          } else if (payload.eventType === "UPDATE") {
+            setEnrollments((prev) =>
+              prev.map((e) => (e.id === (payload.new as Enrollment).id ? (payload.new as Enrollment) : e))
+            );
+          } else if (payload.eventType === "DELETE") {
+            setEnrollments((prev) => prev.filter((e) => e.id !== (payload.old as any).id));
+          }
+        }
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "training_requests" },
+        (payload) => {
+          if (payload.eventType === "INSERT") {
+            setTrainingRequests((prev) => [payload.new as TrainingRequest, ...prev]);
+          } else if (payload.eventType === "UPDATE") {
+            setTrainingRequests((prev) =>
+              prev.map((r) => (r.id === (payload.new as TrainingRequest).id ? (payload.new as TrainingRequest) : r))
+            );
+          } else if (payload.eventType === "DELETE") {
+            setTrainingRequests((prev) => prev.filter((r) => r.id !== (payload.old as any).id));
+          }
+        }
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "courses" },
+        (payload) => {
+          if (payload.eventType === "INSERT") {
+            setCourses((prev) => [payload.new as CourseRow, ...prev]);
+          } else if (payload.eventType === "UPDATE") {
+            setCourses((prev) =>
+              prev.map((c) => (c.id === (payload.new as CourseRow).id ? (payload.new as CourseRow) : c))
+            );
+          } else if (payload.eventType === "DELETE") {
+            setCourses((prev) => prev.filter((c) => c.id !== (payload.old as any).id));
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
   return {
     enrollments, courses, trainingRequests, proofs, loading,
     fetchProofs, updateEnrollmentStatus, updateEnrollmentNotes, deleteEnrollment,
