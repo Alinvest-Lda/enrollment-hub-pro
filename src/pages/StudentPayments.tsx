@@ -1,13 +1,15 @@
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
-import { Calendar, Check, Clock, AlertCircle, X, Banknote, ArrowLeft, Upload, FileText, Eye } from "lucide-react";
+import { Calendar, Check, Clock, AlertCircle, X, Banknote, ArrowLeft, Upload, FileText, Eye, Smartphone, CreditCard } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { formatCurrency } from "@/lib/courses-data";
 import { toast } from "@/hooks/use-toast";
+import MpesaPaymentStep from "@/components/enrollment/MpesaPaymentStep";
 
 interface Installment {
   id: string;
