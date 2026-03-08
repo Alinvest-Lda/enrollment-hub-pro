@@ -39,21 +39,21 @@ const HeroSection = () => {
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <motion.div
           className="absolute w-[500px] h-[500px] rounded-full"
-          style={{ background: "radial-gradient(circle, hsl(var(--accent) / 0.08) 0%, transparent 70%)" }}
+          style={{ background: "radial-gradient(circle, hsl(var(--accent) / 0.15) 0%, transparent 70%)" }}
           initial={{ x: "60%", y: "-20%" }}
           animate={{ x: "65%", y: "-15%", scale: [1, 1.15, 1] }}
           transition={{ duration: 12, repeat: Infinity, repeatType: "reverse", ease: "easeInOut" }}
         />
         <motion.div
           className="absolute w-[350px] h-[350px] rounded-full"
-          style={{ background: "radial-gradient(circle, hsl(var(--primary) / 0.06) 0%, transparent 70%)" }}
+          style={{ background: "radial-gradient(circle, hsl(var(--primary) / 0.12) 0%, transparent 70%)" }}
           initial={{ x: "-10%", y: "60%" }}
           animate={{ x: "-5%", y: "55%", scale: [1, 1.2, 1] }}
           transition={{ duration: 15, repeat: Infinity, repeatType: "reverse", ease: "easeInOut", delay: 2 }}
         />
         <motion.div
           className="absolute w-[200px] h-[200px] rounded-full"
-          style={{ background: "radial-gradient(circle, hsl(var(--accent) / 0.05) 0%, transparent 70%)" }}
+          style={{ background: "radial-gradient(circle, hsl(var(--accent) / 0.1) 0%, transparent 70%)" }}
           initial={{ x: "30%", y: "70%" }}
           animate={{ x: "35%", y: "65%", scale: [1, 1.3, 1] }}
           transition={{ duration: 10, repeat: Infinity, repeatType: "reverse", ease: "easeInOut", delay: 4 }}
@@ -63,17 +63,17 @@ const HeroSection = () => {
       {/* Animated decorative circles */}
       <div className="absolute top-0 right-0 w-1/2 h-full pointer-events-none">
         <motion.div
-          className="absolute top-20 right-20 w-72 h-72 rounded-full border-2 border-primary-foreground/[0.04]"
+          className="absolute top-20 right-20 w-72 h-72 rounded-full border-2 border-primary-foreground/[0.08]"
           animate={{ scale: [1, 1.05, 1], rotate: [0, 3, 0] }}
           transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
         />
         <motion.div
-          className="absolute bottom-32 right-40 w-48 h-48 rounded-full border border-primary-foreground/[0.04]"
+          className="absolute bottom-32 right-40 w-48 h-48 rounded-full border border-primary-foreground/[0.08]"
           animate={{ scale: [1, 1.08, 1], rotate: [0, -5, 0] }}
           transition={{ duration: 16, repeat: Infinity, ease: "easeInOut", delay: 3 }}
         />
         <motion.div
-          className="absolute top-1/2 right-10 w-96 h-96 rounded-full border border-primary-foreground/[0.03]"
+          className="absolute top-1/2 right-10 w-96 h-96 rounded-full border border-primary-foreground/[0.06]"
           animate={{ scale: [1, 1.03, 1], rotate: [0, 2, 0] }}
           transition={{ duration: 24, repeat: Infinity, ease: "easeInOut", delay: 1 }}
         />
@@ -91,7 +91,7 @@ const HeroSection = () => {
         ].map((p, i) => (
           <motion.div
             key={i}
-            className="absolute rounded-full bg-primary-foreground/[0.08]"
+            className="absolute rounded-full bg-primary-foreground/[0.15]"
             style={{ left: p.x, top: p.y, width: p.size, height: p.size }}
             animate={{ y: [0, -20, 0], opacity: [0.3, 0.7, 0.3] }}
             transition={{ duration: p.dur, repeat: Infinity, ease: "easeInOut", delay: p.delay }}
