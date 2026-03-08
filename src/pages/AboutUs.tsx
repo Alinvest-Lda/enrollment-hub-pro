@@ -33,6 +33,7 @@ const AboutUs = () => {
   const whatsappLink = getWhatsAppUrl(settings?.whatsappNumber || "");
   return (
     <div className="min-h-screen flex flex-col bg-background">
+      <SEO title="Sobre Nós" description="Conheça a ALINVEST — missão, visão, valores e equipa. Consultoria e formação profissional certificada em Moçambique." path="/sobre" />
       <Navbar />
 
       {/* Hero */}

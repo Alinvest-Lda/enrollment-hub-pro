@@ -81,6 +81,7 @@ const AllCourses = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
+      <SEO title="Todos os Cursos" description="Explore todos os cursos certificados da ALINVEST em gestão, ISO, HSEQ e liderança. Filtros por categoria, preço e data de início." path="/cursos" />
       <Navbar />
 
       <section className="bg-navy-gradient text-primary-foreground py-12">
