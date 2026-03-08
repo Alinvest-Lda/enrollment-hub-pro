@@ -35,6 +35,7 @@ const KEY_MAP: Record<string, keyof SystemSettings> = {
   bank_name: "bankName",
   bank_account_name: "bankAccountName",
   bank_account_number: "bankAccountNumber",
+  bank_nib: "bankNIB",
   emola_number: "emolaNumber",
   emola_name: "emolaName",
 };
