@@ -18,12 +18,19 @@ import PaymentMethodStep, { type PaymentMethod } from "@/components/enrollment/P
 import MpesaPaymentStep from "@/components/enrollment/MpesaPaymentStep";
 import ProofUploadStep from "@/components/enrollment/ProofUploadStep";
 
+const PROVINCES = [
+  "Maputo Cidade", "Maputo Província", "Gaza", "Inhambane",
+  "Sofala", "Manica", "Tete", "Zambézia",
+  "Nampula", "Cabo Delgado", "Niassa",
+];
+
 const enrollmentSchema = z.object({
   fullName: z.string().min(3, "Nome completo obrigatório").max(100),
   email: z.string().email("Email inválido").max(255),
   phone: z.string().min(9, "Telefone inválido").max(20),
   company: z.string().max(100).optional(),
-  nuit: z.string().max(20).optional(),
+  nuit: z.string().min(1, "NUIT obrigatório").max(20),
+  province: z.string().min(1, "Província obrigatória"),
   message: z.string().max(500).optional(),
   paymentPlanId: z.string().min(1, "Seleccione um plano de pagamento"),
 });
