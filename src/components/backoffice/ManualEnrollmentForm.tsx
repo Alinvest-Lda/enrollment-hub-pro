@@ -71,7 +71,7 @@ export default function ManualEnrollmentForm({ courses, onSubmit }: Props) {
     if (ok) {
       setOpen(false);
       setForm({
-        full_name: "", email: "", phone: "", company: "", nuit: "",
+        full_name: "", email: "", phone: "", company: "", nuit: "", province: "",
         course_id: "", payment_plan: "full",
         amount_due: "", source: "presencial",
         payment_method: "", message: "", admin_notes: "",
