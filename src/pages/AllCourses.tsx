@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
+import SEO from "@/components/SEO";
 import { Search, Filter, X } from "lucide-react";
 import { useCourses } from "@/hooks/use-courses";
 import CourseCard from "@/components/CourseCard";
