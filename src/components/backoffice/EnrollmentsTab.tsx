@@ -32,11 +32,17 @@ export default function EnrollmentsTab({ enrollments, proofs, fetchProofs, updat
   const [activeTab, setActiveTab] = useState("all");
   const [noteDraft, setNoteDraft] = useState<Record<string, string>>({});
   const [courseFilter, setCourseFilter] = useState("all");
+  const [provinceFilter, setProvinceFilter] = useState("all");
   const [dateFilter, setDateFilter] = useState("all");
   const [showFilters, setShowFilters] = useState(false);
 
   const courseNames = useMemo(() => {
     const names = [...new Set(enrollments.map((e) => e.course_name))];
+    return names.sort();
+  }, [enrollments]);
+
+  const provinceNames = useMemo(() => {
+    const names = [...new Set(enrollments.map((e) => (e as any).province).filter(Boolean))];
     return names.sort();
   }, [enrollments]);
 
@@ -46,6 +52,7 @@ export default function EnrollmentsTab({ enrollments, proofs, fetchProofs, updat
       const matchesSearch = e.full_name.toLowerCase().includes(q) || e.email.toLowerCase().includes(q) || e.id.toLowerCase().includes(q);
       const matchesStatus = activeTab === "all" || e.status === activeTab;
       const matchesCourse = courseFilter === "all" || e.course_name === courseFilter;
+      const matchesProvince = provinceFilter === "all" || (e as any).province === provinceFilter;
 
       let matchesDate = true;
       if (dateFilter !== "all") {
@@ -56,9 +63,9 @@ export default function EnrollmentsTab({ enrollments, proofs, fetchProofs, updat
         else if (dateFilter === "90d") matchesDate = now.getTime() - d.getTime() < 90 * 86400000;
       }
 
-      return matchesSearch && matchesStatus && matchesCourse && matchesDate;
+      return matchesSearch && matchesStatus && matchesCourse && matchesProvince && matchesDate;
     });
-  }, [enrollments, search, activeTab, courseFilter, dateFilter]);
+  }, [enrollments, search, activeTab, courseFilter, provinceFilter, dateFilter]);
 
   const counts = {
     all: enrollments.length,
@@ -93,6 +100,15 @@ export default function EnrollmentsTab({ enrollments, proofs, fetchProofs, updat
               ))}
             </SelectContent>
           </Select>
+          <Select value={provinceFilter} onValueChange={setProvinceFilter}>
+            <SelectTrigger className="w-[180px] bg-background"><SelectValue placeholder="Todas as províncias" /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todas as províncias</SelectItem>
+              {provinceNames.map((name) => (
+                <SelectItem key={name} value={name}>{name}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
           <Select value={dateFilter} onValueChange={setDateFilter}>
             <SelectTrigger className="w-[160px] bg-background"><SelectValue placeholder="Período" /></SelectTrigger>
             <SelectContent>
@@ -102,8 +118,8 @@ export default function EnrollmentsTab({ enrollments, proofs, fetchProofs, updat
               <SelectItem value="90d">Últimos 90 dias</SelectItem>
             </SelectContent>
           </Select>
-          {(courseFilter !== "all" || dateFilter !== "all") && (
-            <Button variant="ghost" size="sm" onClick={() => { setCourseFilter("all"); setDateFilter("all"); }}>
+          {(courseFilter !== "all" || provinceFilter !== "all" || dateFilter !== "all") && (
+            <Button variant="ghost" size="sm" onClick={() => { setCourseFilter("all"); setProvinceFilter("all"); setDateFilter("all"); }}>
               Limpar filtros
             </Button>
           )}
