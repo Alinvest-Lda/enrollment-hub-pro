@@ -155,7 +155,7 @@ const AboutUs = () => {
                   Ver Cursos <ArrowRight className="w-4 h-4 ml-1" />
                 </Button>
               </Link>
-              <a href={WHATSAPP_LINK} target="_blank" rel="noopener noreferrer">
+              <a href={whatsappLink} target="_blank" rel="noopener noreferrer">
                 <Button size="lg" variant="whatsapp">
                   <MessageCircle className="w-4 h-4" /> Falar Connosco
                 </Button>
