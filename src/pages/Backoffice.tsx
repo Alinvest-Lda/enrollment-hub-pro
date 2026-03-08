@@ -22,6 +22,7 @@ import WhatsAppTemplatesTab from "@/components/backoffice/WhatsAppTemplatesTab";
 import QuotationsTab from "@/components/backoffice/QuotationsTab";
 import PaymentPlansTab from "@/components/backoffice/PaymentPlansTab";
 import CertificatesTab from "@/components/backoffice/CertificatesTab";
+import PartnersTab from "@/components/backoffice/PartnersTab";
 import { useBackofficeData } from "@/hooks/use-backoffice-data";
 import RealtimeNotifications from "@/components/backoffice/RealtimeNotifications";
 import { supabase } from "@/integrations/supabase/client";
