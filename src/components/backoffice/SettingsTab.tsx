@@ -4,6 +4,7 @@ import {
   MessageSquare, Globe, Shield, ToggleLeft, ToggleRight,
   Plus, Trash2, Pencil, X, Check,
 } from "lucide-react";
+import CollapsibleSection from "@/components/CollapsibleSection";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -304,31 +305,32 @@ const SettingsTab = () => {
 
           return (
             <Card key={category} className="border-border">
-              <CardHeader className="pb-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle className="font-heading text-base flex items-center gap-2">
+              <CardContent className="p-5">
+                <CollapsibleSection
+                  title={config.title}
+                  icon={
+                    <div className="flex items-center gap-2">
                       <div className="p-2 rounded-lg bg-primary/5">
                         <Icon className="w-4 h-4 text-primary" />
                       </div>
-                      {config.title}
                       <Badge variant="secondary" className="text-[10px]">{items.length}</Badge>
-                    </CardTitle>
-                    <CardDescription className="text-xs mt-1">{config.description}</CardDescription>
+                    </div>
+                  }
+                  defaultOpen={category === "general" || category === "payments"}
+                >
+                  <div className="flex justify-between items-center mb-3">
+                    <p className="text-xs text-muted-foreground">{config.description}</p>
+                    {config.allowAdd && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => { setAddCategory(category); setAddingOpen(true); }}
+                      >
+                        <Plus className="w-3.5 h-3.5 mr-1" />
+                        Adicionar
+                      </Button>
+                    )}
                   </div>
-                  {config.allowAdd && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => { setAddCategory(category); setAddingOpen(true); }}
-                    >
-                      <Plus className="w-3.5 h-3.5 mr-1" />
-                      Adicionar
-                    </Button>
-                  )}
-                </div>
-              </CardHeader>
-              <CardContent>
                 {items.length === 0 ? (
                   <div className="text-center py-8 text-muted-foreground text-sm">
                     Nenhum campo configurado. Clique em "Adicionar" para criar.
@@ -513,6 +515,7 @@ const SettingsTab = () => {
                     )}
                   </div>
                 )}
+                </CollapsibleSection>
               </CardContent>
             </Card>
           );

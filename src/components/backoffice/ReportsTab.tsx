@@ -12,7 +12,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Download, Filter, TrendingUp, TrendingDown, Minus, Calendar, FileSpreadsheet } from "lucide-react";
+import { Download, Filter, TrendingUp, TrendingDown, Minus, Calendar, FileSpreadsheet, BarChart3, Users } from "lucide-react";
+import CollapsibleSection from "@/components/CollapsibleSection";
 import { Enrollment, TrainingRequest, CourseRow, statusConfig } from "@/hooks/use-backoffice-data";
 import { exportToCSV, enrollmentCSVColumns, trainingRequestCSVColumns } from "@/lib/csv-export";
 import { formatCurrency } from "@/lib/courses-data";
@@ -364,6 +365,10 @@ export default function ReportsTab({ enrollments, trainingRequests, courses }: P
       </div>
 
       {/* Charts */}
+      <CollapsibleSection
+        title="Gráficos de Análise"
+        icon={<BarChart3 className="w-5 h-5 text-accent" />}
+      >
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Revenue timeline */}
         <Card className="lg:col-span-2">
@@ -500,8 +505,14 @@ export default function ReportsTab({ enrollments, trainingRequests, courses }: P
           </CardContent>
         </Card>
       </div>
+      </CollapsibleSection>
 
       {/* Top students table */}
+      <CollapsibleSection
+        title="Top Estudantes por Receita"
+        icon={<Users className="w-5 h-5 text-accent" />}
+        defaultOpen={false}
+      >
       <Card>
         <CardHeader className="pb-2">
           <div className="flex items-center justify-between">
@@ -538,6 +549,7 @@ export default function ReportsTab({ enrollments, trainingRequests, courses }: P
           </div>
         </CardContent>
       </Card>
+      </CollapsibleSection>
     </div>
   );
 }
