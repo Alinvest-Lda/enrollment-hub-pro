@@ -273,36 +273,87 @@ export default function QuotationsTab({ trainingRequests }: Props) {
             <FileText className="w-5 h-5 text-primary" />
             Cotações
           </h2>
-          <p className="text-sm text-muted-foreground mt-1">Gerencie cotações para pedidos de formação</p>
+          <p className="text-sm text-muted-foreground mt-1">Crie cotações a partir dos pedidos de formação recebidos</p>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" size="sm" onClick={fetchQuotations}><RefreshCw className="w-4 h-4" /></Button>
-          <Button size="sm" onClick={openCreate}><Plus className="w-4 h-4 mr-1" />Nova Cotação</Button>
+          <Button size="sm" variant="outline" onClick={openCreate}><Plus className="w-4 h-4 mr-1" />Cotação Manual</Button>
         </div>
       </div>
 
-      {/* Quick generate from requests */}
-      {trainingRequests.filter((r) => r.status === "new" || r.status === "contacted").length > 0 && (
-        <Card className="border-primary/20 bg-primary/5">
-          <CardContent className="p-4">
-            <p className="text-sm font-heading font-semibold mb-2">Gerar cotação de pedido pendente:</p>
-            <div className="flex flex-wrap gap-2">
-              {trainingRequests
-                .filter((r) => r.status === "new" || r.status === "contacted")
-                .slice(0, 5)
-                .map((r) => (
-                  <Button key={r.id} variant="outline" size="sm" onClick={() => openFromRequest(r)} className="text-xs">
-                    <FileText className="w-3 h-3 mr-1" />
-                    {r.full_name} — {r.training_topic.substring(0, 30)}
-                  </Button>
-                ))}
+      {/* Primary: Training Requests as source */}
+      <Card className="border-primary/20">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-sm font-heading flex items-center gap-2">
+            <Send className="w-4 h-4 text-primary" />
+            Pedidos de Formação Pendentes
+          </CardTitle>
+          <p className="text-xs text-muted-foreground">Selecione um pedido para gerar uma cotação com os dados pré-preenchidos</p>
+        </CardHeader>
+        <CardContent>
+          {trainingRequests.filter(r => r.status === "new" || r.status === "contacted").length === 0 ? (
+            <div className="text-center py-6 text-muted-foreground">
+              <FileText className="w-8 h-8 mx-auto mb-2 opacity-30" />
+              <p className="text-sm">Sem pedidos pendentes de cotação.</p>
+              <p className="text-xs mt-1">Novos pedidos aparecerão aqui automaticamente.</p>
             </div>
-          </CardContent>
-        </Card>
-      )}
+          ) : (
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="text-xs">Cliente</TableHead>
+                    <TableHead className="text-xs">Tipo</TableHead>
+                    <TableHead className="text-xs hidden md:table-cell">Tema</TableHead>
+                    <TableHead className="text-xs hidden sm:table-cell">Participantes</TableHead>
+                    <TableHead className="text-xs hidden sm:table-cell">Orçamento</TableHead>
+                    <TableHead className="text-xs">Data</TableHead>
+                    <TableHead className="text-xs">Acção</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {trainingRequests
+                    .filter(r => r.status === "new" || r.status === "contacted")
+                    .map(r => {
+                      const hasQuotation = quotations.some(q => q.training_request_id === r.id);
+                      return (
+                        <TableRow key={r.id} className={hasQuotation ? "opacity-50" : ""}>
+                          <TableCell>
+                            <p className="text-sm font-medium">{r.full_name}</p>
+                            <p className="text-[10px] text-muted-foreground">{r.email}</p>
+                          </TableCell>
+                          <TableCell>
+                            <Badge variant="outline" className="text-[10px]">{r.client_type}</Badge>
+                          </TableCell>
+                          <TableCell className="hidden md:table-cell text-sm max-w-[200px] truncate">{r.training_topic}</TableCell>
+                          <TableCell className="hidden sm:table-cell text-sm">{r.num_participants || "—"}</TableCell>
+                          <TableCell className="hidden sm:table-cell text-sm">{r.budget_range || "—"}</TableCell>
+                          <TableCell className="text-xs text-muted-foreground">{new Date(r.created_at || "").toLocaleDateString("pt-PT")}</TableCell>
+                          <TableCell>
+                            {hasQuotation ? (
+                              <Badge variant="secondary" className="text-[10px]">Cotação criada</Badge>
+                            ) : (
+                              <Button size="sm" className="h-7 text-xs" onClick={() => openFromRequest(r)}>
+                                <FileText className="w-3 h-3 mr-1" />Gerar Cotação
+                              </Button>
+                            )}
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                </TableBody>
+              </Table>
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
-      {/* Search */}
-      <Input placeholder="Pesquisar cotações..." value={search} onChange={(e) => setSearch(e.target.value)} className="max-w-sm" />
+      {/* Search existing quotations */}
+      <Separator />
+      <div className="flex items-center justify-between">
+        <h3 className="font-heading text-sm font-semibold">Cotações Existentes ({quotations.length})</h3>
+        <Input placeholder="Pesquisar cotações..." value={search} onChange={(e) => setSearch(e.target.value)} className="max-w-xs h-9" />
+      </div>
 
       {/* List */}
       {filtered.length === 0 ? (
