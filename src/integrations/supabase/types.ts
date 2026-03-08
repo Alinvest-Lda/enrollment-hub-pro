@@ -19,12 +19,15 @@ export type Database = {
           background_color: string
           body_template: string
           border_style: string
+          closing_text: string
           created_at: string
           description: string
           example_image_url: string | null
           footer_text: string
           header_text: string
           id: string
+          institution_name: string
+          intro_text: string
           is_active: boolean
           is_default: boolean
           language: string
@@ -32,6 +35,8 @@ export type Database = {
           name: string
           signature_label: string
           signature_name: string
+          signature2_label: string
+          signature2_name: string
           updated_at: string
           variables: string[]
         }
@@ -39,12 +44,15 @@ export type Database = {
           background_color?: string
           body_template?: string
           border_style?: string
+          closing_text?: string
           created_at?: string
           description?: string
           example_image_url?: string | null
           footer_text?: string
           header_text?: string
           id?: string
+          institution_name?: string
+          intro_text?: string
           is_active?: boolean
           is_default?: boolean
           language?: string
@@ -52,6 +60,8 @@ export type Database = {
           name: string
           signature_label?: string
           signature_name?: string
+          signature2_label?: string
+          signature2_name?: string
           updated_at?: string
           variables?: string[]
         }
@@ -59,12 +69,15 @@ export type Database = {
           background_color?: string
           body_template?: string
           border_style?: string
+          closing_text?: string
           created_at?: string
           description?: string
           example_image_url?: string | null
           footer_text?: string
           header_text?: string
           id?: string
+          institution_name?: string
+          intro_text?: string
           is_active?: boolean
           is_default?: boolean
           language?: string
@@ -72,6 +85,8 @@ export type Database = {
           name?: string
           signature_label?: string
           signature_name?: string
+          signature2_label?: string
+          signature2_name?: string
           updated_at?: string
           variables?: string[]
         }
@@ -93,6 +108,7 @@ export type Database = {
           status: string
           student_name: string
           template_id: string | null
+          trainer_name: string
           updated_at: string
         }
         Insert: {
@@ -110,6 +126,7 @@ export type Database = {
           status?: string
           student_name: string
           template_id?: string | null
+          trainer_name?: string
           updated_at?: string
         }
         Update: {
@@ -127,6 +144,7 @@ export type Database = {
           status?: string
           student_name?: string
           template_id?: string | null
+          trainer_name?: string
           updated_at?: string
         }
         Relationships: [
