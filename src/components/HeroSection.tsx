@@ -88,7 +88,7 @@ const HeroSection = () => {
   const { data: settings } = useSystemSettings();
   const whatsappNumber = settings?.whatsappNumber || "";
   return (
-    <section className="relative min-h-[92vh] flex items-center overflow-hidden">
+    <section className="relative min-h-[85vh] sm:min-h-[92vh] flex items-center overflow-hidden">
       {/* Background with subtle zoom animation */}
       <motion.img
         src={heroBg}
