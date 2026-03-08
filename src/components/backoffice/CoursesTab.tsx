@@ -1,17 +1,19 @@
-import { useState } from "react";
-import { Plus, Pencil, Trash2, Eye, EyeOff, Search } from "lucide-react";
+import { useState, useRef } from "react";
+import { Plus, Pencil, Trash2, Eye, EyeOff, Search, Upload, X, Image as ImageIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { CourseRow } from "@/hooks/use-backoffice-data";
 import { formatCurrency } from "@/lib/courses-data";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 interface Props {
   courses: CourseRow[];
@@ -31,6 +33,8 @@ export default function CoursesTab({ courses, saveCourse, deleteCourse, toggleCo
   const [editing, setEditing] = useState<Partial<CourseRow> | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [highlightsText, setHighlightsText] = useState("");
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const filtered = courses.filter((c) => c.title.toLowerCase().includes(search.toLowerCase()) || c.category.toLowerCase().includes(search.toLowerCase()));
 
@@ -51,6 +55,27 @@ export default function CoursesTab({ courses, saveCourse, deleteCourse, toggleCo
     const courseData = { ...editing, highlights: highlightsText.split("\n").filter(Boolean) } as CourseRow;
     const ok = await saveCourse(courseData);
     if (ok) { setDialogOpen(false); setEditing(null); }
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/")) { toast.error("Selecione um ficheiro de imagem"); return; }
+    if (file.size > 5 * 1024 * 1024) { toast.error("Imagem deve ter no máximo 5MB"); return; }
+
+    setUploading(true);
+    const slug = editing?.slug || "course";
+    const ext = file.name.split(".").pop();
+    const filePath = `${slug}-${Date.now()}.${ext}`;
+
+    const { error } = await supabase.storage.from("course-images").upload(filePath, file, { upsert: true });
+    if (error) { toast.error("Erro ao enviar imagem"); setUploading(false); return; }
+
+    const { data: urlData } = supabase.storage.from("course-images").getPublicUrl(filePath);
+    updateField("image", urlData.publicUrl);
+    toast.success("Imagem enviada com sucesso");
+    setUploading(false);
+    if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
   const updateField = (field: string, value: any) => setEditing((prev) => prev ? { ...prev, [field]: value } : prev);
@@ -162,6 +187,53 @@ export default function CoursesTab({ courses, saveCourse, deleteCourse, toggleCo
               <div>
                 <Label>Descrição</Label>
                 <Textarea value={editing.description ?? ""} onChange={(e) => updateField("description", e.target.value)} rows={3} />
+              </div>
+
+              <div>
+                <Label>Imagem do Curso</Label>
+                <div className="mt-1 space-y-2">
+                  {editing.image && (
+                    <div className="relative w-full h-36 rounded-lg overflow-hidden border border-border">
+                      <img src={editing.image} alt="Preview" className="w-full h-full object-cover" />
+                      <Button
+                        variant="destructive"
+                        size="icon"
+                        className="absolute top-2 right-2 h-7 w-7"
+                        onClick={() => updateField("image", "")}
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </Button>
+                    </div>
+                  )}
+                  <div className="flex gap-2">
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={handleImageUpload}
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      disabled={uploading}
+                      onClick={() => fileInputRef.current?.click()}
+                    >
+                      {uploading ? (
+                        <span className="animate-pulse">A enviar...</span>
+                      ) : (
+                        <><Upload className="w-4 h-4 mr-1" /> Carregar Imagem</>
+                      )}
+                    </Button>
+                    <Input
+                      placeholder="Ou cole um URL de imagem"
+                      value={editing.image ?? ""}
+                      onChange={(e) => updateField("image", e.target.value)}
+                      className="text-xs"
+                    />
+                  </div>
+                </div>
               </div>
 
               <div>
