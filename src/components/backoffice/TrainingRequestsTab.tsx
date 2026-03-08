@@ -149,6 +149,9 @@ export default function TrainingRequestsTab({ requests, updateStatus, updateNote
                           <Badge variant={(statusConfig[req.status] || statusConfig.new).variant}>
                             {(statusConfig[req.status] || statusConfig.new).label}
                           </Badge>
+                          {quotationMap[req.id] && (
+                            <Badge variant="secondary" className="ml-1 text-[10px]">Cotação</Badge>
+                          )}
                         </TableCell>
                         <TableCell>
                           <div className="flex items-center gap-1">
