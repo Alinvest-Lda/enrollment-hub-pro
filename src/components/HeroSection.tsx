@@ -234,7 +234,7 @@ const HeroSection = () => {
                 animate={{ opacity: [0.5, 0.8, 0.5] }}
                 transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
               />
-              <div className="relative bg-card/80 backdrop-blur-lg rounded-2xl border border-primary-foreground/15 overflow-hidden shadow-card">
+              <div className="relative bg-card/40 backdrop-blur-2xl rounded-2xl border border-primary-foreground/10 overflow-hidden shadow-card">
                 {/* Featured highlight banner */}
                 <div className="bg-navy-gradient px-6 py-3 border-b border-primary-foreground/10">
                   <div className="flex items-center gap-2 justify-center">
