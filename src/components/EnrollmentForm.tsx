@@ -56,6 +56,7 @@ const EnrollmentForm = ({ course }: EnrollmentFormProps) => {
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | null>(null);
   const [enrollmentId, setEnrollmentId] = useState<string | null>(null);
   const { data: settings } = useSystemSettings();
+  const { addNotification } = useAppNotifications();
 
   const { register, handleSubmit, watch, setValue, getValues, formState: { errors, isSubmitting } } = useForm<EnrollmentFormData>({
     resolver: zodResolver(enrollmentSchema),
