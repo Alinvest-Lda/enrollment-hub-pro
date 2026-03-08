@@ -1,5 +1,9 @@
 import { useState, useEffect } from "react";
-import { Save, RefreshCw, Settings2, Smartphone, Building2, Banknote, MessageSquare, Globe, Shield, ToggleLeft, ToggleRight } from "lucide-react";
+import {
+  Save, RefreshCw, Settings2, Smartphone, Building2, Banknote,
+  MessageSquare, Globe, Shield, ToggleLeft, ToggleRight,
+  Plus, Trash2, Pencil, X, Check,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -7,6 +11,13 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 
@@ -20,20 +31,37 @@ interface Setting {
   is_secret: boolean;
 }
 
-const categoryConfig: Record<string, { icon: React.ElementType; title: string; description: string }> = {
-  general: { icon: Globe, title: "Informações Gerais", description: "Dados da empresa e contactos" },
-  whatsapp: { icon: MessageSquare, title: "WhatsApp Business", description: "Configuração da Meta Cloud API" },
-  mpesa: { icon: Smartphone, title: "M-Pesa API", description: "Configuração do gateway M-Pesa Vodacom" },
-  bank: { icon: Building2, title: "Dados Bancários", description: "Conta para transferências bancárias" },
-  emola: { icon: Banknote, title: "e-Mola", description: "Dados para pagamentos e-Mola" },
-  payments: { icon: ToggleLeft, title: "Canais de Pagamento", description: "Activar ou desactivar métodos de pagamento" },
+const categoryConfig: Record<string, { icon: React.ElementType; title: string; description: string; allowAdd: boolean }> = {
+  general: { icon: Globe, title: "Informações Gerais", description: "Dados da empresa e contactos", allowAdd: true },
+  whatsapp: { icon: MessageSquare, title: "WhatsApp Business", description: "Configuração da Meta Cloud API", allowAdd: true },
+  mpesa: { icon: Smartphone, title: "M-Pesa API", description: "Configuração do gateway M-Pesa Vodacom", allowAdd: true },
+  bank: { icon: Building2, title: "Contas Bancárias", description: "Contas para transferências bancárias", allowAdd: true },
+  emola: { icon: Banknote, title: "e-Mola", description: "Dados para pagamentos e-Mola", allowAdd: true },
+  payments: { icon: ToggleLeft, title: "Canais de Pagamento", description: "Activar ou desactivar métodos de pagamento", allowAdd: false },
 };
+
+const categoryOrder = ["general", "payments", "mpesa", "whatsapp", "bank", "emola"];
+
+interface NewSettingForm {
+  key: string;
+  label: string;
+  value: string;
+  description: string;
+  is_secret: boolean;
+}
+
+const emptyNewSetting: NewSettingForm = { key: "", label: "", value: "", description: "", is_secret: false };
 
 const SettingsTab = () => {
   const [settings, setSettings] = useState<Setting[]>([]);
   const [editedValues, setEditedValues] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [addCategory, setAddCategory] = useState<string | null>(null);
+  const [newSetting, setNewSetting] = useState<NewSettingForm>(emptyNewSetting);
+  const [addingOpen, setAddingOpen] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editForm, setEditForm] = useState<{ label: string; description: string; is_secret: boolean }>({ label: "", description: "", is_secret: false });
 
   const fetchSettings = async () => {
     setLoading(true);
@@ -92,6 +120,64 @@ const SettingsTab = () => {
     setSaving(false);
   };
 
+  const handleAddSetting = async () => {
+    if (!addCategory || !newSetting.key.trim() || !newSetting.label.trim()) {
+      toast({ title: "Erro", description: "Preencha pelo menos a chave e o rótulo.", variant: "destructive" });
+      return;
+    }
+
+    const sanitizedKey = newSetting.key.trim().toLowerCase().replace(/[^a-z0-9_]/g, "_");
+
+    const { error } = await supabase.from("system_settings").insert({
+      key: sanitizedKey,
+      label: newSetting.label.trim(),
+      value: newSetting.value.trim(),
+      description: newSetting.description.trim(),
+      category: addCategory,
+      is_secret: newSetting.is_secret,
+    } as any);
+
+    if (error) {
+      toast({ title: "Erro", description: error.message.includes("duplicate") ? "Já existe uma configuração com esta chave." : "Não foi possível adicionar.", variant: "destructive" });
+    } else {
+      toast({ title: "Adicionado", description: `Campo "${newSetting.label}" adicionado com sucesso.` });
+      setNewSetting(emptyNewSetting);
+      setAddingOpen(false);
+      setAddCategory(null);
+      await fetchSettings();
+    }
+  };
+
+  const handleDeleteSetting = async (setting: Setting) => {
+    const { error } = await supabase.from("system_settings").delete().eq("id", setting.id);
+    if (error) {
+      toast({ title: "Erro", description: "Não foi possível eliminar.", variant: "destructive" });
+    } else {
+      toast({ title: "Eliminado", description: `"${setting.label}" foi removido.` });
+      await fetchSettings();
+    }
+  };
+
+  const handleStartEdit = (setting: Setting) => {
+    setEditingId(setting.id);
+    setEditForm({ label: setting.label, description: setting.description, is_secret: setting.is_secret });
+  };
+
+  const handleSaveEdit = async (setting: Setting) => {
+    const { error } = await supabase
+      .from("system_settings")
+      .update({ label: editForm.label, description: editForm.description, is_secret: editForm.is_secret } as any)
+      .eq("id", setting.id);
+
+    if (error) {
+      toast({ title: "Erro", description: "Não foi possível actualizar.", variant: "destructive" });
+    } else {
+      toast({ title: "Actualizado" });
+      setEditingId(null);
+      await fetchSettings();
+    }
+  };
+
   const groupedSettings = settings.reduce<Record<string, Setting[]>>((acc, s) => {
     if (!acc[s.category]) acc[s.category] = [];
     acc[s.category].push(s);
@@ -108,11 +194,10 @@ const SettingsTab = () => {
     );
   }
 
-  const categoryOrder = ["general", "payments", "mpesa", "whatsapp", "bank", "emola"];
-
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      {/* Header */}
+      <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
           <h2 className="font-heading text-xl font-bold flex items-center gap-2">
             <Settings2 className="w-5 h-5 text-accent" />
@@ -129,7 +214,7 @@ const SettingsTab = () => {
           </Button>
           <Button variant="navy" size="sm" onClick={handleSave} disabled={saving || !hasChanges}>
             <Save className="w-4 h-4" />
-            {saving ? "A guardar..." : "Guardar Alterações"}
+            {saving ? "A guardar..." : "Guardar Valores"}
           </Button>
         </div>
       </div>
@@ -137,30 +222,118 @@ const SettingsTab = () => {
       {hasChanges && (
         <div className="bg-warning/10 border border-warning/30 rounded-lg p-3 text-sm text-warning flex items-center gap-2">
           <Shield className="w-4 h-4" />
-          Tem alterações por guardar. Clique em "Guardar Alterações" para aplicar.
+          Tem alterações de valores por guardar. Clique em "Guardar Valores" para aplicar.
         </div>
       )}
 
+      {/* Add Setting Dialog */}
+      <Dialog open={addingOpen} onOpenChange={(open) => { setAddingOpen(open); if (!open) setNewSetting(emptyNewSetting); }}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="font-heading">Adicionar Campo</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <div>
+              <Label className="text-sm font-medium">Categoria</Label>
+              <p className="text-sm text-muted-foreground">{addCategory ? (categoryConfig[addCategory]?.title || addCategory) : ""}</p>
+            </div>
+            <div>
+              <Label className="text-sm font-medium">Chave (identificador único)</Label>
+              <Input
+                value={newSetting.key}
+                onChange={(e) => setNewSetting((p) => ({ ...p, key: e.target.value }))}
+                placeholder="ex: bank_account_bci"
+                className="mt-1"
+              />
+              <p className="text-xs text-muted-foreground mt-1">Só letras minúsculas, números e underscore</p>
+            </div>
+            <div>
+              <Label className="text-sm font-medium">Rótulo</Label>
+              <Input
+                value={newSetting.label}
+                onChange={(e) => setNewSetting((p) => ({ ...p, label: e.target.value }))}
+                placeholder="ex: Conta BCI"
+                className="mt-1"
+              />
+            </div>
+            <div>
+              <Label className="text-sm font-medium">Valor</Label>
+              <Input
+                value={newSetting.value}
+                onChange={(e) => setNewSetting((p) => ({ ...p, value: e.target.value }))}
+                placeholder="ex: 123456789"
+                className="mt-1"
+              />
+            </div>
+            <div>
+              <Label className="text-sm font-medium">Descrição</Label>
+              <Input
+                value={newSetting.description}
+                onChange={(e) => setNewSetting((p) => ({ ...p, description: e.target.value }))}
+                placeholder="ex: NIB da conta do BCI"
+                className="mt-1"
+              />
+            </div>
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id="is_secret"
+                checked={newSetting.is_secret}
+                onChange={(e) => setNewSetting((p) => ({ ...p, is_secret: e.target.checked }))}
+                className="rounded border-border"
+              />
+              <Label htmlFor="is_secret" className="text-sm">Campo secreto (ocultar valor)</Label>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setAddingOpen(false)}>Cancelar</Button>
+            <Button onClick={handleAddSetting}>
+              <Plus className="w-4 h-4 mr-1" />
+              Adicionar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Settings Grid */}
       <div className="grid gap-6">
         {categoryOrder.map((category) => {
-          const items = groupedSettings[category];
-          if (!items || items.length === 0) return null;
-          const config = categoryConfig[category] || { icon: Settings2, title: category, description: "" };
+          const items = groupedSettings[category] || [];
+          const config = categoryConfig[category] || { icon: Settings2, title: category, description: "", allowAdd: true };
           const Icon = config.icon;
 
           return (
             <Card key={category} className="border-border">
               <CardHeader className="pb-4">
-                <CardTitle className="font-heading text-base flex items-center gap-2">
-                  <div className="p-2 rounded-lg bg-primary/5">
-                    <Icon className="w-4 h-4 text-primary" />
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="font-heading text-base flex items-center gap-2">
+                      <div className="p-2 rounded-lg bg-primary/5">
+                        <Icon className="w-4 h-4 text-primary" />
+                      </div>
+                      {config.title}
+                      <Badge variant="secondary" className="text-[10px]">{items.length}</Badge>
+                    </CardTitle>
+                    <CardDescription className="text-xs mt-1">{config.description}</CardDescription>
                   </div>
-                  {config.title}
-                </CardTitle>
-                <CardDescription className="text-xs">{config.description}</CardDescription>
+                  {config.allowAdd && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => { setAddCategory(category); setAddingOpen(true); }}
+                    >
+                      <Plus className="w-3.5 h-3.5 mr-1" />
+                      Adicionar
+                    </Button>
+                  )}
+                </div>
               </CardHeader>
-              <CardContent className="space-y-4">
-                {category === "payments" ? (
+              <CardContent>
+                {items.length === 0 ? (
+                  <div className="text-center py-8 text-muted-foreground text-sm">
+                    Nenhum campo configurado. Clique em "Adicionar" para criar.
+                  </div>
+                ) : category === "payments" ? (
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     {items.map((setting) => {
                       const isEnabled = editedValues[setting.key] === "true";
@@ -179,88 +352,164 @@ const SettingsTab = () => {
                             <p className="text-xs text-muted-foreground">{setting.description}</p>
                           </div>
                           {isEnabled ? (
-                            <ToggleRight className="w-6 h-6 text-success" />
+                            <ToggleRight className="w-6 h-6 text-success shrink-0" />
                           ) : (
-                            <ToggleLeft className="w-6 h-6 text-muted-foreground" />
+                            <ToggleLeft className="w-6 h-6 text-muted-foreground shrink-0" />
                           )}
                         </div>
                       );
                     })}
                   </div>
-                ) : category === "mpesa" && items.some((s) => s.key === "mpesa_environment") ? (
-                  <div className="space-y-4">
-                    {items.map((setting) => (
-                      <div key={setting.key}>
-                        <Label className="text-sm font-medium mb-1.5 block">{setting.label}</Label>
-                        {setting.key === "mpesa_environment" ? (
-                          <Select
-                            value={editedValues[setting.key] || "sandbox"}
-                            onValueChange={(val) => handleChange(setting.key, val)}
-                          >
-                            <SelectTrigger className="w-full">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="sandbox">Sandbox (Teste)</SelectItem>
-                              <SelectItem value="production">Produção</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        ) : (
-                          <Input
-                            value={editedValues[setting.key] || ""}
-                            onChange={(e) => handleChange(setting.key, e.target.value)}
-                            placeholder={setting.description}
-                          />
-                        )}
-                        <p className="text-xs text-muted-foreground mt-1">{setting.description}</p>
-                      </div>
-                    ))}
-                    <Separator />
-                    <div className="bg-muted/50 rounded-lg p-4">
-                      <p className="text-xs font-heading font-semibold mb-2 flex items-center gap-1.5">
-                        <Shield className="w-3.5 h-3.5 text-accent" />
-                        Chaves API (Seguras)
-                      </p>
-                      <p className="text-xs text-muted-foreground mb-3">
-                        As chaves API do M-Pesa (API Key e Public Key) estão armazenadas de forma segura como segredos do sistema.
-                        Para as alterar, contacte o administrador do sistema.
-                      </p>
-                      <div className="flex flex-wrap gap-2">
-                        <Badge variant="outline" className="text-xs">MPESA_API_KEY ✓</Badge>
-                        <Badge variant="outline" className="text-xs">MPESA_PUBLIC_KEY ✓</Badge>
-                        <Badge variant="outline" className="text-xs">MPESA_SERVICE_PROVIDER_CODE ✓</Badge>
-                      </div>
-                    </div>
-                  </div>
                 ) : (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {items.map((setting) => (
-                      <div key={setting.key}>
-                        <Label className="text-sm font-medium mb-1.5 block">{setting.label}</Label>
-                        <Input
-                          value={editedValues[setting.key] || ""}
-                          onChange={(e) => handleChange(setting.key, e.target.value)}
-                          placeholder={setting.description}
-                          type={setting.is_secret ? "password" : "text"}
-                        />
-                        <p className="text-xs text-muted-foreground mt-1">{setting.description}</p>
-                      </div>
-                    ))}
-                    {category === "whatsapp" && (
-                      <>
-                        <Separator className="col-span-full" />
-                        <div className="col-span-full bg-muted/50 rounded-lg p-4">
-                          <p className="text-xs font-heading font-semibold mb-2 flex items-center gap-1.5">
-                            <Shield className="w-3.5 h-3.5 text-accent" />
-                            Token de Acesso (Seguro)
-                          </p>
-                          <p className="text-xs text-muted-foreground mb-3">
-                            O token de acesso da Meta Cloud API está armazenado como segredo do sistema.
-                            Configure-o na secção de segredos para activar o envio automático de mensagens.
-                          </p>
-                          <Badge variant="outline" className="text-xs">WHATSAPP_ACCESS_TOKEN — Não configurado</Badge>
+                  <div className="space-y-3">
+                    {items.map((setting) => {
+                      const isEditing = editingId === setting.id;
+
+                      return (
+                        <div
+                          key={setting.key}
+                          className="group flex flex-col sm:flex-row sm:items-start gap-3 p-3 rounded-lg border border-border/50 hover:border-border transition-colors"
+                        >
+                          <div className="flex-1 space-y-2 min-w-0">
+                            {isEditing ? (
+                              <div className="space-y-2">
+                                <Input
+                                  value={editForm.label}
+                                  onChange={(e) => setEditForm((p) => ({ ...p, label: e.target.value }))}
+                                  placeholder="Rótulo"
+                                  className="h-8 text-sm"
+                                />
+                                <Input
+                                  value={editForm.description}
+                                  onChange={(e) => setEditForm((p) => ({ ...p, description: e.target.value }))}
+                                  placeholder="Descrição"
+                                  className="h-8 text-sm"
+                                />
+                              </div>
+                            ) : (
+                              <div>
+                                <div className="flex items-center gap-2">
+                                  <Label className="text-sm font-medium">{setting.label}</Label>
+                                  <Badge variant="outline" className="text-[9px] font-mono text-muted-foreground">{setting.key}</Badge>
+                                  {setting.is_secret && <Badge variant="secondary" className="text-[9px]">Secreto</Badge>}
+                                </div>
+                                {setting.description && (
+                                  <p className="text-xs text-muted-foreground mt-0.5">{setting.description}</p>
+                                )}
+                              </div>
+                            )}
+
+                            {/* Value field - only show for mpesa_environment as select */}
+                            {setting.key === "mpesa_environment" ? (
+                              <Select
+                                value={editedValues[setting.key] || "sandbox"}
+                                onValueChange={(val) => handleChange(setting.key, val)}
+                              >
+                                <SelectTrigger className="w-full h-9">
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="sandbox">Sandbox (Teste)</SelectItem>
+                                  <SelectItem value="production">Produção</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            ) : (
+                              <Input
+                                value={editedValues[setting.key] || ""}
+                                onChange={(e) => handleChange(setting.key, e.target.value)}
+                                placeholder={setting.description || "Valor..."}
+                                type={setting.is_secret ? "password" : "text"}
+                                className="h-9"
+                              />
+                            )}
+                          </div>
+
+                          {/* Action buttons */}
+                          <div className="flex items-center gap-1 shrink-0 sm:pt-1">
+                            {isEditing ? (
+                              <>
+                                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleSaveEdit(setting)} title="Guardar">
+                                  <Check className="w-3.5 h-3.5 text-success" />
+                                </Button>
+                                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setEditingId(null)} title="Cancelar">
+                                  <X className="w-3.5 h-3.5" />
+                                </Button>
+                              </>
+                            ) : (
+                              <>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
+                                  onClick={() => handleStartEdit(setting)}
+                                  title="Editar rótulo/descrição"
+                                >
+                                  <Pencil className="w-3.5 h-3.5" />
+                                </Button>
+                                <AlertDialog>
+                                  <AlertDialogTrigger asChild>
+                                    <Button
+                                      variant="ghost"
+                                      size="icon"
+                                      className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity text-destructive hover:text-destructive"
+                                      title="Eliminar"
+                                    >
+                                      <Trash2 className="w-3.5 h-3.5" />
+                                    </Button>
+                                  </AlertDialogTrigger>
+                                  <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                      <AlertDialogTitle>Eliminar "{setting.label}"?</AlertDialogTitle>
+                                      <AlertDialogDescription>
+                                        Esta acção é irreversível. O campo <strong>{setting.key}</strong> será permanentemente removido.
+                                      </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                      <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                      <AlertDialogAction
+                                        onClick={() => handleDeleteSetting(setting)}
+                                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                      >
+                                        Eliminar
+                                      </AlertDialogAction>
+                                    </AlertDialogFooter>
+                                  </AlertDialogContent>
+                                </AlertDialog>
+                              </>
+                            )}
+                          </div>
                         </div>
-                      </>
+                      );
+                    })}
+
+                    {/* Secure keys info for specific categories */}
+                    {category === "mpesa" && (
+                      <div className="bg-muted/50 rounded-lg p-4 mt-2">
+                        <p className="text-xs font-heading font-semibold mb-2 flex items-center gap-1.5">
+                          <Shield className="w-3.5 h-3.5 text-accent" />
+                          Chaves API (Seguras)
+                        </p>
+                        <p className="text-xs text-muted-foreground mb-3">
+                          As chaves API do M-Pesa estão armazenadas como segredos do sistema.
+                        </p>
+                        <div className="flex flex-wrap gap-2">
+                          <Badge variant="outline" className="text-xs">MPESA_API_KEY ✓</Badge>
+                          <Badge variant="outline" className="text-xs">MPESA_PUBLIC_KEY ✓</Badge>
+                          <Badge variant="outline" className="text-xs">MPESA_SERVICE_PROVIDER_CODE ✓</Badge>
+                        </div>
+                      </div>
+                    )}
+                    {category === "whatsapp" && (
+                      <div className="bg-muted/50 rounded-lg p-4 mt-2">
+                        <p className="text-xs font-heading font-semibold mb-2 flex items-center gap-1.5">
+                          <Shield className="w-3.5 h-3.5 text-accent" />
+                          Token de Acesso (Seguro)
+                        </p>
+                        <p className="text-xs text-muted-foreground mb-3">
+                          O token de acesso da Meta Cloud API está armazenado como segredo do sistema.
+                        </p>
+                        <Badge variant="outline" className="text-xs">WHATSAPP_ACCESS_TOKEN ✓</Badge>
+                      </div>
                     )}
                   </div>
                 )}
