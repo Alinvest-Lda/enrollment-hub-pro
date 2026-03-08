@@ -184,7 +184,7 @@ export default function TrainingRequestsTab({ requests, updateStatus, updateNote
                               </DialogContent>
                             </Dialog>
 
-                            <a href={getWhatsAppLink(`Olá ${req.full_name}, referente ao seu pedido de formação em "${req.training_topic}"...`)} target="_blank" rel="noopener noreferrer">
+                            <a href={getWhatsAppLinkFromNumber(settings?.whatsappNumber || "", `Olá ${req.full_name}, referente ao seu pedido de formação em "${req.training_topic}"...`)} target="_blank" rel="noopener noreferrer">
                               <Button variant="ghost" size="icon"><MessageCircle className="w-4 h-4" /></Button>
                             </a>
 
