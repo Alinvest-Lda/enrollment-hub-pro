@@ -75,8 +75,7 @@ export function useTeamMembers() {
   return useQuery({
     queryKey: ["team-members"],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("team_members")
+      const { data, error } = await (supabase.from("team_members" as any) as any)
         .select("*")
         .eq("is_active", true)
         .order("display_order");
