@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { MessageCircle, Mail, MapPin, Phone, Lock } from "lucide-react";
+import { MessageCircle, Mail, MapPin, Phone } from "lucide-react";
 import { WHATSAPP_LINK } from "@/lib/courses-data";
 import logo from "@/assets/logo.png";
 
