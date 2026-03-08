@@ -9,6 +9,8 @@ import AllCourses from "./pages/AllCourses";
 import AdminLogin from "./pages/AdminLogin";
 import Backoffice from "./pages/Backoffice";
 import AboutUs from "./pages/AboutUs";
+import StudentPayments from "./pages/StudentPayments";
+import VerifyCertificate from "./pages/VerifyCertificate";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
