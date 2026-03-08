@@ -65,6 +65,7 @@ interface TrainingRequest {
   num_participants: number | null;
   budget_range: string | null;
   status: string;
+  created_at: string;
 }
 
 const statusLabels: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
