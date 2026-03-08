@@ -38,6 +38,7 @@ const navItems: { id: Section; label: string; icon: React.ElementType; shortLabe
   { id: "quotations", label: "Cotações", icon: FileText, shortLabel: "Cotaç." },
   { id: "certificates", label: "Certificados", icon: Award, shortLabel: "Certif." },
   { id: "partners", label: "Parceiros", icon: Handshake, shortLabel: "Parceiros" },
+  { id: "reports", label: "Relatórios", icon: PieChart, shortLabel: "Relat." },
   { id: "payment_plans", label: "Pagamentos", icon: DollarSign, shortLabel: "Pagam." },
   { id: "whatsapp", label: "WhatsApp", icon: MessageSquare, shortLabel: "WhatsApp" },
   { id: "settings", label: "Configurações", icon: Settings, shortLabel: "Config." },
