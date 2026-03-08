@@ -90,8 +90,7 @@ export function useHeroStats() {
   return useQuery({
     queryKey: ["hero-stats"],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("hero_stats")
+      const { data, error } = await (supabase.from("hero_stats" as any) as any)
         .select("*")
         .eq("is_active", true)
         .order("display_order");
