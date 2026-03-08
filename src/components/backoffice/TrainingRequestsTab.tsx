@@ -51,6 +51,7 @@ interface Props {
 }
 
 export default function TrainingRequestsTab({ requests, updateStatus, updateNotes, deleteRequest }: Props) {
+  const { data: settings } = useSystemSettings();
   const [search, setSearch] = useState("");
   const [activeTab, setActiveTab] = useState("all");
   const [noteDraft, setNoteDraft] = useState<Record<string, string>>({});
