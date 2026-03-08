@@ -24,6 +24,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { formatCurrency } from "@/lib/courses-data";
 import { downloadQuotationPDF, getQuotationWhatsAppMessage, getQuotationEmailSubject, getQuotationEmailBody } from "@/lib/quotation-pdf";
+import { useSystemSettings } from "@/hooks/use-system-settings";
+import { QRCodeSVG } from "qrcode.react";
 
 interface QuotationItem {
   description: string;
