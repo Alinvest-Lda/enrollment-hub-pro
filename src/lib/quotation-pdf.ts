@@ -239,15 +239,7 @@ export async function generateQuotationPDF(
       totY += 2;
     }
 
-    if (hasEmola) {
-      doc.setFont("helvetica", "bold");
-      doc.text("e-Mola:", margin, totY);
-      totY += 4;
-      doc.setFont("helvetica", "normal");
-      if (bankDetails.emolaNumber) { doc.text(`Número: ${bankDetails.emolaNumber}`, margin + 2, totY); totY += 3.5; }
-      if (bankDetails.emolaName) { doc.text(`Nome: ${bankDetails.emolaName}`, margin + 2, totY); totY += 3.5; }
-      totY += 2;
-    }
+
 
     // QR Code on the right side
     if (paymentUrl) {
