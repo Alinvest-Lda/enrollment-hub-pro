@@ -15,8 +15,6 @@ interface BankDetails {
   bankAccountName?: string;
   bankAccountNumber?: string;
   bankNIB?: string;
-  emolaNumber?: string;
-  emolaName?: string;
 }
 
 interface QuotationData {
@@ -210,9 +208,8 @@ export async function generateQuotationPDF(
     : "";
 
   const hasBankDetails = bankDetails && (bankDetails.bankName || bankDetails.bankAccountNumber || bankDetails.bankNIB);
-  const hasEmola = bankDetails && bankDetails.emolaNumber;
 
-  if (hasBankDetails || hasEmola || paymentUrl) {
+  if (hasBankDetails || paymentUrl) {
     // Section header
     doc.setFontSize(9);
     doc.setFont("helvetica", "bold");
@@ -242,15 +239,7 @@ export async function generateQuotationPDF(
       totY += 2;
     }
 
-    if (hasEmola) {
-      doc.setFont("helvetica", "bold");
-      doc.text("e-Mola:", margin, totY);
-      totY += 4;
-      doc.setFont("helvetica", "normal");
-      if (bankDetails.emolaNumber) { doc.text(`Número: ${bankDetails.emolaNumber}`, margin + 2, totY); totY += 3.5; }
-      if (bankDetails.emolaName) { doc.text(`Nome: ${bankDetails.emolaName}`, margin + 2, totY); totY += 3.5; }
-      totY += 2;
-    }
+
 
     // QR Code on the right side
     if (paymentUrl) {
