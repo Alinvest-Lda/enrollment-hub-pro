@@ -167,7 +167,21 @@ export default function EnrollmentsTab({ enrollments, proofs, fetchProofs, updat
                                     <div><span className="text-muted-foreground">NUIT:</span> {enrollment.nuit || "—"}</div>
                                     <div><span className="text-muted-foreground">Curso:</span> {enrollment.course_name}</div>
                                     <div><span className="text-muted-foreground">Plano:</span> {enrollment.payment_plan}</div>
-                                    <div className="col-span-2"><span className="text-muted-foreground">Valor:</span> {formatCurrency(enrollment.amount_due)} / {formatCurrency(enrollment.total_price)}</div>
+                                    <div className="col-span-2 flex items-center justify-between">
+                                      <span><span className="text-muted-foreground">Valor:</span> {formatCurrency(enrollment.amount_due)} / {formatCurrency(enrollment.total_price)}</span>
+                                      <Button
+                                        size="sm"
+                                        variant="outline"
+                                        className="h-7 text-xs"
+                                        onClick={() => {
+                                          const url = `${window.location.origin}/pagamentos/${enrollment.id}`;
+                                          navigator.clipboard.writeText(url);
+                                          toast({ title: "Link copiado!" });
+                                        }}
+                                      >
+                                        <Link2 className="w-3 h-3 mr-1" />Link Pagamentos
+                                      </Button>
+                                    </div>
                                     </div>
 
                                   {enrollment.message && (
