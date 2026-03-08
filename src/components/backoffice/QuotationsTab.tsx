@@ -272,8 +272,17 @@ export default function QuotationsTab({ trainingRequests }: Props) {
     window.print();
   };
 
+  const getBankDetails = () => ({
+    bankName: sysSettings?.bankName || "",
+    bankAccountName: sysSettings?.bankAccountName || "",
+    bankAccountNumber: sysSettings?.bankAccountNumber || "",
+    bankNIB: sysSettings?.bankNIB || "",
+    emolaNumber: sysSettings?.emolaNumber || "",
+    emolaName: sysSettings?.emolaName || "",
+  });
+
   const handleDownloadPDF = async (q: Quotation) => {
-    await downloadQuotationPDF(q as any);
+    await downloadQuotationPDF(q as any, getBankDetails());
     toast({ title: "PDF descarregado!" });
   };
 
