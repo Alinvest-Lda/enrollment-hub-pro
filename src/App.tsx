@@ -14,6 +14,8 @@ import StudentPayments from "./pages/StudentPayments";
 import VerifyCertificate from "./pages/VerifyCertificate";
 import QuotationPayment from "./pages/QuotationPayment";
 import NotFound from "./pages/NotFound";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsOfUse from "./pages/TermsOfUse";
 import ScrollToTop from "./components/ScrollToTop";
 
 const queryClient = new QueryClient();
@@ -36,6 +38,8 @@ const App = () => (
             <Route path="/cotacao/:quotationId" element={<QuotationPayment />} />
             <Route path="/admin" element={<AdminLogin />} />
             <Route path="/backoffice" element={<Backoffice />} />
+            <Route path="/politica-de-privacidade" element={<PrivacyPolicy />} />
+            <Route path="/termos-de-uso" element={<TermsOfUse />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
