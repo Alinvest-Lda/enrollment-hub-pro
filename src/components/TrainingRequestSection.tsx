@@ -13,11 +13,19 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
+const PROVINCES = [
+  "Maputo Cidade", "Maputo Província", "Gaza", "Inhambane",
+  "Sofala", "Manica", "Tete", "Zambézia",
+  "Nampula", "Cabo Delgado", "Niassa",
+];
+
 const schema = z.object({
   clientType: z.enum(["individual", "empresa", "ong", "estado"]),
   fullName: z.string().trim().min(3, "Nome obrigatório").max(100),
   email: z.string().trim().email("Email inválido").max(255),
   phone: z.string().trim().min(9, "Telefone inválido").max(20),
+  nuit: z.string().trim().min(1, "NUIT obrigatório").max(20),
+  province: z.string().min(1, "Província obrigatória"),
   organizationName: z.string().max(200).optional(),
   organizationSector: z.string().max(100).optional(),
   numParticipants: z.string().optional(),
