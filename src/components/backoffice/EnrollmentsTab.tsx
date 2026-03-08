@@ -124,13 +124,14 @@ export default function EnrollmentsTab({ enrollments, proofs, fetchProofs, updat
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Aluno</TableHead>
-                    <TableHead className="hidden md:table-cell">Curso</TableHead>
-                    <TableHead className="hidden sm:table-cell">Plano</TableHead>
-                    <TableHead>Valor</TableHead>
-                    <TableHead>Estado</TableHead>
-                    <TableHead>Acções</TableHead>
-                  </TableRow>
+                     <TableHead>Aluno</TableHead>
+                     <TableHead className="hidden md:table-cell">Curso</TableHead>
+                     <TableHead className="hidden lg:table-cell">Província</TableHead>
+                     <TableHead className="hidden sm:table-cell">Plano</TableHead>
+                     <TableHead>Valor</TableHead>
+                     <TableHead>Estado</TableHead>
+                     <TableHead>Acções</TableHead>
+                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {filtered.length === 0 ? (
