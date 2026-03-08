@@ -48,7 +48,7 @@ export default function ManualEnrollmentForm({ courses, onSubmit }: Props) {
   const update = (field: string, value: string) => setForm((p) => ({ ...p, [field]: value }));
 
   const handleSubmit = async () => {
-    if (!form.full_name || !form.email || !form.phone || !form.course_id) return;
+    if (!form.full_name || !form.email || !form.phone || !form.course_id || !form.nuit || !form.province) return;
     setLoading(true);
     const ok = await onSubmit({
       full_name: form.full_name,
