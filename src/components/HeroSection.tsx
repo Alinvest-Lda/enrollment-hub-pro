@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { useState, useEffect, useMemo } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, GraduationCap, Shield, CheckCircle, Users, BookOpen, Award, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import heroBg from "@/assets/hero-bg.jpg";
@@ -19,6 +19,69 @@ function AnimatedCounter({ target, suffix = "" }: { target: number; suffix?: str
   }, [target]);
   return <span>{count}{suffix}</span>;
 }
+interface CircleData {
+  id: number;
+  x: number;
+  y: number;
+  size: number;
+  opacity: number;
+  duration: number;
+}
+
+function RandomCircles() {
+  const [circles, setCircles] = useState<CircleData[]>([]);
+  const idRef = useState({ current: 0 })[0];
+
+  useEffect(() => {
+    const createCircle = (): CircleData => {
+      idRef.current += 1;
+      return {
+        id: idRef.current,
+        x: Math.random() * 90 + 5,
+        y: Math.random() * 85 + 5,
+        size: Math.random() * 120 + 40,
+        opacity: Math.random() * 0.08 + 0.04,
+        duration: Math.random() * 3 + 2,
+      };
+    };
+
+    setCircles([createCircle(), createCircle(), createCircle()]);
+
+    const interval = setInterval(() => {
+      setCircles((prev) => {
+        const next = [...prev];
+        if (next.length >= 6) next.shift();
+        next.push(createCircle());
+        return next;
+      });
+    }, 1800 + Math.random() * 1200);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      <AnimatePresence>
+        {circles.map((c) => (
+          <motion.div
+            key={c.id}
+            className="absolute rounded-full border border-primary-foreground/[0.08]"
+            style={{
+              left: `${c.x}%`,
+              top: `${c.y}%`,
+              width: c.size,
+              height: c.size,
+            }}
+            initial={{ opacity: 0, scale: 0.5 }}
+            animate={{ opacity: c.opacity, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.6 }}
+            transition={{ duration: c.duration, ease: "easeInOut" }}
+          />
+        ))}
+      </AnimatePresence>
+    </div>
+  );
+}
 
 const HeroSection = () => {
   return (
@@ -35,69 +98,8 @@ const HeroSection = () => {
       />
       <div className="absolute inset-0 bg-hero-overlay" />
 
-      {/* Animated floating orbs */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <motion.div
-          className="absolute w-[500px] h-[500px] rounded-full"
-          style={{ background: "radial-gradient(circle, hsl(var(--accent) / 0.15) 0%, transparent 70%)" }}
-          initial={{ x: "60%", y: "-20%" }}
-          animate={{ x: "65%", y: "-15%", scale: [1, 1.15, 1] }}
-          transition={{ duration: 12, repeat: Infinity, repeatType: "reverse", ease: "easeInOut" }}
-        />
-        <motion.div
-          className="absolute w-[350px] h-[350px] rounded-full"
-          style={{ background: "radial-gradient(circle, hsl(var(--primary) / 0.12) 0%, transparent 70%)" }}
-          initial={{ x: "-10%", y: "60%" }}
-          animate={{ x: "-5%", y: "55%", scale: [1, 1.2, 1] }}
-          transition={{ duration: 15, repeat: Infinity, repeatType: "reverse", ease: "easeInOut", delay: 2 }}
-        />
-        <motion.div
-          className="absolute w-[200px] h-[200px] rounded-full"
-          style={{ background: "radial-gradient(circle, hsl(var(--accent) / 0.1) 0%, transparent 70%)" }}
-          initial={{ x: "30%", y: "70%" }}
-          animate={{ x: "35%", y: "65%", scale: [1, 1.3, 1] }}
-          transition={{ duration: 10, repeat: Infinity, repeatType: "reverse", ease: "easeInOut", delay: 4 }}
-        />
-      </div>
-
-      {/* Animated decorative circles */}
-      <div className="absolute top-0 right-0 w-1/2 h-full pointer-events-none">
-        <motion.div
-          className="absolute top-20 right-20 w-72 h-72 rounded-full border-2 border-primary-foreground/[0.08]"
-          animate={{ scale: [1, 1.05, 1], rotate: [0, 3, 0] }}
-          transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
-        />
-        <motion.div
-          className="absolute bottom-32 right-40 w-48 h-48 rounded-full border border-primary-foreground/[0.08]"
-          animate={{ scale: [1, 1.08, 1], rotate: [0, -5, 0] }}
-          transition={{ duration: 16, repeat: Infinity, ease: "easeInOut", delay: 3 }}
-        />
-        <motion.div
-          className="absolute top-1/2 right-10 w-96 h-96 rounded-full border border-primary-foreground/[0.06]"
-          animate={{ scale: [1, 1.03, 1], rotate: [0, 2, 0] }}
-          transition={{ duration: 24, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-        />
-      </div>
-
-      {/* Floating particles */}
-      <div className="absolute inset-0 pointer-events-none">
-        {[
-          { x: "15%", y: "25%", size: 3, delay: 0, dur: 6 },
-          { x: "75%", y: "35%", size: 2, delay: 1, dur: 8 },
-          { x: "45%", y: "70%", size: 2.5, delay: 2.5, dur: 7 },
-          { x: "85%", y: "65%", size: 2, delay: 3, dur: 9 },
-          { x: "25%", y: "80%", size: 1.5, delay: 4, dur: 6.5 },
-          { x: "55%", y: "15%", size: 2, delay: 1.5, dur: 7.5 },
-        ].map((p, i) => (
-          <motion.div
-            key={i}
-            className="absolute rounded-full bg-primary-foreground/[0.15]"
-            style={{ left: p.x, top: p.y, width: p.size, height: p.size }}
-            animate={{ y: [0, -20, 0], opacity: [0.3, 0.7, 0.3] }}
-            transition={{ duration: p.dur, repeat: Infinity, ease: "easeInOut", delay: p.delay }}
-          />
-        ))}
-      </div>
+      {/* Random appearing/disappearing circles */}
+      <RandomCircles />
 
       <div className="container mx-auto px-4 relative z-10 py-16 lg:py-20">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
