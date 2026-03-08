@@ -28,6 +28,8 @@ const fadeInUp = {
 };
 
 const AboutUs = () => {
+  const { data: settings } = useSystemSettings();
+  const whatsappLink = getWhatsAppUrl(settings?.whatsappNumber || "");
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <Navbar />
