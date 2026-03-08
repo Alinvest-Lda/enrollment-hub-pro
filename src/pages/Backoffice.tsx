@@ -224,6 +224,7 @@ const Backoffice = () => {
                 {section === "courses" && `${data.courses.length} cursos registados`}
                 {section === "training" && `${data.trainingRequests.length} pedidos`}
                 {section === "quotations" && "Gere cotações para formações"}
+                {section === "certificates" && "Gestão de templates e emissão"}
                 {section === "payment_plans" && "Configure modelos de pagamento"}
                 {section === "whatsapp" && "Templates de mensagens"}
                 {section === "settings" && "Gerencie a plataforma"}
