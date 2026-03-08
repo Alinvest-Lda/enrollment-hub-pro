@@ -52,6 +52,7 @@ export default function EnrollmentsTab({ enrollments, proofs, fetchProofs, updat
       const matchesSearch = e.full_name.toLowerCase().includes(q) || e.email.toLowerCase().includes(q) || e.id.toLowerCase().includes(q);
       const matchesStatus = activeTab === "all" || e.status === activeTab;
       const matchesCourse = courseFilter === "all" || e.course_name === courseFilter;
+      const matchesProvince = provinceFilter === "all" || (e as any).province === provinceFilter;
 
       let matchesDate = true;
       if (dateFilter !== "all") {
