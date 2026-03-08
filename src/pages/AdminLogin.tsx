@@ -49,6 +49,7 @@ const AdminLogin = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background px-4">
+      <SEO title="Admin Login" noIndex />
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-md">
         <div className="text-center mb-8">
           <h1 className="font-heading text-3xl font-extrabold text-primary">ALINVEST</h1>
