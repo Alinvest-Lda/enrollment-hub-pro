@@ -1,5 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { MessageCircle, Menu, X, Lock, ChevronRight } from "lucide-react";
+import { NotificationBell } from "@/components/InAppNotifications";
 import { Button } from "@/components/ui/button";
 import { useSystemSettings, getWhatsAppUrl } from "@/hooks/use-system-settings";
 import { useState, useEffect } from "react";
@@ -64,6 +65,7 @@ const Navbar = () => {
             );
           })}
           <div className="ml-3 flex items-center gap-2">
+            <NotificationBell />
             <a href={whatsappLink} target="_blank" rel="noopener noreferrer">
               <Button variant="whatsapp" size="sm" className="rounded-lg shadow-sm">
                 <MessageCircle className="w-4 h-4" />

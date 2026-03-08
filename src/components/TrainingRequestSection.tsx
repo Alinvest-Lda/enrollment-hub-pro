@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { useAppNotifications } from "@/components/InAppNotifications";
 import { Send, User, Building, Phone, Mail, Users, BookOpen, CheckCircle, Sparkles, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -53,6 +54,7 @@ const budgetOptions = [
 ];
 
 const TrainingRequestSection = () => {
+  const { addNotification } = useAppNotifications();
   const [submitted, setSubmitted] = useState(false);
 
   const { register, handleSubmit, watch, setValue, formState: { errors, isSubmitting }, reset } = useForm<FormData>({
@@ -85,6 +87,12 @@ const TrainingRequestSection = () => {
 
       setSubmitted(true);
       reset();
+      addNotification({
+        type: "success",
+        title: "Pedido de Formação Enviado!",
+        message: `O seu pedido sobre "${data.trainingTopic}" foi recebido. Entraremos em contacto em até 48 horas.`,
+        icon: "training",
+      });
       toast({ title: "Pedido enviado!", description: "Entraremos em contacto em breve." });
     } catch (err: any) {
       toast({ title: "Erro ao enviar", description: err.message || "Tente novamente.", variant: "destructive" });

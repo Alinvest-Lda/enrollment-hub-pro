@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
+import { NotificationProvider, NotificationToast } from "@/components/InAppNotifications";
 import Index from "./pages/Index";
 import CourseDetail from "./pages/CourseDetail";
 import AllCourses from "./pages/AllCourses";
@@ -24,25 +25,28 @@ const App = () => (
   <HelmetProvider>
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <ScrollToTop />
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/cursos" element={<AllCourses />} />
-            <Route path="/curso/:id" element={<CourseDetail />} />
-            <Route path="/sobre" element={<AboutUs />} />
-            <Route path="/pagamentos/:enrollmentId" element={<StudentPayments />} />
-            <Route path="/verificar-certificado" element={<VerifyCertificate />} />
-            <Route path="/cotacao/:quotationId" element={<QuotationPayment />} />
-            <Route path="/admin" element={<AdminLogin />} />
-            <Route path="/backoffice" element={<Backoffice />} />
-            <Route path="/politica-de-privacidade" element={<PrivacyPolicy />} />
-            <Route path="/termos-de-uso" element={<TermsOfUse />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
+        <NotificationProvider>
+          <Toaster />
+          <Sonner />
+          <NotificationToast />
+          <BrowserRouter>
+            <ScrollToTop />
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/cursos" element={<AllCourses />} />
+              <Route path="/curso/:id" element={<CourseDetail />} />
+              <Route path="/sobre" element={<AboutUs />} />
+              <Route path="/pagamentos/:enrollmentId" element={<StudentPayments />} />
+              <Route path="/verificar-certificado" element={<VerifyCertificate />} />
+              <Route path="/cotacao/:quotationId" element={<QuotationPayment />} />
+              <Route path="/admin" element={<AdminLogin />} />
+              <Route path="/backoffice" element={<Backoffice />} />
+              <Route path="/politica-de-privacidade" element={<PrivacyPolicy />} />
+              <Route path="/termos-de-uso" element={<TermsOfUse />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </NotificationProvider>
       </TooltipProvider>
     </QueryClientProvider>
   </HelmetProvider>

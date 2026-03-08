@@ -16,6 +16,7 @@ import { useSystemSettings, getWhatsAppLinkFromNumber } from "@/hooks/use-system
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import PaymentMethodStep, { type PaymentMethod } from "@/components/enrollment/PaymentMethodStep";
+import { useAppNotifications } from "@/components/InAppNotifications";
 import MpesaPaymentStep from "@/components/enrollment/MpesaPaymentStep";
 import ProofUploadStep from "@/components/enrollment/ProofUploadStep";
 
@@ -55,6 +56,7 @@ const EnrollmentForm = ({ course }: EnrollmentFormProps) => {
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | null>(null);
   const [enrollmentId, setEnrollmentId] = useState<string | null>(null);
   const { data: settings } = useSystemSettings();
+  const { addNotification } = useAppNotifications();
 
   const { register, handleSubmit, watch, setValue, getValues, formState: { errors, isSubmitting } } = useForm<EnrollmentFormData>({
     resolver: zodResolver(enrollmentSchema),
@@ -329,7 +331,15 @@ const EnrollmentForm = ({ course }: EnrollmentFormProps) => {
                 phone={formData.phone}
                 amount={firstInstallment}
                 reference={course.id}
-                onSuccess={() => setStep("done")}
+                onSuccess={() => {
+                  addNotification({
+                    type: "success",
+                    title: "Inscrição Confirmada!",
+                    message: `A sua inscrição em ${course.title} foi submetida com sucesso. Pagamento M-Pesa confirmado.`,
+                    icon: "enrollment",
+                  });
+                  setStep("done");
+                }}
                 onError={(err) => toast({ title: "Erro M-Pesa", description: err, variant: "destructive" })}
               />
             </motion.div>
@@ -347,6 +357,13 @@ const EnrollmentForm = ({ course }: EnrollmentFormProps) => {
                 totalPrice={course.price}
                 onSuccess={(id) => {
                   setEnrollmentId(id);
+                  addNotification({
+                    type: "success",
+                    title: "Inscrição Submetida!",
+                    message: `Inscrição em ${course.title} registada com sucesso.`,
+                    icon: "enrollment",
+                    action: { label: "Ver pagamentos", href: `/pagamentos/${id}` },
+                  });
                   setStep("done");
                 }}
               />
