@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { WHATSAPP_LINK } from "@/lib/courses-data";
+import CollapsibleSection from "@/components/CollapsibleSection";
 
 const values = [
   { icon: Award, title: "Excelência", description: "Compromisso com os mais altos padrões de qualidade em formação e consultoria." },
