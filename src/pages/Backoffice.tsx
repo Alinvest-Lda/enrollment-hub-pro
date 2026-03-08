@@ -80,6 +80,7 @@ const Backoffice = () => {
     courses: "Cursos",
     training: "Pedidos de Formação",
     quotations: "Cotações",
+    certificates: "Certificados",
     payment_plans: "Modelos de Pagamento",
     whatsapp: "Templates WhatsApp",
     settings: "Configurações",
