@@ -16,6 +16,7 @@ import { useSystemSettings, getWhatsAppLinkFromNumber } from "@/hooks/use-system
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import PaymentMethodStep, { type PaymentMethod } from "@/components/enrollment/PaymentMethodStep";
+import { useAppNotifications } from "@/components/InAppNotifications";
 import MpesaPaymentStep from "@/components/enrollment/MpesaPaymentStep";
 import ProofUploadStep from "@/components/enrollment/ProofUploadStep";
 
