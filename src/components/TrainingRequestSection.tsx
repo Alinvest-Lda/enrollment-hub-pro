@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Send, User, Building, Phone, Mail, Users, BookOpen, CheckCircle, Sparkles } from "lucide-react";
+import { Send, User, Building, Phone, Mail, Users, BookOpen, CheckCircle, Sparkles, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";

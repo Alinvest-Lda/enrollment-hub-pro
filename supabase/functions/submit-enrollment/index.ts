@@ -67,6 +67,7 @@ Deno.serve(async (req) => {
         phone: phone.trim().substring(0, 20),
         company: company?.trim().substring(0, 100) || null,
         nuit: nuit?.trim().substring(0, 20) || null,
+        province: province?.trim().substring(0, 50) || null,
         message: message?.trim().substring(0, 500) || null,
         course_id: courseId.substring(0, 100),
         course_name: courseName.substring(0, 200),
