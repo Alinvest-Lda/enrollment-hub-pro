@@ -419,10 +419,13 @@ export default function QuotationsTab({ trainingRequests }: Props) {
                       <div className="flex gap-1">
                         <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => printQuotation(q)} title="Pré-visualizar"><Eye className="w-4 h-4" /></Button>
                         <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => openEdit(q)} title="Editar"><Pencil className="w-4 h-4" /></Button>
+                        <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleDownloadPDF(q)} title="Download PDF"><Download className="w-4 h-4" /></Button>
+                        <Button variant="ghost" size="icon" className="h-8 w-8 text-success" onClick={() => handleShareWhatsApp(q)} title="Enviar por WhatsApp"><MessageCircle className="w-4 h-4" /></Button>
+                        <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleShareEmail(q)} title="Enviar por Email"><Mail className="w-4 h-4" /></Button>
                         <Button
                           variant="ghost" size="icon" className="h-8 w-8" title="Copiar link de pagamento"
                           onClick={() => {
-                            const url = `${window.location.origin}/cotacao/${q.id}`;
+                            const url = getPaymentUrl(q);
                             navigator.clipboard.writeText(url);
                             toast({ title: "Link de pagamento copiado!" });
                           }}
