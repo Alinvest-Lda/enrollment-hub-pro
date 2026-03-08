@@ -16,7 +16,8 @@ interface ProofUploadStepProps {
     email: string;
     phone: string;
     company?: string;
-    nuit?: string;
+    nuit: string;
+    province: string;
     message?: string;
     paymentPlanId: string;
   };
