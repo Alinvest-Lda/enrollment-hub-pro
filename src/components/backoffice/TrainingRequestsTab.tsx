@@ -208,6 +208,16 @@ export default function TrainingRequestsTab({ requests, updateStatus, updateNote
                                       <X className="w-4 h-4" /> Rejeitar
                                     </Button>
                                   </div>
+
+                                  {quotationMap[req.id] ? (
+                                    <div className="pt-2">
+                                      <Button size="sm" variant="outline" className="w-full" onClick={() => onNavigateToQuotations?.()}>
+                                        <FileText className="w-4 h-4 mr-1" /> Ver Cotação (Rascunho Gerado)
+                                      </Button>
+                                    </div>
+                                  ) : (
+                                    <p className="text-xs text-muted-foreground pt-2 text-center">A cotação será gerada automaticamente.</p>
+                                  )}
                                 </div>
                               </DialogContent>
                             </Dialog>
