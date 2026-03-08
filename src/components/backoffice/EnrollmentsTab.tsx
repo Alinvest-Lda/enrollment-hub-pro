@@ -41,6 +41,11 @@ export default function EnrollmentsTab({ enrollments, proofs, fetchProofs, updat
     return names.sort();
   }, [enrollments]);
 
+  const provinceNames = useMemo(() => {
+    const names = [...new Set(enrollments.map((e) => (e as any).province).filter(Boolean))];
+    return names.sort();
+  }, [enrollments]);
+
   const filtered = useMemo(() => {
     return enrollments.filter((e) => {
       const q = search.toLowerCase();
