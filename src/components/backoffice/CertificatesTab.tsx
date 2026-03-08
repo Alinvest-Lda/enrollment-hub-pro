@@ -912,12 +912,22 @@ export default function CertificatesTab() {
                 <Separator />
                 <div>
                   <p className="text-xs font-medium mb-2 flex items-center gap-1">
-                    Pré-visualização (Fonte: Lora)
+                    Pré-visualização interactiva (Fonte: Lora)
                     <Badge variant="outline" className="text-[9px] ml-1">
                       <Globe className="w-2.5 h-2.5 mr-0.5" />{langLabel(editTemplate.language || "pt")}
                     </Badge>
+                    <Badge variant="secondary" className="text-[9px] ml-1">
+                      <GripVertical className="w-2.5 h-2.5 mr-0.5" />Arraste para mover
+                    </Badge>
                   </p>
-                  <CertificatePreview template={editTemplate} layout={layout} />
+                  <CertificatePreview
+                    template={editTemplate}
+                    layout={layout}
+                    interactive
+                    selectedFieldId={selectedFieldId}
+                    onSelectField={setSelectedFieldId}
+                    onFieldUpdate={updateField}
+                  />
                 </div>
 
                 <div className="flex gap-2">
