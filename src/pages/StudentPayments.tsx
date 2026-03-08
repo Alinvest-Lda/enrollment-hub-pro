@@ -133,9 +133,14 @@ export default function StudentPayments() {
             <AlertCircle className="w-12 h-12 mx-auto mb-4 text-destructive" />
             <h2 className="font-heading text-xl font-bold mb-2">Inscrição não encontrada</h2>
             <p className="text-muted-foreground text-sm mb-6">Verifique o link ou contacte a administração.</p>
-            <Link to="/">
-              <Button variant="outline"><ArrowLeft className="w-4 h-4 mr-2" />Voltar ao site</Button>
-            </Link>
+            <div className="flex flex-wrap gap-3 justify-center">
+              <Link to="/">
+                <Button variant="outline"><ArrowLeft className="w-4 h-4 mr-2" />Voltar ao site</Button>
+              </Link>
+              <a href={WHATSAPP_LINK} target="_blank" rel="noopener noreferrer">
+                <Button variant="whatsapp"><MessageCircle className="w-4 h-4 mr-2" />Precisa de ajuda?</Button>
+              </a>
+            </div>
           </CardContent>
         </Card>
       </div>
