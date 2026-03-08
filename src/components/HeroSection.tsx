@@ -149,18 +149,20 @@ const HeroSection = () => {
       {/* Floating particles */}
       <div className="absolute inset-0 pointer-events-none">
         {[
-          { x: "15%", y: "25%", size: 3, delay: 0, dur: 6 },
-          { x: "75%", y: "35%", size: 2, delay: 1, dur: 8 },
-          { x: "45%", y: "70%", size: 2.5, delay: 2.5, dur: 7 },
-          { x: "85%", y: "65%", size: 2, delay: 3, dur: 9 },
-          { x: "25%", y: "80%", size: 1.5, delay: 4, dur: 6.5 },
-          { x: "55%", y: "15%", size: 2, delay: 1.5, dur: 7.5 },
+          { x: "12%", y: "20%", size: 8, delay: 0, dur: 5 },
+          { x: "72%", y: "30%", size: 6, delay: 0.8, dur: 7 },
+          { x: "42%", y: "65%", size: 7, delay: 2, dur: 6 },
+          { x: "82%", y: "60%", size: 5, delay: 2.5, dur: 8 },
+          { x: "22%", y: "75%", size: 6, delay: 3.5, dur: 5.5 },
+          { x: "58%", y: "12%", size: 7, delay: 1.2, dur: 6.5 },
+          { x: "90%", y: "20%", size: 5, delay: 4, dur: 7 },
+          { x: "35%", y: "40%", size: 4, delay: 1.8, dur: 8 },
         ].map((p, i) => (
           <motion.div
             key={i}
-            className="absolute rounded-full bg-primary-foreground/[0.15]"
+            className="absolute rounded-full bg-primary-foreground/30"
             style={{ left: p.x, top: p.y, width: p.size, height: p.size }}
-            animate={{ y: [0, -20, 0], opacity: [0.3, 0.7, 0.3] }}
+            animate={{ y: [0, -30, 0], opacity: [0.2, 0.8, 0.2], scale: [1, 1.5, 1] }}
             transition={{ duration: p.dur, repeat: Infinity, ease: "easeInOut", delay: p.delay }}
           />
         ))}

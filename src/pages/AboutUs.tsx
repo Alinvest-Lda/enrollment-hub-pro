@@ -57,11 +57,6 @@ const AboutUs = () => {
             </p>
           </motion.div>
         </div>
-        <div className="absolute bottom-0 left-0 right-0">
-          <svg viewBox="0 0 1440 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full">
-            <path d="M0 40L60 34C120 28 240 16 360 12C480 8 600 12 720 16C840 20 960 24 1080 24C1200 24 1320 20 1380 18L1440 16V40H0Z" fill="hsl(var(--background))" />
-          </svg>
-        </div>
       </section>
 
       {/* Mission & Vision */}
