@@ -334,6 +334,45 @@ export type Database = {
           },
         ]
       }
+      partners: {
+        Row: {
+          courses_url: string | null
+          created_at: string
+          description: string
+          display_order: number
+          id: string
+          is_active: boolean
+          logo_url: string
+          name: string
+          updated_at: string
+          website_url: string | null
+        }
+        Insert: {
+          courses_url?: string | null
+          created_at?: string
+          description?: string
+          display_order?: number
+          id?: string
+          is_active?: boolean
+          logo_url?: string
+          name: string
+          updated_at?: string
+          website_url?: string | null
+        }
+        Update: {
+          courses_url?: string | null
+          created_at?: string
+          description?: string
+          display_order?: number
+          id?: string
+          is_active?: boolean
+          logo_url?: string
+          name?: string
+          updated_at?: string
+          website_url?: string | null
+        }
+        Relationships: []
+      }
       payment_plans: {
         Row: {
           created_at: string
