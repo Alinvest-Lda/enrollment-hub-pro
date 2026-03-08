@@ -4,7 +4,7 @@ import {
   LogOut, Loader2, BookOpen, Users, RefreshCw, GraduationCap,
   BarChart3, Settings, Bell, UserPlus, FileSpreadsheet,
   ChevronLeft, ChevronRight, Menu, MessageSquare, FileText,
-  DollarSign, ExternalLink, Award, Handshake,
+  DollarSign, ExternalLink, Award, Handshake, PieChart,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
