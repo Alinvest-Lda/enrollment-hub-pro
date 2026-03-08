@@ -134,6 +134,56 @@ export type Database = {
         }
         Relationships: []
       }
+      installments: {
+        Row: {
+          admin_notes: string | null
+          amount: number
+          created_at: string
+          due_date: string
+          enrollment_id: string
+          id: string
+          installment_number: number
+          paid_date: string | null
+          payment_method: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          amount?: number
+          created_at?: string
+          due_date?: string
+          enrollment_id: string
+          id?: string
+          installment_number?: number
+          paid_date?: string | null
+          payment_method?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          admin_notes?: string | null
+          amount?: number
+          created_at?: string
+          due_date?: string
+          enrollment_id?: string
+          id?: string
+          installment_number?: number
+          paid_date?: string | null
+          payment_method?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "installments_enrollment_id_fkey"
+            columns: ["enrollment_id"]
+            isOneToOne: false
+            referencedRelation: "enrollments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       payment_proofs: {
         Row: {
           created_at: string
