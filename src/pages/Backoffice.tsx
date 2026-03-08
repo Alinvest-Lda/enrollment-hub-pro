@@ -329,8 +329,6 @@ const Backoffice = () => {
                 <QuotationsTab trainingRequests={data.trainingRequests} />
               )}
               {section === "certificates" && <CertificatesTab />}
-              {section === "partners" && <PartnersTab />}
-              {section === "content" && <ContentManagerTab />}
               {section === "reports" && (
                 <ReportsTab enrollments={data.enrollments} trainingRequests={data.trainingRequests} courses={data.courses} />
               )}
