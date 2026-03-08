@@ -124,17 +124,18 @@ export default function EnrollmentsTab({ enrollments, proofs, fetchProofs, updat
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Aluno</TableHead>
-                    <TableHead className="hidden md:table-cell">Curso</TableHead>
-                    <TableHead className="hidden sm:table-cell">Plano</TableHead>
-                    <TableHead>Valor</TableHead>
-                    <TableHead>Estado</TableHead>
-                    <TableHead>Acções</TableHead>
-                  </TableRow>
+                     <TableHead>Aluno</TableHead>
+                     <TableHead className="hidden md:table-cell">Curso</TableHead>
+                     <TableHead className="hidden lg:table-cell">Província</TableHead>
+                     <TableHead className="hidden sm:table-cell">Plano</TableHead>
+                     <TableHead>Valor</TableHead>
+                     <TableHead>Estado</TableHead>
+                     <TableHead>Acções</TableHead>
+                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {filtered.length === 0 ? (
-                    <TableRow><TableCell colSpan={6} className="text-center py-8 text-muted-foreground">Sem resultados</TableCell></TableRow>
+                    <TableRow><TableCell colSpan={7} className="text-center py-8 text-muted-foreground">Sem resultados</TableCell></TableRow>
                   ) : (
                     filtered.map((enrollment) => (
                       <TableRow key={enrollment.id}>
@@ -145,8 +146,9 @@ export default function EnrollmentsTab({ enrollments, proofs, fetchProofs, updat
                             <Badge variant="outline" className="text-[10px] mt-0.5 px-1.5 py-0">{enrollment.source}</Badge>
                           )}
                         </TableCell>
-                        <TableCell className="hidden md:table-cell text-sm">{enrollment.course_name}</TableCell>
-                        <TableCell className="hidden sm:table-cell text-sm">{enrollment.payment_plan}</TableCell>
+                         <TableCell className="hidden md:table-cell text-sm">{enrollment.course_name}</TableCell>
+                         <TableCell className="hidden lg:table-cell text-sm">{(enrollment as any).province || "—"}</TableCell>
+                         <TableCell className="hidden sm:table-cell text-sm">{enrollment.payment_plan}</TableCell>
                         <TableCell className="font-heading font-semibold text-sm">{formatCurrency(enrollment.amount_due)}</TableCell>
                         <TableCell>
                           <Badge variant={statusConfig[enrollment.status].variant}>{statusConfig[enrollment.status].label}</Badge>
