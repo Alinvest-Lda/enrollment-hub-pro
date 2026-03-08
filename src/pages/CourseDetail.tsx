@@ -1,5 +1,5 @@
 import { useParams, Link } from "react-router-dom";
-import { ArrowLeft, Clock, Calendar, CheckCircle, MessageCircle, BookOpen, CreditCard } from "lucide-react";
+import { ArrowLeft, Clock, Calendar, CheckCircle, MessageCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import { formatCurrency, getWhatsAppLink } from "@/lib/courses-data";
 import { useCourse } from "@/hooks/use-courses";
@@ -9,7 +9,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import EnrollmentForm from "@/components/EnrollmentForm";
-import CollapsibleSection from "@/components/CollapsibleSection";
 
 const CourseDetail = () => {
   const { id } = useParams<{ id: string }>();
