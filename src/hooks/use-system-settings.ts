@@ -33,8 +33,8 @@ const KEY_MAP: Record<string, keyof SystemSettings> = {
   company_address: "companyAddress",
   company_phone: "companyPhone",
   bank_name: "bankName",
-  bank_account: "bankAccount",
-  bank_nib: "bankNIB",
+  bank_account_name: "bankAccountName",
+  bank_account_number: "bankAccountNumber",
   emola_number: "emolaNumber",
   emola_name: "emolaName",
 };
