@@ -19,6 +19,69 @@ function AnimatedCounter({ target, suffix = "" }: { target: number; suffix?: str
   }, [target]);
   return <span>{count}{suffix}</span>;
 }
+interface CircleData {
+  id: number;
+  x: number;
+  y: number;
+  size: number;
+  opacity: number;
+  duration: number;
+}
+
+function RandomCircles() {
+  const [circles, setCircles] = useState<CircleData[]>([]);
+  const idRef = useState({ current: 0 })[0];
+
+  useEffect(() => {
+    const createCircle = (): CircleData => {
+      idRef.current += 1;
+      return {
+        id: idRef.current,
+        x: Math.random() * 90 + 5,
+        y: Math.random() * 85 + 5,
+        size: Math.random() * 120 + 40,
+        opacity: Math.random() * 0.08 + 0.04,
+        duration: Math.random() * 3 + 2,
+      };
+    };
+
+    setCircles([createCircle(), createCircle(), createCircle()]);
+
+    const interval = setInterval(() => {
+      setCircles((prev) => {
+        const next = [...prev];
+        if (next.length >= 6) next.shift();
+        next.push(createCircle());
+        return next;
+      });
+    }, 1800 + Math.random() * 1200);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      <AnimatePresence>
+        {circles.map((c) => (
+          <motion.div
+            key={c.id}
+            className="absolute rounded-full border border-primary-foreground/[0.08]"
+            style={{
+              left: `${c.x}%`,
+              top: `${c.y}%`,
+              width: c.size,
+              height: c.size,
+            }}
+            initial={{ opacity: 0, scale: 0.5 }}
+            animate={{ opacity: c.opacity, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.6 }}
+            transition={{ duration: c.duration, ease: "easeInOut" }}
+          />
+        ))}
+      </AnimatePresence>
+    </div>
+  );
+}
 
 const HeroSection = () => {
   return (
