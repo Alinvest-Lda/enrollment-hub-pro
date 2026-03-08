@@ -659,8 +659,11 @@ export default function QuotationsTab({ trainingRequests }: Props) {
                 <div><p className="text-xs font-semibold mb-1">Termos:</p><p className="text-xs text-muted-foreground">{previewQuotation.terms}</p></div>
               )}
 
-              <div className="flex gap-2 print:hidden pt-2">
+              <div className="flex flex-wrap gap-2 print:hidden pt-2">
                 <Button size="sm" onClick={handlePrint}><Printer className="w-4 h-4 mr-1" />Imprimir</Button>
+                <Button size="sm" variant="outline" onClick={() => handleDownloadPDF(previewQuotation)}><Download className="w-4 h-4 mr-1" />PDF</Button>
+                <Button size="sm" variant="outline" className="text-success border-success/30" onClick={() => handleShareWhatsApp(previewQuotation)}><MessageCircle className="w-4 h-4 mr-1" />WhatsApp</Button>
+                <Button size="sm" variant="outline" onClick={() => handleShareEmail(previewQuotation)}><Mail className="w-4 h-4 mr-1" />Email</Button>
                 <Button size="sm" variant="outline" onClick={() => setPreviewOpen(false)}>Fechar</Button>
               </div>
             </div>
