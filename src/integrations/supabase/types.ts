@@ -184,6 +184,39 @@ export type Database = {
           },
         ]
       }
+      payment_plans: {
+        Row: {
+          created_at: string
+          description: string
+          id: string
+          installments: Json
+          is_active: boolean
+          is_default: boolean
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string
+          id?: string
+          installments?: Json
+          is_active?: boolean
+          is_default?: boolean
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          id?: string
+          installments?: Json
+          is_active?: boolean
+          is_default?: boolean
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       payment_proofs: {
         Row: {
           created_at: string
@@ -218,6 +251,86 @@ export type Database = {
             columns: ["enrollment_id"]
             isOneToOne: false
             referencedRelation: "enrollments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quotations: {
+        Row: {
+          client_email: string
+          client_name: string
+          client_phone: string
+          client_type: string
+          created_at: string
+          currency: string
+          discount_percent: number
+          id: string
+          items: Json
+          notes: string | null
+          organization_name: string | null
+          quotation_number: string
+          status: string
+          subtotal: number
+          tax_percent: number
+          terms: string | null
+          total: number
+          training_request_id: string | null
+          training_topic: string
+          updated_at: string
+          valid_until: string | null
+        }
+        Insert: {
+          client_email: string
+          client_name: string
+          client_phone: string
+          client_type?: string
+          created_at?: string
+          currency?: string
+          discount_percent?: number
+          id?: string
+          items?: Json
+          notes?: string | null
+          organization_name?: string | null
+          quotation_number: string
+          status?: string
+          subtotal?: number
+          tax_percent?: number
+          terms?: string | null
+          total?: number
+          training_request_id?: string | null
+          training_topic: string
+          updated_at?: string
+          valid_until?: string | null
+        }
+        Update: {
+          client_email?: string
+          client_name?: string
+          client_phone?: string
+          client_type?: string
+          created_at?: string
+          currency?: string
+          discount_percent?: number
+          id?: string
+          items?: Json
+          notes?: string | null
+          organization_name?: string | null
+          quotation_number?: string
+          status?: string
+          subtotal?: number
+          tax_percent?: number
+          terms?: string | null
+          total?: number
+          training_request_id?: string | null
+          training_topic?: string
+          updated_at?: string
+          valid_until?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quotations_training_request_id_fkey"
+            columns: ["training_request_id"]
+            isOneToOne: false
+            referencedRelation: "training_requests"
             referencedColumns: ["id"]
           },
         ]

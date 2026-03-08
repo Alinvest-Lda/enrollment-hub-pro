@@ -3,7 +3,8 @@ import { motion } from "framer-motion";
 import {
   LogOut, Loader2, BookOpen, Users, RefreshCw, GraduationCap,
   BarChart3, Settings, Bell, UserPlus, FileSpreadsheet,
-  ChevronLeft, ChevronRight, Menu, MessageSquare,
+  ChevronLeft, ChevronRight, Menu, MessageSquare, FileText,
+  DollarSign, ExternalLink,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -18,17 +19,21 @@ import ManualEnrollmentForm from "@/components/backoffice/ManualEnrollmentForm";
 import CSVImportDialog from "@/components/backoffice/CSVImportDialog";
 import SettingsTab from "@/components/backoffice/SettingsTab";
 import WhatsAppTemplatesTab from "@/components/backoffice/WhatsAppTemplatesTab";
+import QuotationsTab from "@/components/backoffice/QuotationsTab";
+import PaymentPlansTab from "@/components/backoffice/PaymentPlansTab";
 import { useBackofficeData } from "@/hooks/use-backoffice-data";
 import RealtimeNotifications from "@/components/backoffice/RealtimeNotifications";
 import { supabase } from "@/integrations/supabase/client";
 
-type Section = "dashboard" | "enrollments" | "courses" | "training" | "whatsapp" | "settings";
+type Section = "dashboard" | "enrollments" | "courses" | "training" | "quotations" | "payment_plans" | "whatsapp" | "settings";
 
 const navItems: { id: Section; label: string; icon: React.ElementType; shortLabel: string }[] = [
   { id: "dashboard", label: "Dashboard", icon: BarChart3, shortLabel: "Dash" },
   { id: "enrollments", label: "Inscrições", icon: Users, shortLabel: "Inscr." },
   { id: "courses", label: "Cursos", icon: BookOpen, shortLabel: "Cursos" },
   { id: "training", label: "Formações", icon: GraduationCap, shortLabel: "Form." },
+  { id: "quotations", label: "Cotações", icon: FileText, shortLabel: "Cotaç." },
+  { id: "payment_plans", label: "Pagamentos", icon: DollarSign, shortLabel: "Pagam." },
   { id: "whatsapp", label: "WhatsApp", icon: MessageSquare, shortLabel: "WhatsApp" },
   { id: "settings", label: "Configurações", icon: Settings, shortLabel: "Config." },
 ];
@@ -72,6 +77,8 @@ const Backoffice = () => {
     enrollments: "Inscrições",
     courses: "Cursos",
     training: "Pedidos de Formação",
+    quotations: "Cotações",
+    payment_plans: "Modelos de Pagamento",
     whatsapp: "Templates WhatsApp",
     settings: "Configurações",
   };
@@ -133,8 +140,14 @@ const Backoffice = () => {
           })}
         </nav>
 
-        {/* Collapse toggle */}
-        <div className="p-2 border-t border-sidebar-border">
+        {/* Site link + Collapse toggle */}
+        <div className="p-2 border-t border-sidebar-border space-y-1">
+          <a href="/" target="_blank" rel="noopener noreferrer">
+            <button className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-sidebar-foreground/60 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground transition-colors`}>
+              <ExternalLink className="w-[18px] h-[18px] shrink-0" />
+              {!sidebarCollapsed && <span>Ver Site</span>}
+            </button>
+          </a>
           <button
             onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
             className="w-full flex items-center justify-center p-2 rounded-lg text-sidebar-foreground/50 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground transition-colors"
@@ -207,6 +220,9 @@ const Backoffice = () => {
                 {section === "enrollments" && `${enrollmentCounts.pending} pendentes de ${enrollmentCounts.total}`}
                 {section === "courses" && `${data.courses.length} cursos registados`}
                 {section === "training" && `${data.trainingRequests.length} pedidos`}
+                {section === "quotations" && "Gere cotações para formações"}
+                {section === "payment_plans" && "Configure modelos de pagamento"}
+                {section === "whatsapp" && "Templates de mensagens"}
                 {section === "settings" && "Gerencie a plataforma"}
               </p>
             </div>
@@ -293,6 +309,10 @@ const Backoffice = () => {
                   deleteRequest={data.deleteTrainingRequest}
                 />
               )}
+              {section === "quotations" && (
+                <QuotationsTab trainingRequests={data.trainingRequests} />
+              )}
+              {section === "payment_plans" && <PaymentPlansTab />}
               {section === "whatsapp" && <WhatsAppTemplatesTab />}
               {section === "settings" && <SettingsTab />}
             </motion.div>
