@@ -3,7 +3,8 @@ import { motion } from "framer-motion";
 import {
   LogOut, Loader2, BookOpen, Users, RefreshCw, GraduationCap,
   BarChart3, Settings, Bell, UserPlus, FileSpreadsheet,
-  ChevronLeft, ChevronRight, Menu, MessageSquare,
+  ChevronLeft, ChevronRight, Menu, MessageSquare, FileText,
+  DollarSign, ExternalLink,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
