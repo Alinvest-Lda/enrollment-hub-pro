@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Send, User, Building, Phone, Mail, Users, BookOpen, CheckCircle } from "lucide-react";
+import { Send, User, Building, Phone, Mail, Users, BookOpen, CheckCircle, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -82,27 +82,40 @@ const TrainingRequestSection = () => {
   };
 
   return (
-    <section id="treinamento-personalizado" className="py-20 bg-muted/50">
-      <div className="container mx-auto px-4">
+    <section id="treinamento-personalizado" className="py-24 bg-section-subtle relative overflow-hidden">
+      {/* Decorative elements */}
+      <div className="absolute bottom-0 left-0 w-[300px] h-[300px] rounded-full opacity-[0.04] bg-primary blur-3xl" />
+      <div className="absolute top-20 right-0 w-[200px] h-[200px] rounded-full opacity-[0.03] bg-accent blur-3xl" />
+
+      <div className="container mx-auto px-4 relative">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-          className="text-center mb-12"
+          className="text-center mb-14"
         >
-          <h2 className="font-heading text-3xl md:text-4xl font-extrabold text-foreground mb-3">
+          <motion.span
+            className="inline-flex items-center gap-2 bg-accent/8 text-accent px-5 py-2 rounded-full text-sm font-semibold mb-5 border border-accent/10"
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.4, delay: 0.1 }}
+          >
+            <Sparkles className="w-4 h-4" />
+            Formação à Medida
+          </motion.span>
+          <h2 className="font-heading text-3xl md:text-4xl lg:text-5xl font-extrabold text-foreground mb-4">
             Treinamento Personalizado
           </h2>
           <motion.p
-            className="text-muted-foreground max-w-2xl mx-auto"
+            className="text-muted-foreground max-w-2xl mx-auto text-base md:text-lg"
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.2 }}
           >
             Não encontrou o que procura? Solicite um treinamento à medida para si, para a sua equipa ou organização.
-            Desenvolvemos programas adaptados às suas necessidades específicas.
           </motion.p>
         </motion.div>
 
@@ -111,14 +124,20 @@ const TrainingRequestSection = () => {
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="text-center py-12 bg-card border border-border rounded-xl shadow-card"
+              className="text-center py-16 bg-card border border-border/60 rounded-2xl shadow-card"
             >
-              <CheckCircle className="w-16 h-16 mx-auto text-success mb-4" />
-              <h3 className="font-heading text-xl font-bold mb-2">Pedido Recebido!</h3>
-              <p className="text-muted-foreground text-sm max-w-md mx-auto mb-6">
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ type: "spring", stiffness: 200, delay: 0.1 }}
+              >
+                <CheckCircle className="w-20 h-20 mx-auto text-success mb-6" />
+              </motion.div>
+              <h3 className="font-heading text-2xl font-bold mb-3">Pedido Recebido!</h3>
+              <p className="text-muted-foreground text-sm max-w-md mx-auto mb-8">
                 A nossa equipa irá analisar o seu pedido e entrar em contacto dentro de 48 horas.
               </p>
-              <Button variant="outline" onClick={() => setSubmitted(false)}>Enviar outro pedido</Button>
+              <Button variant="outline" onClick={() => setSubmitted(false)} className="rounded-lg">Enviar outro pedido</Button>
             </motion.div>
           ) : (
             <motion.div
@@ -126,7 +145,7 @@ const TrainingRequestSection = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              <form onSubmit={handleSubmit(onSubmit)} className="bg-card border border-border rounded-xl p-6 md:p-8 shadow-card space-y-6">
+              <form onSubmit={handleSubmit(onSubmit)} className="bg-card border border-border/60 rounded-2xl p-6 md:p-8 shadow-card space-y-6">
                 {/* Client Type */}
                 <div>
                   <Label className="mb-3 block font-heading font-semibold">Tipo de Cliente *</Label>
@@ -138,12 +157,14 @@ const TrainingRequestSection = () => {
                     {clientTypes.map((ct) => (
                       <label
                         key={ct.value}
-                        className={`flex flex-col items-center gap-1.5 p-3 rounded-lg border cursor-pointer transition-colors text-center ${
-                          clientType === ct.value ? "border-accent bg-accent/5" : "border-border hover:border-accent/50"
+                        className={`flex flex-col items-center gap-1.5 p-3 rounded-xl border-2 cursor-pointer transition-all duration-200 text-center ${
+                          clientType === ct.value
+                            ? "border-accent bg-accent/5 shadow-sm"
+                            : "border-border hover:border-accent/30 hover:bg-muted/30"
                         }`}
                       >
                         <RadioGroupItem value={ct.value} className="sr-only" />
-                        <ct.icon className={`w-5 h-5 ${clientType === ct.value ? "text-accent" : "text-muted-foreground"}`} />
+                        <ct.icon className={`w-5 h-5 transition-colors ${clientType === ct.value ? "text-accent" : "text-muted-foreground"}`} />
                         <span className="text-xs font-medium">{ct.label}</span>
                       </label>
                     ))}
@@ -154,23 +175,23 @@ const TrainingRequestSection = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="tr-name" className="flex items-center gap-1 mb-1.5"><User className="w-3.5 h-3.5" /> Nome Completo *</Label>
-                    <Input id="tr-name" {...register("fullName")} placeholder="Seu nome" />
+                    <Input id="tr-name" {...register("fullName")} placeholder="Seu nome" className="rounded-lg" />
                     {errors.fullName && <p className="text-xs text-destructive mt-1">{errors.fullName.message}</p>}
                   </div>
                   <div>
                     <Label htmlFor="tr-email" className="flex items-center gap-1 mb-1.5"><Mail className="w-3.5 h-3.5" /> Email *</Label>
-                    <Input id="tr-email" type="email" {...register("email")} placeholder="email@exemplo.com" />
+                    <Input id="tr-email" type="email" {...register("email")} placeholder="email@exemplo.com" className="rounded-lg" />
                     {errors.email && <p className="text-xs text-destructive mt-1">{errors.email.message}</p>}
                   </div>
                   <div>
                     <Label htmlFor="tr-phone" className="flex items-center gap-1 mb-1.5"><Phone className="w-3.5 h-3.5" /> Telefone *</Label>
-                    <Input id="tr-phone" {...register("phone")} placeholder="+258 84 999 9999" />
+                    <Input id="tr-phone" {...register("phone")} placeholder="+258 84 999 9999" className="rounded-lg" />
                     {errors.phone && <p className="text-xs text-destructive mt-1">{errors.phone.message}</p>}
                   </div>
                   {isOrg && (
                     <div>
                       <Label htmlFor="tr-org" className="flex items-center gap-1 mb-1.5"><Building className="w-3.5 h-3.5" /> Nome da Organização</Label>
-                      <Input id="tr-org" {...register("organizationName")} placeholder="Nome da empresa/organização" />
+                      <Input id="tr-org" {...register("organizationName")} placeholder="Nome da empresa/organização" className="rounded-lg" />
                     </div>
                   )}
                 </div>
@@ -179,11 +200,11 @@ const TrainingRequestSection = () => {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <Label htmlFor="tr-sector" className="mb-1.5 block">Sector de Actividade</Label>
-                      <Input id="tr-sector" {...register("organizationSector")} placeholder="Ex: Energia, Saúde, Construção" />
+                      <Input id="tr-sector" {...register("organizationSector")} placeholder="Ex: Energia, Saúde, Construção" className="rounded-lg" />
                     </div>
                     <div>
                       <Label htmlFor="tr-participants" className="flex items-center gap-1 mb-1.5"><Users className="w-3.5 h-3.5" /> Nº de Participantes</Label>
-                      <Input id="tr-participants" type="number" min="1" {...register("numParticipants")} placeholder="Ex: 15" />
+                      <Input id="tr-participants" type="number" min="1" {...register("numParticipants")} placeholder="Ex: 15" className="rounded-lg" />
                     </div>
                   </div>
                 )}
@@ -191,24 +212,24 @@ const TrainingRequestSection = () => {
                 {/* Training Details */}
                 <div>
                   <Label htmlFor="tr-topic" className="flex items-center gap-1 mb-1.5"><BookOpen className="w-3.5 h-3.5" /> Tema do Treinamento *</Label>
-                  <Input id="tr-topic" {...register("trainingTopic")} placeholder="Ex: ISO 14001, Gestão de Riscos, Excel Avançado" />
+                  <Input id="tr-topic" {...register("trainingTopic")} placeholder="Ex: ISO 14001, Gestão de Riscos, Excel Avançado" className="rounded-lg" />
                   {errors.trainingTopic && <p className="text-xs text-destructive mt-1">{errors.trainingTopic.message}</p>}
                 </div>
 
                 <div>
                   <Label htmlFor="tr-details" className="mb-1.5 block">Detalhes Adicionais</Label>
-                  <Textarea id="tr-details" {...register("trainingDetails")} placeholder="Descreva os objectivos, necessidades específicas ou requisitos do treinamento..." rows={3} />
+                  <Textarea id="tr-details" {...register("trainingDetails")} placeholder="Descreva os objectivos, necessidades específicas ou requisitos do treinamento..." rows={3} className="rounded-lg" />
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="tr-start" className="mb-1.5 block">Período Preferido</Label>
-                    <Input id="tr-start" {...register("preferredStart")} placeholder="Ex: Março 2026, Flexível" />
+                    <Input id="tr-start" {...register("preferredStart")} placeholder="Ex: Março 2026, Flexível" className="rounded-lg" />
                   </div>
                   <div>
                     <Label className="mb-1.5 block">Orçamento Estimado</Label>
                     <Select onValueChange={(val) => setValue("budgetRange", val)}>
-                      <SelectTrigger><SelectValue placeholder="Seleccione" /></SelectTrigger>
+                      <SelectTrigger className="rounded-lg"><SelectValue placeholder="Seleccione" /></SelectTrigger>
                       <SelectContent>
                         {budgetOptions.map((b) => (
                           <SelectItem key={b.value} value={b.value}>{b.label}</SelectItem>
@@ -218,7 +239,7 @@ const TrainingRequestSection = () => {
                   </div>
                 </div>
 
-                <Button type="submit" variant="navy" className="w-full" size="lg" disabled={isSubmitting}>
+                <Button type="submit" variant="navy" className="w-full rounded-xl" size="lg" disabled={isSubmitting}>
                   <Send className="w-4 h-4" />
                   {isSubmitting ? "A enviar..." : "Enviar Pedido de Treinamento"}
                 </Button>

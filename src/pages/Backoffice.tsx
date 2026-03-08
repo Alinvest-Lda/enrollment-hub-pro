@@ -105,27 +105,32 @@ const Backoffice = () => {
       {/* Sidebar — Desktop */}
       <aside
         className={`hidden md:flex flex-col bg-sidebar text-sidebar-foreground border-r border-sidebar-border transition-all duration-300 sticky top-0 h-screen ${
-          sidebarCollapsed ? "w-[68px]" : "w-[240px]"
+          sidebarCollapsed ? "w-[72px]" : "w-[250px]"
         }`}
       >
         {/* Logo */}
         <div className="h-16 flex items-center px-4 border-b border-sidebar-border">
           {!sidebarCollapsed ? (
-            <div className="flex items-center gap-2">
-              <span className="font-heading text-lg font-extrabold tracking-tight text-sidebar-foreground">
-                ALINVEST
-              </span>
-              <Badge variant="outline" className="text-[9px] border-sidebar-border text-sidebar-foreground/60">
-                Admin
-              </Badge>
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-lg bg-sidebar-primary/20 flex items-center justify-center">
+                <span className="font-heading text-sm font-extrabold text-sidebar-primary">A</span>
+              </div>
+              <div>
+                <span className="font-heading text-sm font-extrabold tracking-tight text-sidebar-foreground block leading-none">
+                  ALINVEST
+                </span>
+                <span className="text-[10px] text-sidebar-foreground/40 font-medium">Backoffice</span>
+              </div>
             </div>
           ) : (
-            <span className="font-heading text-lg font-extrabold text-sidebar-primary mx-auto">A</span>
+            <div className="w-9 h-9 rounded-lg bg-sidebar-primary/20 flex items-center justify-center mx-auto">
+              <span className="font-heading text-sm font-extrabold text-sidebar-primary">A</span>
+            </div>
           )}
         </div>
 
         {/* Nav items */}
-        <nav className="flex-1 py-4 px-2 space-y-1">
+        <nav className="flex-1 py-3 px-2.5 space-y-0.5 overflow-y-auto">
           {navItems.map((item) => {
             const isActive = section === item.id;
             const Icon = item.icon;
@@ -133,17 +138,17 @@ const Backoffice = () => {
               <button
                 key={item.id}
                 onClick={() => handleNavClick(item.id)}
-                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
+                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-200 ${
                   isActive
-                    ? "bg-sidebar-accent text-sidebar-primary"
-                    : "text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
+                    ? "bg-sidebar-primary/15 text-sidebar-primary shadow-sm"
+                    : "text-sidebar-foreground/60 hover:bg-sidebar-accent/40 hover:text-sidebar-foreground"
                 }`}
                 title={sidebarCollapsed ? item.label : undefined}
               >
                 <Icon className={`w-[18px] h-[18px] shrink-0 ${isActive ? "text-sidebar-primary" : ""}`} />
                 {!sidebarCollapsed && <span>{item.label}</span>}
                 {!sidebarCollapsed && item.id === "enrollments" && enrollmentCounts.pending > 0 && (
-                  <Badge className="ml-auto text-[10px] h-5 px-1.5 bg-sidebar-primary text-sidebar-primary-foreground">
+                  <Badge className="ml-auto text-[10px] h-5 px-1.5 bg-sidebar-primary text-sidebar-primary-foreground rounded-full">
                     {enrollmentCounts.pending}
                   </Badge>
                 )}
@@ -217,7 +222,7 @@ const Backoffice = () => {
       {/* Main content */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Top bar */}
-        <header className="h-16 border-b border-border bg-card/80 backdrop-blur-md flex items-center justify-between px-4 md:px-6 sticky top-0 z-40">
+        <header className="h-16 border-b border-border/60 bg-card/80 backdrop-blur-xl flex items-center justify-between px-4 md:px-6 sticky top-0 z-40">
           <div className="flex items-center gap-3">
             <button
               className="md:hidden p-2 -ml-2 rounded-lg hover:bg-muted transition-colors"
