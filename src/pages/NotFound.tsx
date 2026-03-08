@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { ArrowLeft, MessageCircle, SearchX } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useSystemSettings, getWhatsAppUrl } from "@/hooks/use-system-settings";
+import SEO from "@/components/SEO";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
