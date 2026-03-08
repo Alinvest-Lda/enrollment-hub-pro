@@ -1,12 +1,13 @@
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
-import { Calendar, Check, Clock, AlertCircle, X, Banknote, ArrowLeft, Upload, Smartphone, FileText } from "lucide-react";
+import { Calendar, Check, Clock, AlertCircle, X, Banknote, ArrowLeft, Upload, Smartphone, FileText, MessageCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { formatCurrency } from "@/lib/courses-data";
+import { Skeleton } from "@/components/ui/skeleton";
+import { formatCurrency, WHATSAPP_LINK } from "@/lib/courses-data";
 import { toast } from "@/hooks/use-toast";
 import MpesaPaymentStep from "@/components/enrollment/MpesaPaymentStep";
 import logo from "@/assets/logo.png";
