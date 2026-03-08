@@ -70,6 +70,8 @@ const TrainingRequestSection = () => {
         full_name: data.fullName,
         email: data.email,
         phone: data.phone,
+        nuit: data.nuit || null,
+        province: data.province,
         organization_name: data.organizationName || null,
         organization_sector: data.organizationSector || null,
         num_participants: data.numParticipants ? parseInt(data.numParticipants) : null,
