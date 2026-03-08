@@ -62,7 +62,7 @@ const CourseDetail = () => {
         title={course.title}
         description={`${course.description.substring(0, 150)}. Inscreva-se online na ALINVEST.`}
         path={`/curso/${id}`}
-        ogImage={course.image || undefined}
+        ogImage={undefined}
       />
       <Navbar />
 
