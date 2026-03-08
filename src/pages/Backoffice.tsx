@@ -140,8 +140,14 @@ const Backoffice = () => {
           })}
         </nav>
 
-        {/* Collapse toggle */}
-        <div className="p-2 border-t border-sidebar-border">
+        {/* Site link + Collapse toggle */}
+        <div className="p-2 border-t border-sidebar-border space-y-1">
+          <a href="/" target="_blank" rel="noopener noreferrer">
+            <button className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-sidebar-foreground/60 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground transition-colors`}>
+              <ExternalLink className="w-[18px] h-[18px] shrink-0" />
+              {!sidebarCollapsed && <span>Ver Site</span>}
+            </button>
+          </a>
           <button
             onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
             className="w-full flex items-center justify-center p-2 rounded-lg text-sidebar-foreground/50 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground transition-colors"
