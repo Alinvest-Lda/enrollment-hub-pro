@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import {
   Plus, Trash2, Pencil, Save, X, RefreshCw, FileText,
   Send, Copy, Eye, Printer, DollarSign, Percent, Calendar, Link2,
+  Download, Mail, MessageCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
