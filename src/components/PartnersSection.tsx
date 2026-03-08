@@ -62,10 +62,11 @@ const PartnersSection = () => {
           {partners.map((partner, i) => (
             <motion.div
               key={partner.id}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.1 }}
+              initial={{ opacity: 0, y: 25, scale: 0.95 }}
+              whileInView={{ opacity: 1, y: 0, scale: 1 }}
+              viewport={{ once: true, margin: "-20px" }}
+              transition={{ delay: i * 0.08, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+              whileHover={{ y: -5, scale: 1.02, transition: { duration: 0.2 } }}
               className="group relative bg-background rounded-xl border border-border p-6 flex flex-col items-center text-center hover:shadow-card-hover hover:border-accent/20 transition-all duration-300"
             >
               {/* Logo */}

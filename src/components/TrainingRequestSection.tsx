@@ -85,18 +85,25 @@ const TrainingRequestSection = () => {
     <section id="treinamento-personalizado" className="py-20 bg-muted/50">
       <div className="container mx-auto px-4">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
           className="text-center mb-12"
         >
           <h2 className="font-heading text-3xl md:text-4xl font-extrabold text-foreground mb-3">
             Treinamento Personalizado
           </h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto">
+          <motion.p
+            className="text-muted-foreground max-w-2xl mx-auto"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
             Não encontrou o que procura? Solicite um treinamento à medida para si, para a sua equipa ou organização.
             Desenvolvemos programas adaptados às suas necessidades específicas.
-          </p>
+          </motion.p>
         </motion.div>
 
         <div className="max-w-2xl mx-auto">
