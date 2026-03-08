@@ -8,6 +8,8 @@ import Footer from "@/components/Footer";
 
 const NotFound = () => {
   const location = useLocation();
+  const { data: settings } = useSystemSettings();
+  const whatsappLink = getWhatsAppUrl(settings?.whatsappNumber || "");
 
   useEffect(() => {
     console.error("404 Error: User attempted to access non-existent route:", location.pathname);
