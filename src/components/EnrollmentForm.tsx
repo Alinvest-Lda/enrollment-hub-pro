@@ -163,6 +163,8 @@ const EnrollmentForm = ({ course }: EnrollmentFormProps) => {
           <p><span className="text-muted-foreground">Nome:</span> {formData.fullName}</p>
           <p><span className="text-muted-foreground">Tel:</span> {formData.phone}</p>
           <p><span className="text-muted-foreground">Email:</span> {formData.email}</p>
+          <p><span className="text-muted-foreground">Província:</span> {formData.province}</p>
+          <p><span className="text-muted-foreground">NUIT:</span> {formData.nuit}</p>
           {formData.company && <p><span className="text-muted-foreground">Empresa:</span> {formData.company}</p>}
         </div>
       </div>
