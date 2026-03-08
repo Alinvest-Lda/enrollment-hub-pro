@@ -1,5 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { MessageCircle, Menu, X, Lock, ChevronRight } from "lucide-react";
+import { NotificationBell } from "@/components/InAppNotifications";
 import { Button } from "@/components/ui/button";
 import { useSystemSettings, getWhatsAppUrl } from "@/hooks/use-system-settings";
 import { useState, useEffect } from "react";
