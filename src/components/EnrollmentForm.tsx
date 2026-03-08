@@ -234,9 +234,24 @@ const EnrollmentForm = ({ course }: EnrollmentFormProps) => {
                 </div>
               </div>
 
-              <div>
-                <Label htmlFor="nuit" className="mb-2 block text-sm font-medium">NUIT (Opcional)</Label>
-                <Input id="nuit" {...register("nuit")} placeholder="Número Único de Identificação Tributária" className="rounded-lg" />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="nuit" className="flex items-center gap-1.5 mb-2 text-sm font-medium">NUIT *</Label>
+                  <Input id="nuit" {...register("nuit")} placeholder="Número Único de Identificação Tributária" className="rounded-lg" />
+                  {errors.nuit && <p className="text-xs text-destructive mt-1.5">{errors.nuit.message}</p>}
+                </div>
+                <div>
+                  <Label htmlFor="province" className="flex items-center gap-1.5 mb-2 text-sm font-medium"><MapPin className="w-3.5 h-3.5 text-muted-foreground" /> Província *</Label>
+                  <Select value={watch("province") || ""} onValueChange={(val) => setValue("province", val, { shouldValidate: true })}>
+                    <SelectTrigger className="rounded-lg"><SelectValue placeholder="Seleccione a província" /></SelectTrigger>
+                    <SelectContent>
+                      {PROVINCES.map((p) => (
+                        <SelectItem key={p} value={p}>{p}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {errors.province && <p className="text-xs text-destructive mt-1.5">{errors.province.message}</p>}
+                </div>
               </div>
 
               <div>
