@@ -7,7 +7,8 @@ export interface SystemSettings {
   companyAddress: string;
   companyPhone: string;
   bankName: string;
-  bankAccount: string;
+  bankAccountName: string;
+  bankAccountNumber: string;
   bankNIB: string;
   emolaNumber: string;
   emolaName: string;
