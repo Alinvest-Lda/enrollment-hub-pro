@@ -29,19 +29,43 @@ interface QuotationData {
   status: string;
 }
 
-export function generateQuotationPDF(q: QuotationData): jsPDF {
+function loadImage(src: string): Promise<HTMLImageElement> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => resolve(img);
+    img.onerror = reject;
+    img.src = src;
+  });
+}
+
+export async function generateQuotationPDF(q: QuotationData): Promise<jsPDF> {
   const doc = new jsPDF();
   const pageWidth = doc.internal.pageSize.getWidth();
 
-  // Header
-  doc.setFontSize(22);
-  doc.setFont("helvetica", "bold");
-  doc.setTextColor(10, 36, 99); // navy
-  doc.text("ALINVEST", 14, 25);
-  doc.setFontSize(9);
-  doc.setFont("helvetica", "normal");
-  doc.setTextColor(120, 120, 120);
-  doc.text("Consultoria & Formação", 14, 31);
+  // Header with logo
+  try {
+    const logoUrl = new URL("/assets/logo.png", window.location.origin).href;
+    const logoImg = await loadImage(logoUrl);
+    const logoH = 14;
+    const logoW = (logoImg.width / logoImg.height) * logoH;
+    doc.addImage(logoImg, "PNG", 14, 14, logoW, logoH);
+    // Subtitle next to logo
+    doc.setFontSize(9);
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(120, 120, 120);
+    doc.text("Consultoria & Formação", 14 + logoW + 3, 24);
+  } catch {
+    // Fallback to text if logo fails
+    doc.setFontSize(22);
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(10, 36, 99);
+    doc.text("ALINVEST", 14, 25);
+    doc.setFontSize(9);
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(120, 120, 120);
+    doc.text("Consultoria & Formação", 14, 31);
+  }
 
   // Quotation title
   doc.setFontSize(16);
