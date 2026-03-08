@@ -87,6 +87,12 @@ const TrainingRequestSection = () => {
 
       setSubmitted(true);
       reset();
+      addNotification({
+        type: "success",
+        title: "Pedido de Formação Enviado!",
+        message: `O seu pedido sobre "${data.trainingTopic}" foi recebido. Entraremos em contacto em até 48 horas.`,
+        icon: "training",
+      });
       toast({ title: "Pedido enviado!", description: "Entraremos em contacto em breve." });
     } catch (err: any) {
       toast({ title: "Erro ao enviar", description: err.message || "Tente novamente.", variant: "destructive" });
