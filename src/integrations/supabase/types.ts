@@ -237,6 +237,7 @@ export type Database = {
           payment_method: string | null
           payment_plan: Database["public"]["Enums"]["payment_plan_type"]
           phone: string
+          province: string | null
           source: Database["public"]["Enums"]["enrollment_source"]
           status: Database["public"]["Enums"]["payment_status"]
           total_price: number
@@ -257,6 +258,7 @@ export type Database = {
           payment_method?: string | null
           payment_plan?: Database["public"]["Enums"]["payment_plan_type"]
           phone: string
+          province?: string | null
           source?: Database["public"]["Enums"]["enrollment_source"]
           status?: Database["public"]["Enums"]["payment_status"]
           total_price: number
@@ -277,6 +279,7 @@ export type Database = {
           payment_method?: string | null
           payment_plan?: Database["public"]["Enums"]["payment_plan_type"]
           phone?: string
+          province?: string | null
           source?: Database["public"]["Enums"]["enrollment_source"]
           status?: Database["public"]["Enums"]["payment_status"]
           total_price?: number
@@ -724,6 +727,7 @@ export type Database = {
           organization_sector: string | null
           phone: string
           preferred_start: string | null
+          province: string | null
           status: string
           training_details: string | null
           training_topic: string
@@ -742,6 +746,7 @@ export type Database = {
           organization_sector?: string | null
           phone: string
           preferred_start?: string | null
+          province?: string | null
           status?: string
           training_details?: string | null
           training_topic: string
@@ -760,6 +765,7 @@ export type Database = {
           organization_sector?: string | null
           phone?: string
           preferred_start?: string | null
+          province?: string | null
           status?: string
           training_details?: string | null
           training_topic?: string
