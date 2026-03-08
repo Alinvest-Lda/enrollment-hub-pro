@@ -1,11 +1,18 @@
 import { useState } from "react";
-import { UserPlus } from "lucide-react";
+import { UserPlus, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { CourseRow, EnrollmentSource } from "@/hooks/use-backoffice-data";
+
+const PROVINCES = [
+  "Maputo Cidade", "Maputo Província", "Gaza", "Inhambane",
+  "Sofala", "Manica", "Tete", "Zambézia",
+  "Nampula", "Cabo Delgado", "Niassa",
+];
 import { CourseRow, EnrollmentSource } from "@/hooks/use-backoffice-data";
 
 const sources: { value: EnrollmentSource; label: string }[] = [
