@@ -51,7 +51,10 @@ const Footer = () => {
                 <a href="https://alinvest-group.com" target="_blank" rel="noopener noreferrer" className="hover:text-primary-foreground transition-colors">Site Institucional</a>
               </li>
               <li>
-                <a href="https://pecb.com" target="_blank" rel="noopener noreferrer" className="hover:text-primary-foreground transition-colors">PECB</a>
+                <Link to="/politica-de-privacidade" className="hover:text-primary-foreground transition-colors">Política de Privacidade</Link>
+              </li>
+              <li>
+                <Link to="/termos-de-uso" className="hover:text-primary-foreground transition-colors">Termos de Uso</Link>
               </li>
             </ul>
           </div>
