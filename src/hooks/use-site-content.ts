@@ -145,8 +145,7 @@ export function useAllHeroStats() {
   return useQuery({
     queryKey: ["hero-stats-all"],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("hero_stats")
+      const { data, error } = await (supabase.from("hero_stats" as any) as any)
         .select("*")
         .order("display_order");
       if (error) throw error;
