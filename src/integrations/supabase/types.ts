@@ -722,6 +722,7 @@ export type Database = {
           email: string
           full_name: string
           id: string
+          nuit: string | null
           num_participants: number | null
           organization_name: string | null
           organization_sector: string | null
@@ -741,6 +742,7 @@ export type Database = {
           email: string
           full_name: string
           id?: string
+          nuit?: string | null
           num_participants?: number | null
           organization_name?: string | null
           organization_sector?: string | null
@@ -760,6 +762,7 @@ export type Database = {
           email?: string
           full_name?: string
           id?: string
+          nuit?: string | null
           num_participants?: number | null
           organization_name?: string | null
           organization_sector?: string | null
