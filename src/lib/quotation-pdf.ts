@@ -208,9 +208,8 @@ export async function generateQuotationPDF(
     : "";
 
   const hasBankDetails = bankDetails && (bankDetails.bankName || bankDetails.bankAccountNumber || bankDetails.bankNIB);
-  const hasEmola = bankDetails && bankDetails.emolaNumber;
 
-  if (hasBankDetails || hasEmola || paymentUrl) {
+  if (hasBankDetails || paymentUrl) {
     // Section header
     doc.setFontSize(9);
     doc.setFont("helvetica", "bold");
