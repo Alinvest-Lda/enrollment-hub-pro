@@ -438,10 +438,6 @@ export default function InstallmentTracker({ enrollmentId, paymentPlan, totalPri
           })}
         </div>
       )}
-
-      {inst.length > 0 && (
-        <Separator />
-      )}
     </div>
   );
 }
