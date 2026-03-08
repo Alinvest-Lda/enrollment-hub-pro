@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useSearchParams } from "react-router-dom";
+import SEO from "@/components/SEO";
 import { Search, Award, CheckCircle, XCircle, ArrowLeft, Loader2, ShieldCheck } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import { supabase } from "@/integrations/supabase/client";
@@ -59,6 +60,7 @@ export default function VerifyCertificate() {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO title="Verificar Certificado" description="Verifique a autenticidade de um certificado ALINVEST inserindo o código único." path="/verificar-certificado" />
       <header className="border-b border-border bg-card">
         <div className="max-w-2xl mx-auto px-4 py-4 flex items-center justify-between">
           <div>

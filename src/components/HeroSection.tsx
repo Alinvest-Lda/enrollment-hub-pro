@@ -88,7 +88,7 @@ const HeroSection = () => {
   const { data: settings } = useSystemSettings();
   const whatsappNumber = settings?.whatsappNumber || "";
   return (
-    <section className="relative min-h-[92vh] flex items-center overflow-hidden">
+    <section className="relative min-h-[85vh] sm:min-h-[92vh] flex items-center overflow-hidden">
       {/* Background with subtle zoom animation */}
       <motion.img
         src={heroBg}
@@ -157,7 +157,7 @@ const HeroSection = () => {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8 }}
           >
-            <h1 className="text-4xl sm:text-5xl lg:text-[3.5rem] xl:text-6xl font-extrabold text-primary-foreground leading-[1.08] mb-6 font-heading">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-[3.5rem] xl:text-6xl font-extrabold text-primary-foreground leading-[1.08] mb-6 font-heading">
               Invista no seu{" "}
               <span className="text-gradient">Crescimento</span>{" "}
               <span className="text-gradient">Profissional</span>
@@ -168,7 +168,7 @@ const HeroSection = () => {
               Inscreva-se online e escolha o plano de pagamento que melhor se adapta a si.
             </p>
 
-            <div className="flex flex-wrap gap-4 mb-10">
+            <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 mb-10">
               <a href="#cursos">
                 <Button variant="hero" size="xl" className="group">
                   Ver Cursos

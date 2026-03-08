@@ -1,4 +1,5 @@
 import { useParams, Link } from "react-router-dom";
+import SEO from "@/components/SEO";
 import { ArrowLeft, Clock, Calendar, CheckCircle, MessageCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import { formatCurrency } from "@/lib/courses-data";
@@ -49,6 +50,12 @@ const CourseDetail = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
+      <SEO
+        title={course.title}
+        description={`${course.description.substring(0, 150)}. Inscreva-se online na ALINVEST.`}
+        path={`/curso/${id}`}
+        ogImage={course.image || undefined}
+      />
       <Navbar />
 
       <section className="relative bg-navy-gradient text-primary-foreground py-16 overflow-hidden">

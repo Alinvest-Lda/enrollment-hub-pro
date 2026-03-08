@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { ArrowLeft, MessageCircle, SearchX } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useSystemSettings, getWhatsAppUrl } from "@/hooks/use-system-settings";
+import SEO from "@/components/SEO";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
@@ -17,6 +18,7 @@ const NotFound = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
+      <SEO title="Página Não Encontrada" noIndex />
       <Navbar />
       <div className="flex-1 flex items-center justify-center px-4">
         <div className="text-center max-w-md">
