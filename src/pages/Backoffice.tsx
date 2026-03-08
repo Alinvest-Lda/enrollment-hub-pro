@@ -105,7 +105,7 @@ const Backoffice = () => {
       {/* Sidebar — Desktop */}
       <aside
         className={`hidden md:flex flex-col bg-sidebar text-sidebar-foreground border-r border-sidebar-border transition-all duration-300 sticky top-0 h-screen ${
-          sidebarCollapsed ? "w-[68px]" : "w-[240px]"
+          sidebarCollapsed ? "w-[72px]" : "w-[250px]"
         }`}
       >
         {/* Logo */}
