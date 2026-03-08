@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import {
   Award, Plus, Pencil, Trash2, Save, X, Eye, Copy, Search,
   FileText, Loader2, Upload, Globe, QrCode, Image as ImageIcon,
