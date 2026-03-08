@@ -119,8 +119,7 @@ export function useAllFAQs() {
   return useQuery({
     queryKey: ["faqs-all"],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("faqs")
+      const { data, error } = await (supabase.from("faqs" as any) as any)
         .select("*")
         .order("display_order");
       if (error) throw error;
