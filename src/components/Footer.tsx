@@ -50,6 +50,11 @@ const Footer = () => {
               <li>
                 <a href="https://pecb.com" target="_blank" rel="noopener noreferrer" className="hover:text-primary-foreground transition-colors">PECB</a>
               </li>
+              <li>
+                <Link to="/admin" className="flex items-center gap-1.5 hover:text-primary-foreground transition-colors">
+                  <Lock className="w-3 h-3" />Área Administrativa
+                </Link>
+              </li>
             </ul>
           </div>
         </div>
