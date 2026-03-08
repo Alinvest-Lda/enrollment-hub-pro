@@ -53,7 +53,8 @@ const AllCourses = () => {
         const [min, max] = selectedPrice.split("-").map(Number);
         if (c.price < min || c.price > max) return false;
       }
-      if (selectedMonth !== "all" && c.startDate) {
+      if (selectedMonth !== "all") {
+        if (!c.startDate) return false;
         const d = new Date(c.startDate);
         const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
         if (key !== selectedMonth) return false;

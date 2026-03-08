@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, GraduationCap, Shield, CheckCircle, Users, BookOpen, Award, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { getWhatsAppLink } from "@/lib/courses-data";
 import heroBg from "@/assets/hero-bg.jpg";
 
 function AnimatedCounter({ target, suffix = "" }: { target: number; suffix?: string }) {
@@ -172,7 +173,7 @@ const HeroSection = () => {
                   <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
                 </Button>
               </a>
-              <a href="https://wa.me/258849999999?text=Olá, gostaria de saber mais sobre os cursos disponíveis." target="_blank" rel="noopener noreferrer">
+              <a href={getWhatsAppLink("Olá, gostaria de saber mais sobre os cursos disponíveis.")} target="_blank" rel="noopener noreferrer">
                 <Button variant="hero-outline" size="xl">
                   Falar no WhatsApp
                 </Button>

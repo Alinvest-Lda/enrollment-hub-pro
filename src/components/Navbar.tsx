@@ -82,13 +82,19 @@ const Navbar = () => {
               </Link>
             );
           })}
-          <div className="pt-2">
+          <div className="pt-2 space-y-2">
             <a href={WHATSAPP_LINK} target="_blank" rel="noopener noreferrer">
               <Button variant="whatsapp" size="sm" className="w-full rounded-lg">
                 <MessageCircle className="w-4 h-4" />
                 WhatsApp
               </Button>
             </a>
+            <Link to="/admin" onClick={() => setMobileOpen(false)}>
+              <Button variant="ghost" size="sm" className="w-full rounded-lg justify-start text-muted-foreground">
+                <Lock className="w-4 h-4 mr-2" />
+                Área Administrativa
+              </Button>
+            </Link>
           </div>
         </div>
       )}

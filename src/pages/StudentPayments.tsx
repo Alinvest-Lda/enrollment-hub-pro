@@ -1,13 +1,14 @@
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
-import { Calendar, Check, Clock, AlertCircle, X, Banknote, ArrowLeft, Upload, FileText, Eye, Smartphone, CreditCard } from "lucide-react";
+import { Calendar, Check, Clock, AlertCircle, X, Banknote, ArrowLeft, Upload, FileText, Eye, Smartphone, CreditCard, MessageCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { formatCurrency } from "@/lib/courses-data";
+import { formatCurrency, WHATSAPP_LINK } from "@/lib/courses-data";
 import { toast } from "@/hooks/use-toast";
 import MpesaPaymentStep from "@/components/enrollment/MpesaPaymentStep";
 
@@ -106,8 +107,21 @@ export default function StudentPayments() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="animate-pulse text-muted-foreground">A carregar...</div>
+      <div className="min-h-screen bg-background">
+        <header className="border-b border-border bg-card">
+          <div className="max-w-3xl mx-auto px-4 py-4 flex items-center justify-between">
+            <div>
+              <Skeleton className="h-6 w-48" />
+              <Skeleton className="h-3 w-24 mt-1" />
+            </div>
+            <Skeleton className="h-8 w-16" />
+          </div>
+        </header>
+        <main className="max-w-3xl mx-auto px-4 py-6 space-y-6">
+          <Skeleton className="h-40 w-full rounded-lg" />
+          <Skeleton className="h-32 w-full rounded-lg" />
+          <Skeleton className="h-32 w-full rounded-lg" />
+        </main>
       </div>
     );
   }
@@ -120,9 +134,14 @@ export default function StudentPayments() {
             <AlertCircle className="w-12 h-12 mx-auto mb-4 text-destructive" />
             <h2 className="font-heading text-xl font-bold mb-2">Inscrição não encontrada</h2>
             <p className="text-muted-foreground text-sm mb-6">Verifique o link ou contacte a administração.</p>
-            <Link to="/">
-              <Button variant="outline"><ArrowLeft className="w-4 h-4 mr-2" />Voltar ao site</Button>
-            </Link>
+            <div className="flex flex-wrap gap-3 justify-center">
+              <Link to="/">
+                <Button variant="outline"><ArrowLeft className="w-4 h-4 mr-2" />Voltar ao site</Button>
+              </Link>
+              <a href={WHATSAPP_LINK} target="_blank" rel="noopener noreferrer">
+                <Button variant="whatsapp"><MessageCircle className="w-4 h-4 mr-2" />Precisa de ajuda?</Button>
+              </a>
+            </div>
           </CardContent>
         </Card>
       </div>
