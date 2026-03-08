@@ -193,6 +193,24 @@ export default function EnrollmentsTab({ enrollments, proofs, fetchProofs, updat
                                     )}
                                   </div>
 
+                                  {/* Installment Tracker */}
+                                  {enrollment.payment_plan !== "full" && (
+                                    <InstallmentTracker
+                                      enrollmentId={enrollment.id}
+                                      paymentPlan={enrollment.payment_plan}
+                                      totalPrice={enrollment.total_price}
+                                      amountDue={enrollment.amount_due}
+                                    />
+                                  )}
+                                  {enrollment.payment_plan === "full" && (
+                                    <InstallmentTracker
+                                      enrollmentId={enrollment.id}
+                                      paymentPlan="full"
+                                      totalPrice={enrollment.total_price}
+                                      amountDue={enrollment.amount_due}
+                                    />
+                                  )}
+
                                   <div>
                                     <p className="font-heading font-semibold mb-1">Notas do Admin</p>
                                     <Textarea
