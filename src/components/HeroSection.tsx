@@ -63,17 +63,17 @@ const HeroSection = () => {
       {/* Animated decorative circles */}
       <div className="absolute top-0 right-0 w-1/2 h-full pointer-events-none">
         <motion.div
-          className="absolute top-20 right-20 w-72 h-72 rounded-full border-2 border-primary-foreground/[0.04]"
+          className="absolute top-20 right-20 w-72 h-72 rounded-full border-2 border-primary-foreground/[0.08]"
           animate={{ scale: [1, 1.05, 1], rotate: [0, 3, 0] }}
           transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
         />
         <motion.div
-          className="absolute bottom-32 right-40 w-48 h-48 rounded-full border border-primary-foreground/[0.04]"
+          className="absolute bottom-32 right-40 w-48 h-48 rounded-full border border-primary-foreground/[0.08]"
           animate={{ scale: [1, 1.08, 1], rotate: [0, -5, 0] }}
           transition={{ duration: 16, repeat: Infinity, ease: "easeInOut", delay: 3 }}
         />
         <motion.div
-          className="absolute top-1/2 right-10 w-96 h-96 rounded-full border border-primary-foreground/[0.03]"
+          className="absolute top-1/2 right-10 w-96 h-96 rounded-full border border-primary-foreground/[0.06]"
           animate={{ scale: [1, 1.03, 1], rotate: [0, 2, 0] }}
           transition={{ duration: 24, repeat: Infinity, ease: "easeInOut", delay: 1 }}
         />
