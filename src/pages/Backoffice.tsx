@@ -111,16 +111,21 @@ const Backoffice = () => {
         {/* Logo */}
         <div className="h-16 flex items-center px-4 border-b border-sidebar-border">
           {!sidebarCollapsed ? (
-            <div className="flex items-center gap-2">
-              <span className="font-heading text-lg font-extrabold tracking-tight text-sidebar-foreground">
-                ALINVEST
-              </span>
-              <Badge variant="outline" className="text-[9px] border-sidebar-border text-sidebar-foreground/60">
-                Admin
-              </Badge>
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-lg bg-sidebar-primary/20 flex items-center justify-center">
+                <span className="font-heading text-sm font-extrabold text-sidebar-primary">A</span>
+              </div>
+              <div>
+                <span className="font-heading text-sm font-extrabold tracking-tight text-sidebar-foreground block leading-none">
+                  ALINVEST
+                </span>
+                <span className="text-[10px] text-sidebar-foreground/40 font-medium">Backoffice</span>
+              </div>
             </div>
           ) : (
-            <span className="font-heading text-lg font-extrabold text-sidebar-primary mx-auto">A</span>
+            <div className="w-9 h-9 rounded-lg bg-sidebar-primary/20 flex items-center justify-center mx-auto">
+              <span className="font-heading text-sm font-extrabold text-sidebar-primary">A</span>
+            </div>
           )}
         </div>
 
