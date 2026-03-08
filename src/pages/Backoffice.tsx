@@ -220,6 +220,9 @@ const Backoffice = () => {
                 {section === "enrollments" && `${enrollmentCounts.pending} pendentes de ${enrollmentCounts.total}`}
                 {section === "courses" && `${data.courses.length} cursos registados`}
                 {section === "training" && `${data.trainingRequests.length} pedidos`}
+                {section === "quotations" && "Gere cotações para formações"}
+                {section === "payment_plans" && "Configure modelos de pagamento"}
+                {section === "whatsapp" && "Templates de mensagens"}
                 {section === "settings" && "Gerencie a plataforma"}
               </p>
             </div>
