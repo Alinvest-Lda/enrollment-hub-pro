@@ -45,8 +45,7 @@ export function useTestimonials() {
   return useQuery({
     queryKey: ["testimonials"],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("testimonials")
+      const { data, error } = await (supabase.from("testimonials" as any) as any)
         .select("*")
         .eq("is_active", true)
         .order("display_order");
