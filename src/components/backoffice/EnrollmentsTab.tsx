@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { Check, X, Eye, FileText, MessageCircle, Search, Trash2, Download, Filter } from "lucide-react";
+import { Check, X, Eye, FileText, MessageCircle, Search, Trash2, Download, Filter, Banknote } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Enrollment, PaymentProof, PaymentStatus, statusConfig } from "@/hooks/use-backoffice-data";
 import { formatCurrency, getWhatsAppLink } from "@/lib/courses-data";
 import { exportToCSV, enrollmentCSVColumns } from "@/lib/csv-export";
+import InstallmentTracker from "@/components/backoffice/InstallmentTracker";
 
 interface Props {
   enrollments: Enrollment[];
@@ -155,7 +156,7 @@ export default function EnrollmentsTab({ enrollments, proofs, fetchProofs, updat
                                   <Eye className="w-4 h-4" />
                                 </Button>
                               </DialogTrigger>
-                              <DialogContent className="max-w-lg">
+                              <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
                                 <DialogHeader><DialogTitle>{enrollment.full_name}</DialogTitle></DialogHeader>
                                 <div className="space-y-3 text-sm">
                                   <div className="grid grid-cols-2 gap-2">
@@ -191,6 +192,24 @@ export default function EnrollmentsTab({ enrollments, proofs, fetchProofs, updat
                                       ))
                                     )}
                                   </div>
+
+                                  {/* Installment Tracker */}
+                                  {enrollment.payment_plan !== "full" && (
+                                    <InstallmentTracker
+                                      enrollmentId={enrollment.id}
+                                      paymentPlan={enrollment.payment_plan}
+                                      totalPrice={enrollment.total_price}
+                                      amountDue={enrollment.amount_due}
+                                    />
+                                  )}
+                                  {enrollment.payment_plan === "full" && (
+                                    <InstallmentTracker
+                                      enrollmentId={enrollment.id}
+                                      paymentPlan="full"
+                                      totalPrice={enrollment.total_price}
+                                      amountDue={enrollment.amount_due}
+                                    />
+                                  )}
 
                                   <div>
                                     <p className="font-heading font-semibold mb-1">Notas do Admin</p>
