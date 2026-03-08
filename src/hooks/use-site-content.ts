@@ -60,8 +60,7 @@ export function useFAQs() {
   return useQuery({
     queryKey: ["faqs"],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("faqs")
+      const { data, error } = await (supabase.from("faqs" as any) as any)
         .select("*")
         .eq("is_active", true)
         .order("display_order");
