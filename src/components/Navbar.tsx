@@ -65,6 +65,7 @@ const Navbar = () => {
             );
           })}
           <div className="ml-3 flex items-center gap-2">
+            <NotificationBell />
             <a href={whatsappLink} target="_blank" rel="noopener noreferrer">
               <Button variant="whatsapp" size="sm" className="rounded-lg shadow-sm">
                 <MessageCircle className="w-4 h-4" />
