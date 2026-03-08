@@ -17,6 +17,7 @@ import DashboardTab from "@/components/backoffice/DashboardTab";
 import ManualEnrollmentForm from "@/components/backoffice/ManualEnrollmentForm";
 import CSVImportDialog from "@/components/backoffice/CSVImportDialog";
 import SettingsTab from "@/components/backoffice/SettingsTab";
+import WhatsAppTemplatesTab from "@/components/backoffice/WhatsAppTemplatesTab";
 import { useBackofficeData } from "@/hooks/use-backoffice-data";
 import RealtimeNotifications from "@/components/backoffice/RealtimeNotifications";
 import { supabase } from "@/integrations/supabase/client";
