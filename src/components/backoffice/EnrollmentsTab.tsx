@@ -100,6 +100,15 @@ export default function EnrollmentsTab({ enrollments, proofs, fetchProofs, updat
               ))}
             </SelectContent>
           </Select>
+          <Select value={provinceFilter} onValueChange={setProvinceFilter}>
+            <SelectTrigger className="w-[180px] bg-background"><SelectValue placeholder="Todas as províncias" /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todas as províncias</SelectItem>
+              {provinceNames.map((name) => (
+                <SelectItem key={name} value={name}>{name}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
           <Select value={dateFilter} onValueChange={setDateFilter}>
             <SelectTrigger className="w-[160px] bg-background"><SelectValue placeholder="Período" /></SelectTrigger>
             <SelectContent>
@@ -109,8 +118,8 @@ export default function EnrollmentsTab({ enrollments, proofs, fetchProofs, updat
               <SelectItem value="90d">Últimos 90 dias</SelectItem>
             </SelectContent>
           </Select>
-          {(courseFilter !== "all" || dateFilter !== "all") && (
-            <Button variant="ghost" size="sm" onClick={() => { setCourseFilter("all"); setDateFilter("all"); }}>
+          {(courseFilter !== "all" || provinceFilter !== "all" || dateFilter !== "all") && (
+            <Button variant="ghost" size="sm" onClick={() => { setCourseFilter("all"); setProvinceFilter("all"); setDateFilter("all"); }}>
               Limpar filtros
             </Button>
           )}
