@@ -911,19 +911,21 @@ export default function CertificatesTab() {
                     </div>
                   </TabsContent>
                 </Tabs>
+                </CollapsibleSection>
 
                 {/* Preview */}
-                <Separator />
-                <div>
-                  <p className="text-xs font-medium mb-2 flex items-center gap-1">
-                    Pré-visualização interactiva (Fonte: Lora)
-                    <Badge variant="outline" className="text-[9px] ml-1">
+                <CollapsibleSection
+                  title="Pré-visualização"
+                  icon={<Eye className="w-4 h-4 text-muted-foreground" />}
+                >
+                  <div className="flex items-center gap-2 mb-2">
+                    <Badge variant="outline" className="text-[9px]">
                       <Globe className="w-2.5 h-2.5 mr-0.5" />{langLabel(editTemplate.language || "pt")}
                     </Badge>
-                    <Badge variant="secondary" className="text-[9px] ml-1">
+                    <Badge variant="secondary" className="text-[9px]">
                       <GripVertical className="w-2.5 h-2.5 mr-0.5" />Arraste para mover
                     </Badge>
-                  </p>
+                  </div>
                   <CertificatePreview
                     template={editTemplate}
                     layout={layout}
@@ -932,7 +934,7 @@ export default function CertificatesTab() {
                     onSelectField={setSelectedFieldId}
                     onFieldUpdate={updateField}
                   />
-                </div>
+                </CollapsibleSection>
 
                 <div className="flex gap-2">
                   <Button onClick={saveTemplate} disabled={saving}>
