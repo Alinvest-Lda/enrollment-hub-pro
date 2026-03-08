@@ -35,7 +35,7 @@ const NotFound = () => {
                 Voltar ao Início
               </Button>
             </Link>
-            <a href={WHATSAPP_LINK} target="_blank" rel="noopener noreferrer">
+            <a href={whatsappLink} target="_blank" rel="noopener noreferrer">
               <Button variant="whatsapp" size="lg">
                 <MessageCircle className="w-4 h-4" />
                 Precisa de Ajuda?

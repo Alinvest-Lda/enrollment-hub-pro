@@ -141,7 +141,7 @@ export default function StudentPayments() {
               <Link to="/">
                 <Button variant="outline"><ArrowLeft className="w-4 h-4 mr-2" />Voltar ao site</Button>
               </Link>
-              <a href={WHATSAPP_LINK} target="_blank" rel="noopener noreferrer">
+              <a href={whatsappLink} target="_blank" rel="noopener noreferrer">
                 <Button variant="whatsapp"><MessageCircle className="w-4 h-4 mr-2" />Precisa de ajuda?</Button>
               </a>
             </div>
