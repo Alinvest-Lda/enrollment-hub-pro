@@ -14,6 +14,8 @@ import StudentPayments from "./pages/StudentPayments";
 import VerifyCertificate from "./pages/VerifyCertificate";
 import QuotationPayment from "./pages/QuotationPayment";
 import NotFound from "./pages/NotFound";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsOfUse from "./pages/TermsOfUse";
 import ScrollToTop from "./components/ScrollToTop";
 
 const queryClient = new QueryClient();
