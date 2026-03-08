@@ -33,8 +33,6 @@ export default function CoursesTab({ courses, saveCourse, deleteCourse, toggleCo
   const [editing, setEditing] = useState<Partial<CourseRow> | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [highlightsText, setHighlightsText] = useState("");
-  const [uploading, setUploading] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const filtered = courses.filter((c) => c.title.toLowerCase().includes(search.toLowerCase()) || c.category.toLowerCase().includes(search.toLowerCase()));
 
