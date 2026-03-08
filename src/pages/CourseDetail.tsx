@@ -84,9 +84,11 @@ const CourseDetail = () => {
 
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-10">
-          <div className="lg:col-span-2 space-y-6">
-            <div>
-              <h3 className="font-heading text-lg font-bold mb-3">O que vai aprender</h3>
+          <div className="lg:col-span-2 space-y-4">
+            <CollapsibleSection
+              title="O que vai aprender"
+              icon={<BookOpen className="w-5 h-5 text-accent" />}
+            >
               <ul className="space-y-2">
                 {course.highlights.map((h) => (
                   <li key={h} className="flex items-start gap-2 text-sm text-muted-foreground">
@@ -95,10 +97,12 @@ const CourseDetail = () => {
                   </li>
                 ))}
               </ul>
-            </div>
+            </CollapsibleSection>
 
-            <div>
-              <h3 className="font-heading text-lg font-bold mb-3">Modalidades de Pagamento</h3>
+            <CollapsibleSection
+              title="Modalidades de Pagamento"
+              icon={<CreditCard className="w-5 h-5 text-accent" />}
+            >
               <div className="space-y-3">
                 {course.paymentPlans.map((plan) => (
                   <div key={plan.id} className="bg-muted rounded-lg p-4">
@@ -114,7 +118,7 @@ const CourseDetail = () => {
                   </div>
                 ))}
               </div>
-            </div>
+            </CollapsibleSection>
 
             <a href={getWhatsAppLink(whatsappMsg)} target="_blank" rel="noopener noreferrer">
               <Button variant="whatsapp" className="w-full mt-4">
