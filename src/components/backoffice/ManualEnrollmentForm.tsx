@@ -187,7 +187,7 @@ export default function ManualEnrollmentForm({ courses, onSubmit }: Props) {
             <Textarea value={form.admin_notes} onChange={(e) => update("admin_notes", e.target.value)} rows={2} placeholder="Notas internas..." />
           </div>
 
-          <Button onClick={handleSubmit} disabled={loading || !form.full_name || !form.email || !form.phone || !form.course_id} className="w-full">
+          <Button onClick={handleSubmit} disabled={loading || !form.full_name || !form.email || !form.phone || !form.course_id || !form.nuit || !form.province} className="w-full">
             {loading ? "A criar..." : "Criar Inscrição"}
           </Button>
         </div>
