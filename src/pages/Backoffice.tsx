@@ -29,7 +29,7 @@ import RealtimeNotifications from "@/components/backoffice/RealtimeNotifications
 import ContentManagerTab from "@/components/backoffice/ContentManagerTab";
 import { supabase } from "@/integrations/supabase/client";
 
-type Section = "dashboard" | "enrollments" | "courses" | "training" | "quotations" | "certificates" | "partners" | "content" | "reports" | "payment_plans" | "whatsapp" | "settings";
+type Section = "dashboard" | "enrollments" | "courses" | "training" | "quotations" | "certificates" | "reports" | "payment_plans" | "whatsapp" | "settings";
 
 const navItems: { id: Section; label: string; icon: React.ElementType; shortLabel: string }[] = [
   { id: "dashboard", label: "Dashboard", icon: BarChart3, shortLabel: "Dash" },
@@ -38,8 +38,6 @@ const navItems: { id: Section; label: string; icon: React.ElementType; shortLabe
   { id: "training", label: "Formações", icon: GraduationCap, shortLabel: "Form." },
   { id: "quotations", label: "Cotações", icon: FileText, shortLabel: "Cotaç." },
   { id: "certificates", label: "Certificados", icon: Award, shortLabel: "Certif." },
-  { id: "partners", label: "Parceiros", icon: Handshake, shortLabel: "Parceiros" },
-  { id: "content", label: "Conteúdos", icon: Palette, shortLabel: "Cont." },
   { id: "reports", label: "Relatórios", icon: PieChart, shortLabel: "Relat." },
   { id: "payment_plans", label: "Pagamentos", icon: DollarSign, shortLabel: "Pagam." },
   { id: "whatsapp", label: "WhatsApp", icon: MessageSquare, shortLabel: "WhatsApp" },
