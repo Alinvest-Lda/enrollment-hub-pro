@@ -3,6 +3,7 @@ import { ArrowRight, BookOpen, Sparkles } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useCourses } from "@/hooks/use-courses";
 import CourseCard from "./CourseCard";
+import { CoursesListJsonLd } from "./CourseJsonLd";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 
