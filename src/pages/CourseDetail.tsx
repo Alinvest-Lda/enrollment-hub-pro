@@ -11,6 +11,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import EnrollmentForm from "@/components/EnrollmentForm";
+import CourseJsonLd from "@/components/CourseJsonLd";
 
 const CourseDetail = () => {
   const { id } = useParams<{ id: string }>();
