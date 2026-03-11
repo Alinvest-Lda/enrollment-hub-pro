@@ -65,6 +65,7 @@ const CourseDetail = () => {
         path={`/curso/${id}`}
         ogImage={undefined}
       />
+      <CourseJsonLd course={course} />
       <Navbar />
 
       {/* Hero with image background */}
