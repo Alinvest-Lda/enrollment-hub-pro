@@ -31,7 +31,7 @@ const enrollmentSchema = z.object({
   email: z.string().email("Email inválido").max(255),
   phone: z.string().min(9, "Telefone inválido").max(20),
   company: z.string().max(100).optional(),
-  nuit: z.string().min(1, "NUIT obrigatório").max(20),
+  nuit: z.string().min(1, "NUIT obrigatório").max(20).regex(/^\d{9}$/, "NUIT deve conter exactamente 9 dígitos numéricos"),
   province: z.string().min(1, "Província obrigatória"),
   message: z.string().max(500).optional(),
   paymentPlanId: z.string().min(1, "Seleccione um plano de pagamento"),
