@@ -55,6 +55,7 @@ const CoursesGrid = () => {
           </div>
         ) : (
           <>
+            {courses && courses.length > 0 && <CoursesListJsonLd courses={courses} />}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7">
               {displayedCourses?.map((course, i) => (
                 <CourseCard key={course.id} course={course} index={i} />
