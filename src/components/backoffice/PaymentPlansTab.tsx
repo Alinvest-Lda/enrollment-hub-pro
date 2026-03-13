@@ -129,6 +129,7 @@ export default function PaymentPlansTab() {
       description: form.description.trim(),
       installments: form.installments,
       is_default: form.is_default,
+      payment_plan_group: form.payment_plan_group,
     };
 
     if (editingPlan) {
