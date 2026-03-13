@@ -21,6 +21,7 @@ const QuotationPayment = lazy(() => import("./pages/QuotationPayment"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
 const TermsOfUse = lazy(() => import("./pages/TermsOfUse"));
+const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 
 const queryClient = new QueryClient();
 
@@ -54,6 +55,7 @@ const App = () => (
                 <Route path="/cotacao/:quotationId" element={<QuotationPayment />} />
                 <Route path="/admin" element={<AdminLogin />} />
                 <Route path="/backoffice" element={<Backoffice />} />
+                <Route path="/reset-password" element={<ResetPassword />} />
                 <Route path="/politica-de-privacidade" element={<PrivacyPolicy />} />
                 <Route path="/termos-de-uso" element={<TermsOfUse />} />
                 <Route path="*" element={<NotFound />} />
