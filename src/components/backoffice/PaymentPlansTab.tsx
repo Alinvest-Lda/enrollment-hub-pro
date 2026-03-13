@@ -1,13 +1,14 @@
 import { useState, useEffect } from "react";
 import {
   Plus, Trash2, Pencil, Save, X, RefreshCw, DollarSign,
-  ToggleLeft, ToggleRight, Copy, Percent,
+  ToggleLeft, ToggleRight, Copy, Percent, Clock,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
@@ -33,8 +34,15 @@ interface PaymentPlan {
   installments: PlanInstallment[];
   is_default: boolean;
   is_active: boolean;
+  payment_plan_group: string;
   created_at: string;
 }
+
+const PLAN_GROUPS = [
+  { value: "all", label: "Todos os cursos" },
+  { value: "2-weeks", label: "Cursos de 2 semanas" },
+  { value: "1-month", label: "Cursos de 1 mês" },
+];
 
 const emptyInstallment: PlanInstallment = { number: 1, percent: 100, days_offset: 0, label: "Pagamento" };
 
@@ -49,6 +57,7 @@ export default function PaymentPlansTab() {
     description: "",
     installments: [{ ...emptyInstallment }] as PlanInstallment[],
     is_default: false,
+    payment_plan_group: "all",
   });
 
   const fetchPlans = async () => {
@@ -65,7 +74,7 @@ export default function PaymentPlansTab() {
 
   const openCreate = () => {
     setEditingPlan(null);
-    setForm({ name: "", description: "", installments: [{ ...emptyInstallment }], is_default: false });
+    setForm({ name: "", description: "", installments: [{ ...emptyInstallment }], is_default: false, payment_plan_group: "all" });
     setDialogOpen(true);
   };
 
@@ -76,6 +85,7 @@ export default function PaymentPlansTab() {
       description: p.description,
       installments: p.installments.length > 0 ? p.installments : [{ ...emptyInstallment }],
       is_default: p.is_default,
+      payment_plan_group: p.payment_plan_group || "all",
     });
     setDialogOpen(true);
   };
@@ -119,6 +129,7 @@ export default function PaymentPlansTab() {
       description: form.description.trim(),
       installments: form.installments,
       is_default: form.is_default,
+      payment_plan_group: form.payment_plan_group,
     };
 
     if (editingPlan) {
@@ -198,7 +209,13 @@ export default function PaymentPlansTab() {
                   )}
                 </div>
               </div>
-              <CardDescription className="text-xs">{plan.description}</CardDescription>
+              <CardDescription className="text-xs flex items-center gap-2">
+                {plan.description}
+                <Badge variant="outline" className="text-[10px] gap-1">
+                  <Clock className="w-3 h-3" />
+                  {PLAN_GROUPS.find((g) => g.value === plan.payment_plan_group)?.label || "Todos"}
+                </Badge>
+              </CardDescription>
             </CardHeader>
             <CardContent className="pt-0">
               <div className="space-y-1.5">
@@ -236,6 +253,17 @@ export default function PaymentPlansTab() {
             <div>
               <Label className="text-sm font-medium">Descrição</Label>
               <Input value={form.description} onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))} placeholder="ex: 50% na inscrição, 50% em 14 dias" className="mt-1" />
+            </div>
+            <div>
+              <Label className="text-sm font-medium">Aplicável a</Label>
+              <Select value={form.payment_plan_group} onValueChange={(val) => setForm((p) => ({ ...p, payment_plan_group: val }))}>
+                <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {PLAN_GROUPS.map((g) => (
+                    <SelectItem key={g.value} value={g.value}>{g.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             <Separator />

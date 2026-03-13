@@ -451,6 +451,7 @@ export type Database = {
           is_active: boolean
           is_default: boolean
           name: string
+          payment_plan_group: string
           updated_at: string
         }
         Insert: {
@@ -461,6 +462,7 @@ export type Database = {
           is_active?: boolean
           is_default?: boolean
           name: string
+          payment_plan_group?: string
           updated_at?: string
         }
         Update: {
@@ -471,6 +473,7 @@ export type Database = {
           is_active?: boolean
           is_default?: boolean
           name?: string
+          payment_plan_group?: string
           updated_at?: string
         }
         Relationships: []
