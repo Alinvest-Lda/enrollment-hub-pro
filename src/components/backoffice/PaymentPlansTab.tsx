@@ -254,6 +254,17 @@ export default function PaymentPlansTab() {
               <Label className="text-sm font-medium">Descrição</Label>
               <Input value={form.description} onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))} placeholder="ex: 50% na inscrição, 50% em 14 dias" className="mt-1" />
             </div>
+            <div>
+              <Label className="text-sm font-medium">Aplicável a</Label>
+              <Select value={form.payment_plan_group} onValueChange={(val) => setForm((p) => ({ ...p, payment_plan_group: val }))}>
+                <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {PLAN_GROUPS.map((g) => (
+                    <SelectItem key={g.value} value={g.value}>{g.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
             <Separator />
 
