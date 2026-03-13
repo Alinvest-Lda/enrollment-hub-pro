@@ -55,6 +55,7 @@ const App = () => (
                 <Route path="/cotacao/:quotationId" element={<QuotationPayment />} />
                 <Route path="/admin" element={<AdminLogin />} />
                 <Route path="/backoffice" element={<Backoffice />} />
+                <Route path="/reset-password" element={<ResetPassword />} />
                 <Route path="/politica-de-privacidade" element={<PrivacyPolicy />} />
                 <Route path="/termos-de-uso" element={<TermsOfUse />} />
                 <Route path="*" element={<NotFound />} />
