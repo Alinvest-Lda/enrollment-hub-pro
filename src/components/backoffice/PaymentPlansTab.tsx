@@ -57,6 +57,7 @@ export default function PaymentPlansTab() {
     description: "",
     installments: [{ ...emptyInstallment }] as PlanInstallment[],
     is_default: false,
+    payment_plan_group: "all",
   });
 
   const fetchPlans = async () => {
