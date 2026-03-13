@@ -74,7 +74,7 @@ export default function PaymentPlansTab() {
 
   const openCreate = () => {
     setEditingPlan(null);
-    setForm({ name: "", description: "", installments: [{ ...emptyInstallment }], is_default: false });
+    setForm({ name: "", description: "", installments: [{ ...emptyInstallment }], is_default: false, payment_plan_group: "all" });
     setDialogOpen(true);
   };
 
