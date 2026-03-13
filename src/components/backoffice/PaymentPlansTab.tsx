@@ -34,8 +34,15 @@ interface PaymentPlan {
   installments: PlanInstallment[];
   is_default: boolean;
   is_active: boolean;
+  payment_plan_group: string;
   created_at: string;
 }
+
+const PLAN_GROUPS = [
+  { value: "all", label: "Todos os cursos" },
+  { value: "2-weeks", label: "Cursos de 2 semanas" },
+  { value: "1-month", label: "Cursos de 1 mês" },
+];
 
 const emptyInstallment: PlanInstallment = { number: 1, percent: 100, days_offset: 0, label: "Pagamento" };
 
