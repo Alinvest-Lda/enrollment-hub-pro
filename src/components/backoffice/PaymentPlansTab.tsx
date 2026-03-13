@@ -85,6 +85,7 @@ export default function PaymentPlansTab() {
       description: p.description,
       installments: p.installments.length > 0 ? p.installments : [{ ...emptyInstallment }],
       is_default: p.is_default,
+      payment_plan_group: p.payment_plan_group || "all",
     });
     setDialogOpen(true);
   };
