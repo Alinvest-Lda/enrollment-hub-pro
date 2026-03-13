@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import {
   Plus, Trash2, Pencil, Save, X, RefreshCw, DollarSign,
-  ToggleLeft, ToggleRight, Copy, Percent,
+  ToggleLeft, ToggleRight, Copy, Percent, Clock,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
