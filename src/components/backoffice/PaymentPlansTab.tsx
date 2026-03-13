@@ -209,7 +209,13 @@ export default function PaymentPlansTab() {
                   )}
                 </div>
               </div>
-              <CardDescription className="text-xs">{plan.description}</CardDescription>
+              <CardDescription className="text-xs flex items-center gap-2">
+                {plan.description}
+                <Badge variant="outline" className="text-[10px] gap-1">
+                  <Clock className="w-3 h-3" />
+                  {PLAN_GROUPS.find((g) => g.value === plan.payment_plan_group)?.label || "Todos"}
+                </Badge>
+              </CardDescription>
             </CardHeader>
             <CardContent className="pt-0">
               <div className="space-y-1.5">
