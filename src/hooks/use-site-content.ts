@@ -1,5 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import {
+  fetchWordPressFAQs,
+  fetchWordPressHeroStats,
+  fetchWordPressTeamMembers,
+  fetchWordPressTestimonials,
+  isWordPressCmsEnabled,
+} from "@/integrations/wordpress/client";
 
 export interface Testimonial {
   id: string;
@@ -43,8 +50,12 @@ export interface HeroStat {
 
 export function useTestimonials() {
   return useQuery({
-    queryKey: ["testimonials"],
+    queryKey: ["testimonials", isWordPressCmsEnabled ? "wordpress" : "supabase"],
     queryFn: async () => {
+      if (isWordPressCmsEnabled) {
+        return fetchWordPressTestimonials();
+      }
+
       const { data, error } = await (supabase.from("testimonials" as any) as any)
         .select("*")
         .eq("is_active", true)
@@ -58,8 +69,12 @@ export function useTestimonials() {
 
 export function useFAQs() {
   return useQuery({
-    queryKey: ["faqs"],
+    queryKey: ["faqs", isWordPressCmsEnabled ? "wordpress" : "supabase"],
     queryFn: async () => {
+      if (isWordPressCmsEnabled) {
+        return fetchWordPressFAQs();
+      }
+
       const { data, error } = await (supabase.from("faqs" as any) as any)
         .select("*")
         .eq("is_active", true)
@@ -73,8 +88,12 @@ export function useFAQs() {
 
 export function useTeamMembers() {
   return useQuery({
-    queryKey: ["team-members"],
+    queryKey: ["team-members", isWordPressCmsEnabled ? "wordpress" : "supabase"],
     queryFn: async () => {
+      if (isWordPressCmsEnabled) {
+        return fetchWordPressTeamMembers();
+      }
+
       const { data, error } = await (supabase.from("team_members" as any) as any)
         .select("*")
         .eq("is_active", true)
@@ -88,8 +107,12 @@ export function useTeamMembers() {
 
 export function useHeroStats() {
   return useQuery({
-    queryKey: ["hero-stats"],
+    queryKey: ["hero-stats", isWordPressCmsEnabled ? "wordpress" : "supabase"],
     queryFn: async () => {
+      if (isWordPressCmsEnabled) {
+        return fetchWordPressHeroStats();
+      }
+
       const { data, error } = await (supabase.from("hero_stats" as any) as any)
         .select("*")
         .eq("is_active", true)

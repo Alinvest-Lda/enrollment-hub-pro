@@ -36,6 +36,65 @@ npm i
 npm run dev
 ```
 
+### Package manager policy
+
+This repository is standardized on **npm**.
+
+- Use `package-lock.json` as the single lockfile source of truth.
+- Do not commit `bun.lock` or `bun.lockb`.
+- Run all project scripts with npm (`npm run lint`, `npm run test`, `npm run build`).
+
+### npm registry troubleshooting
+
+If dependency installation fails due proxy/registry configuration, force npm to use the public registry:
+
+```sh
+npm config set registry https://registry.npmjs.org/
+npm config delete proxy
+npm config delete https-proxy
+```
+
+## Deploy no WordPress com CMS integrado
+
+Este frontend pode ser publicado no WordPress (tema/plugin) usando o WordPress como fonte de conteúdo.
+
+### 1) Configure variáveis de ambiente
+
+Crie um arquivo `.env` com:
+
+```sh
+VITE_CMS_PROVIDER=wordpress
+VITE_WORDPRESS_API_BASE=https://seu-dominio-wordpress.com
+
+# Endpoints WP REST (opcional, altere se os CPTs tiverem outros slugs)
+VITE_WP_ENDPOINT_COURSES=course
+VITE_WP_ENDPOINT_TESTIMONIALS=testimonial
+VITE_WP_ENDPOINT_FAQS=faq
+VITE_WP_ENDPOINT_TEAM=team-member
+VITE_WP_ENDPOINT_HERO_STATS=hero-stat
+```
+
+### 2) Garanta os Custom Post Types no WordPress
+
+No WordPress, expose os CPTs no REST API (show_in_rest=true) para os slugs acima
+e inclua os campos necessários (ACF/meta), por exemplo:
+
+- `course`: `category`, `duration`, `duration_weeks`, `price`, `currency`, `start_date`, `highlights`
+- `testimonial`: `name`, `role`, `course`, `text`, `rating`, `initials`, `is_active`, `display_order`
+- `faq`: `question`, `answer`, `is_active`, `display_order`
+- `team-member`: `name`, `role`, `bio`, `photo_url`, `is_active`, `display_order`
+- `hero-stat`: `label`, `value`, `suffix`, `icon`, `is_active`, `display_order`
+
+### 3) Build e publicação
+
+```sh
+npm install
+npm run build
+```
+
+Publique o conteúdo de `dist/` no WordPress (por plugin de assets/headless ou tema custom),
+mantendo as rotas SPA tratadas no servidor/rewrite.
+
 **Edit a file directly in GitHub**
 
 - Navigate to the desired file(s).

@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { fetchWordPressCourses, isWordPressCmsEnabled } from "@/integrations/wordpress/client";
 import { type Course, type PaymentPlan } from "@/lib/courses-data";
 import type { DBPaymentPlanInstallment } from "@/hooks/use-payment-plans";
 
@@ -31,8 +32,12 @@ function toCoursePlan(row: DBPlanRow): PaymentPlan & { group: string } {
 
 export function useCourses() {
   return useQuery({
-    queryKey: ["public-courses"],
+    queryKey: ["public-courses", isWordPressCmsEnabled ? "wordpress" : "supabase"],
     queryFn: async (): Promise<Course[]> => {
+      if (isWordPressCmsEnabled) {
+        return fetchWordPressCourses();
+      }
+
       const [coursesResult, plansResult] = await Promise.all([
         supabase
           .from("courses")
