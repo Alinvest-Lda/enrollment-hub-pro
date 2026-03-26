@@ -36,6 +36,24 @@ npm i
 npm run dev
 ```
 
+### Package manager policy
+
+This repository is standardized on **npm**.
+
+- Use `package-lock.json` as the single lockfile source of truth.
+- Do not commit `bun.lock` or `bun.lockb`.
+- Run all project scripts with npm (`npm run lint`, `npm run test`, `npm run build`).
+
+### npm registry troubleshooting
+
+If dependency installation fails due proxy/registry configuration, force npm to use the public registry:
+
+```sh
+npm config set registry https://registry.npmjs.org/
+npm config delete proxy
+npm config delete https-proxy
+```
+
 **Edit a file directly in GitHub**
 
 - Navigate to the desired file(s).
