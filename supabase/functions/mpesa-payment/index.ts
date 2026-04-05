@@ -28,15 +28,6 @@ function resolveMpesaUrls(environment: string): string[] {
       "https://api.sandbox.vm.co.mz/ipg/v1x/c2bPayment/singleStage/",
       "https://api.sandbox.vm.co.mz:18352/ipg/v1x/c2bPayment/singleStage/",
     ];
-function resolveMpesaUrl(environment: string): string {
-  const mpesaC2bUrlOverride = Deno.env.get("MPESA_C2B_URL")?.trim();
-  if (mpesaC2bUrlOverride) {
-    return mpesaC2bUrlOverride;
-  }
-
-  return environment === "production"
-    ? "https://api.vm.co.mz:18352/ipg/v1x/c2bPayment/singleStage/"
-    : "https://api.sandbox.vm.co.mz:18352/ipg/v1x/c2bPayment/singleStage/";
 }
 
 async function generateBearerToken(apiKey: string, publicKey: string): Promise<string> {
@@ -134,8 +125,6 @@ Deno.serve(async (req) => {
 
     // Select endpoints based on environment (with optional override for restricted edge environments)
     const mpesaUrls = resolveMpesaUrls(mpesaEnv);
-    // Select endpoint based on environment (with optional override for restricted edge environments)
-    const mpesaUrl = resolveMpesaUrl(mpesaEnv);
 
     const transactionRef = `ENR-${enrollmentId.substring(0, 8).toUpperCase()}`;
     const thirdPartyRef = reference.substring(0, 20);
@@ -193,19 +182,6 @@ Deno.serve(async (req) => {
     }
 
     if (!mpesaResponse) {
-    let mpesaResponse: Response;
-    try {
-      mpesaResponse = await fetch(mpesaUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${bearerToken}`,
-          Accept: "application/json",
-        },
-        body: JSON.stringify(mpesaPayload),
-      });
-    } catch (fetchError) {
-      console.error("M-Pesa network error:", fetchError);
       return new Response(
         JSON.stringify({
           success: false,

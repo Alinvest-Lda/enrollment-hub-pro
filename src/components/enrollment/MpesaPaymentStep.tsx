@@ -29,6 +29,29 @@ const MpesaPaymentStep = ({
   const [processing, setProcessing] = useState(false);
   const [status, setStatus] = useState<"idle" | "processing" | "success" | "error">("idle");
 
+  const extractFunctionErrorMessage = async (err: any): Promise<string> => {
+    const defaultMessage = "Erro ao processar pagamento";
+
+    try {
+      if (typeof err?.context?.json === "function") {
+        const payload = await err.context.json();
+        if (payload?.error) return payload.error;
+        if (payload?.message) return payload.message;
+      }
+    } catch (parseError) {
+      console.warn("Could not parse edge function error payload", parseError);
+    }
+
+    if (typeof err?.message === "string" && err.message.trim().length > 0) {
+      if (err.message.includes("non-2xx")) {
+        return "Pagamento rejeitado pelo M-Pesa. Verifique o número/saldo e tente novamente.";
+      }
+      return err.message;
+    }
+
+    return defaultMessage;
+  };
+
   const handlePayment = async () => {
     if (!mpesaPhone || mpesaPhone.replace(/\D/g, "").length < 9) {
       toast({
@@ -64,7 +87,8 @@ const MpesaPaymentStep = ({
     } catch (err: any) {
       console.error("M-Pesa payment error:", err);
       setStatus("error");
-      onError(err.message || "Erro ao processar pagamento");
+      const userMessage = await extractFunctionErrorMessage(err);
+      onError(userMessage);
     } finally {
       setProcessing(false);
     }
