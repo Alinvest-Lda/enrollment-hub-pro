@@ -13,6 +13,23 @@ interface MpesaC2BRequest {
   reference: string;
 }
 
+function resolveMpesaUrls(environment: string): string[] {
+  const mpesaC2bUrlOverride = Deno.env.get("MPESA_C2B_URL")?.trim();
+  if (mpesaC2bUrlOverride) {
+    return [mpesaC2bUrlOverride];
+  }
+
+  return environment === "production"
+    ? [
+      "https://api.vm.co.mz/ipg/v1x/c2bPayment/singleStage/",
+      "https://api.vm.co.mz:18352/ipg/v1x/c2bPayment/singleStage/",
+    ]
+    : [
+      "https://api.sandbox.vm.co.mz/ipg/v1x/c2bPayment/singleStage/",
+      "https://api.sandbox.vm.co.mz:18352/ipg/v1x/c2bPayment/singleStage/",
+    ];
+}
+
 async function generateBearerToken(apiKey: string, publicKey: string): Promise<string> {
   const pemHeader = "-----BEGIN PUBLIC KEY-----";
   const pemFooter = "-----END PUBLIC KEY-----";
@@ -69,19 +86,7 @@ Deno.serve(async (req) => {
 
     const apiKey = Deno.env.get("MPESA_API_KEY");
     const publicKey = Deno.env.get("MPESA_PUBLIC_KEY");
-    const serviceProviderCode = Deno.env.get("MPESA_SERVICE_PROVIDER_CODE");
-
-    if (!apiKey || !publicKey || !serviceProviderCode) {
-      console.error("Missing M-Pesa configuration:", {
-        hasApiKey: !!apiKey,
-        hasPublicKey: !!publicKey,
-        hasServiceProviderCode: !!serviceProviderCode,
-      });
-      return new Response(
-        JSON.stringify({ success: false, error: "Configuração M-Pesa em falta. Verifique as chaves API nas configurações." }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
+    const serviceProviderCodeEnv = Deno.env.get("MPESA_SERVICE_PROVIDER_CODE");
 
     // Get environment setting from DB
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
@@ -91,9 +96,24 @@ Deno.serve(async (req) => {
     const { data: settingsData } = await supabase
       .from("system_settings")
       .select("key, value")
-      .in("key", ["mpesa_environment"]);
+      .in("key", ["mpesa_environment", "mpesa_service_provider_code"]);
 
     const mpesaEnv = settingsData?.find((s: any) => s.key === "mpesa_environment")?.value || "sandbox";
+    const serviceProviderCodeSetting = settingsData?.find((s: any) => s.key === "mpesa_service_provider_code")?.value;
+    const serviceProviderCode = serviceProviderCodeEnv || serviceProviderCodeSetting;
+
+    if (!apiKey || !publicKey || !serviceProviderCode) {
+      console.error("Missing M-Pesa configuration:", {
+        hasApiKey: !!apiKey,
+        hasPublicKey: !!publicKey,
+        hasServiceProviderCodeEnv: !!serviceProviderCodeEnv,
+        hasServiceProviderCodeSetting: !!serviceProviderCodeSetting,
+      });
+      return new Response(
+        JSON.stringify({ success: false, error: "Configuração M-Pesa incompleta. Defina API Key, Public Key e Service Provider Code." }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
 
     let bearerToken: string;
     try {
@@ -106,10 +126,8 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Select endpoint based on environment
-    const mpesaUrl = mpesaEnv === "production"
-      ? "https://api.vm.co.mz:18352/ipg/v1x/c2bPayment/singleStage/"
-      : "https://api.sandbox.vm.co.mz:18352/ipg/v1x/c2bPayment/singleStage/";
+    // Select endpoints based on environment (with optional override for restricted edge environments)
+    const mpesaUrls = resolveMpesaUrls(mpesaEnv);
 
     const transactionRef = `ENR-${enrollmentId.substring(0, 8).toUpperCase()}`;
     const thirdPartyRef = reference.substring(0, 20);
@@ -122,25 +140,63 @@ Deno.serve(async (req) => {
       input_ServiceProviderCode: serviceProviderCode,
     };
 
-    console.log("M-Pesa request:", { ...mpesaPayload, input_CustomerMSISDN: "***", url: mpesaUrl, env: mpesaEnv });
+    console.log("M-Pesa request:", {
+      ...mpesaPayload,
+      input_CustomerMSISDN: "***",
+      urls: mpesaUrls,
+      env: mpesaEnv,
+    });
 
-    let mpesaResponse: Response;
-    try {
-      mpesaResponse = await fetch(mpesaUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${bearerToken}`,
-          Origin: "*",
-        },
-        body: JSON.stringify(mpesaPayload),
-      });
-    } catch (fetchError) {
-      console.error("M-Pesa network error:", fetchError);
+    let mpesaResponse: Response | null = null;
+    let mpesaFetchError: unknown = null;
+    let selectedEndpoint: string | null = null;
+
+    for (const mpesaUrl of mpesaUrls) {
+      try {
+        const response = await fetch(mpesaUrl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${bearerToken}`,
+            Accept: "application/json",
+          },
+          body: JSON.stringify(mpesaPayload),
+        });
+        console.log("M-Pesa endpoint reached:", mpesaUrl, "status:", response.status);
+
+        const shouldTryNextEndpoint =
+          response.status === 403 ||
+          response.status === 404 ||
+          response.status >= 500;
+
+        if (shouldTryNextEndpoint) {
+          console.warn("M-Pesa endpoint returned retryable status, trying next endpoint:", mpesaUrl, response.status);
+          mpesaResponse = response;
+          continue;
+        }
+
+        mpesaResponse = response;
+        selectedEndpoint = mpesaUrl;
+        break;
+      } catch (fetchError) {
+        mpesaFetchError = fetchError;
+        console.error("M-Pesa network error for endpoint:", mpesaUrl, fetchError);
+      }
+    }
+
+    if (!mpesaResponse) {
       return new Response(
-        JSON.stringify({ success: false, error: "Não foi possível contactar o servidor M-Pesa. Tente novamente." }),
+        JSON.stringify({
+          success: false,
+          error: "Não foi possível contactar o servidor M-Pesa. Configure MPESA_C2B_URL ou tente novamente.",
+          details: String(mpesaFetchError ?? "network_error"),
+        }),
         { status: 502, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
+    }
+
+    if (!selectedEndpoint) {
+      console.warn("M-Pesa request ended with fallback response from last attempted endpoint.");
     }
 
     let mpesaData: any;

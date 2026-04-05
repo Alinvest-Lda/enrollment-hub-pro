@@ -82,6 +82,33 @@ This project is built with:
 
 Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
 
+### Nova arquitetura de deploy (Frontend Vercel + Backend WordPress/MySQL)
+
+- **Frontend (React/Vite):** deploy no Vercel.
+- **Backend API:** plugin WordPress em `wordpress/enrollment-hub-backend.php`.
+- **Base de dados:** MySQL do WordPress.
+
+#### Variáveis do frontend (Vercel)
+
+Defina:
+
+```bash
+VITE_BACKEND_BASE_URL=https://seu-dominio-wordpress.com
+```
+
+O frontend chama:
+
+`POST /wp-json/enrollment-hub/v1/mpesa-payment`
+
+#### Backend WordPress
+
+1. Instalar o plugin `wordpress/enrollment-hub-backend.php`.
+2. Criar a tabela de logs com `wordpress/schema.sql`.
+3. Configurar opções no WordPress:
+   - `enrollment_hub_mpesa_url`
+   - `enrollment_hub_mpesa_token`
+   - `enrollment_hub_service_provider_code`
+
 ## Can I connect a custom domain to my Lovable project?
 
 Yes, you can!
