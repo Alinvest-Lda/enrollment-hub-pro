@@ -146,10 +146,11 @@ Deno.serve(async (req) => {
 
     let mpesaResponse: Response | null = null;
     let mpesaFetchError: unknown = null;
+    let selectedEndpoint: string | null = null;
 
     for (const mpesaUrl of mpesaUrls) {
       try {
-        mpesaResponse = await fetch(mpesaUrl, {
+        const response = await fetch(mpesaUrl, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -158,7 +159,21 @@ Deno.serve(async (req) => {
           },
           body: JSON.stringify(mpesaPayload),
         });
-        console.log("M-Pesa endpoint reached:", mpesaUrl, "status:", mpesaResponse.status);
+        console.log("M-Pesa endpoint reached:", mpesaUrl, "status:", response.status);
+
+        const shouldTryNextEndpoint =
+          response.status === 403 ||
+          response.status === 404 ||
+          response.status >= 500;
+
+        if (shouldTryNextEndpoint) {
+          console.warn("M-Pesa endpoint returned retryable status, trying next endpoint:", mpesaUrl, response.status);
+          mpesaResponse = response;
+          continue;
+        }
+
+        mpesaResponse = response;
+        selectedEndpoint = mpesaUrl;
         break;
       } catch (fetchError) {
         mpesaFetchError = fetchError;
@@ -175,6 +190,10 @@ Deno.serve(async (req) => {
         }),
         { status: 502, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
+    }
+
+    if (!selectedEndpoint) {
+      console.warn("M-Pesa request ended with fallback response from last attempted endpoint.");
     }
 
     let mpesaData: any;
