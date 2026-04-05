@@ -86,19 +86,7 @@ Deno.serve(async (req) => {
 
     const apiKey = Deno.env.get("MPESA_API_KEY");
     const publicKey = Deno.env.get("MPESA_PUBLIC_KEY");
-    const serviceProviderCode = Deno.env.get("MPESA_SERVICE_PROVIDER_CODE");
-
-    if (!apiKey || !publicKey || !serviceProviderCode) {
-      console.error("Missing M-Pesa configuration:", {
-        hasApiKey: !!apiKey,
-        hasPublicKey: !!publicKey,
-        hasServiceProviderCode: !!serviceProviderCode,
-      });
-      return new Response(
-        JSON.stringify({ success: false, error: "Configuração M-Pesa em falta. Verifique as chaves API nas configurações." }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
+    const serviceProviderCodeEnv = Deno.env.get("MPESA_SERVICE_PROVIDER_CODE");
 
     // Get environment setting from DB
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
@@ -108,9 +96,24 @@ Deno.serve(async (req) => {
     const { data: settingsData } = await supabase
       .from("system_settings")
       .select("key, value")
-      .in("key", ["mpesa_environment"]);
+      .in("key", ["mpesa_environment", "mpesa_service_provider_code"]);
 
     const mpesaEnv = settingsData?.find((s: any) => s.key === "mpesa_environment")?.value || "sandbox";
+    const serviceProviderCodeSetting = settingsData?.find((s: any) => s.key === "mpesa_service_provider_code")?.value;
+    const serviceProviderCode = serviceProviderCodeEnv || serviceProviderCodeSetting;
+
+    if (!apiKey || !publicKey || !serviceProviderCode) {
+      console.error("Missing M-Pesa configuration:", {
+        hasApiKey: !!apiKey,
+        hasPublicKey: !!publicKey,
+        hasServiceProviderCodeEnv: !!serviceProviderCodeEnv,
+        hasServiceProviderCodeSetting: !!serviceProviderCodeSetting,
+      });
+      return new Response(
+        JSON.stringify({ success: false, error: "Configuração M-Pesa incompleta. Defina API Key, Public Key e Service Provider Code." }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
 
     let bearerToken: string;
     try {

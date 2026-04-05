@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { formatCurrency } from "@/lib/courses-data";
-import { supabase } from "@/integrations/supabase/client";
+import { requestMpesaPayment } from "@/lib/backend-client";
 import { toast } from "@/hooks/use-toast";
 
 interface MpesaPaymentStepProps {
@@ -44,7 +44,7 @@ const MpesaPaymentStep = ({
 
     if (typeof err?.message === "string" && err.message.trim().length > 0) {
       if (err.message.includes("non-2xx")) {
-        return "Pagamento rejeitado pelo M-Pesa. Verifique o número/saldo e tente novamente.";
+        return "Pagamento rejeitado pelo backend. Verifique o número/saldo e tente novamente.";
       }
       return err.message;
     }
@@ -66,16 +66,12 @@ const MpesaPaymentStep = ({
     setStatus("processing");
 
     try {
-      const { data, error } = await supabase.functions.invoke("mpesa-payment", {
-        body: {
-          enrollmentId,
-          phone: mpesaPhone,
-          amount,
-          reference,
-        },
+      const data = await requestMpesaPayment({
+        enrollmentId,
+        phone: mpesaPhone,
+        amount,
+        reference,
       });
-
-      if (error) throw error;
 
       if (data?.success) {
         setStatus("success");
