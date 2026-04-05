@@ -13,6 +13,17 @@ interface MpesaC2BRequest {
   reference: string;
 }
 
+function resolveMpesaUrl(environment: string): string {
+  const mpesaC2bUrlOverride = Deno.env.get("MPESA_C2B_URL")?.trim();
+  if (mpesaC2bUrlOverride) {
+    return mpesaC2bUrlOverride;
+  }
+
+  return environment === "production"
+    ? "https://api.vm.co.mz:18352/ipg/v1x/c2bPayment/singleStage/"
+    : "https://api.sandbox.vm.co.mz:18352/ipg/v1x/c2bPayment/singleStage/";
+}
+
 async function generateBearerToken(apiKey: string, publicKey: string): Promise<string> {
   const pemHeader = "-----BEGIN PUBLIC KEY-----";
   const pemFooter = "-----END PUBLIC KEY-----";
@@ -106,10 +117,8 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Select endpoint based on environment
-    const mpesaUrl = mpesaEnv === "production"
-      ? "https://api.vm.co.mz:18352/ipg/v1x/c2bPayment/singleStage/"
-      : "https://api.sandbox.vm.co.mz:18352/ipg/v1x/c2bPayment/singleStage/";
+    // Select endpoint based on environment (with optional override for restricted edge environments)
+    const mpesaUrl = resolveMpesaUrl(mpesaEnv);
 
     const transactionRef = `ENR-${enrollmentId.substring(0, 8).toUpperCase()}`;
     const thirdPartyRef = reference.substring(0, 20);
@@ -131,7 +140,7 @@ Deno.serve(async (req) => {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${bearerToken}`,
-          Origin: "*",
+          Accept: "application/json",
         },
         body: JSON.stringify(mpesaPayload),
       });
