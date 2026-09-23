@@ -46,6 +46,17 @@ const CourseCard = ({ course, index }: CourseCardProps) => {
             {course.description}
           </p>
 
+          {course.highlights[0] && (
+            <div className="mb-4 rounded-lg bg-accent/5 border border-accent/10 px-3 py-2.5">
+              <p className="text-[10px] uppercase tracking-wider font-semibold text-accent mb-0.5">
+                Resultado prático
+              </p>
+              <p className="text-xs font-medium text-foreground line-clamp-2">
+                {course.highlights[0]}
+              </p>
+            </div>
+          )}
+
           <div className="flex items-center gap-4 text-xs text-muted-foreground mb-4 pb-4 border-b border-border/60">
             <span className="flex items-center gap-1.5">
               <Clock className="w-3.5 h-3.5 text-accent/70" />
@@ -74,7 +85,7 @@ const CourseCard = ({ course, index }: CourseCardProps) => {
           <Link to={`/curso/${course.id}`}>
             <Button variant="navy" className="w-full group/btn relative overflow-hidden">
               <span className="relative z-10 flex items-center gap-2">
-                Inscrever-se
+                Ver curso e inscrever-se
                 <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-0.5 transition-transform" />
               </span>
             </Button>
