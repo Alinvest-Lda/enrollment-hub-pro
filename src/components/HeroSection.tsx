@@ -10,12 +10,11 @@ function AnimatedCounter({ target, suffix = "" }: { target: number; suffix?: str
   const [count, setCount] = useState(0);
   useEffect(() => {
     let start = 0;
-    const duration = 2000;
-    const step = Math.ceil(target / (duration / 30));
+    const duration = 1800;
+    const step = Math.max(1, Math.ceil(target / (duration / 30)));
     const timer = setInterval(() => {
       start += step;
-      if (start >= target) { setCount(target); clearInterval(timer); }
-      else setCount(start);
+      if (start >= target) { setCount(target); clearInterval(timer); } else setCount(start);
     }, 30);
     return () => clearInterval(timer);
   }, [target]);
@@ -23,7 +22,6 @@ function AnimatedCounter({ target, suffix = "" }: { target: number; suffix?: str
 }
 
 const iconMap: Record<string, React.ElementType> = { Users, BookOpen, Award, Shield };
-
 const defaultStats = [
   { id: "1", value: 500, suffix: "+", label: "Profissionais Formados", icon: "Users", display_order: 1, is_active: true },
   { id: "2", value: 25, suffix: "+", label: "Cursos Disponíveis", icon: "BookOpen", display_order: 2, is_active: true },
@@ -38,167 +36,102 @@ const HeroSection = () => {
   const stats = heroStats.length > 0 ? heroStats : defaultStats;
 
   return (
-    <section className="relative min-h-[75vh] sm:min-h-[85vh] flex items-center overflow-hidden">
-      {/* Background image */}
-      <img
-        src={heroBg}
-        alt="Formação profissional ALINVEST"
-        className="absolute inset-0 w-full h-full object-cover"
-        loading="eager"
-      />
+    <section className="relative min-h-[78vh] lg:min-h-[calc(100vh-72px)] flex items-center overflow-hidden">
+      <img src={heroBg} alt="Formação profissional ALINVEST" className="absolute inset-0 w-full h-full object-cover" loading="eager" />
       <div className="absolute inset-0 bg-hero-overlay" />
+      <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_78%_28%,hsl(var(--accent)/.18),transparent_28%),radial-gradient(circle_at_12%_85%,hsl(210_80%_55%/.08),transparent_30%)]" />
 
-      {/* Subtle decorative elements (reduced from many to 2) */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <motion.div
-          className="absolute w-[500px] h-[500px] rounded-full"
-          style={{ background: "radial-gradient(circle, hsl(var(--accent) / 0.2) 0%, transparent 60%)" }}
-          initial={{ x: "50%", y: "-20%" }}
-          animate={{ x: ["50%", "55%", "50%"], y: ["-20%", "-15%", "-20%"] }}
-          transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
-        />
-        <motion.div
-          className="absolute w-[400px] h-[400px] rounded-full"
-          style={{ background: "radial-gradient(circle, hsl(var(--navy-light) / 0.2) 0%, transparent 60%)" }}
-          initial={{ x: "-10%", y: "50%" }}
-          animate={{ x: ["-10%", "0%", "-10%"], y: ["50%", "45%", "50%"] }}
-          transition={{ duration: 15, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-        />
-      </div>
-
-      <div className="container mx-auto px-4 relative z-10 py-14 lg:py-20">
-        <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
-          {/* Left: Content */}
-          <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6 }}
-          >
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-[3.5rem] xl:text-6xl font-extrabold text-primary-foreground leading-[1.08] mb-6 font-heading">
-              Invista no seu{" "}
-              <span className="text-gradient">Crescimento</span>{" "}
-              <span className="text-gradient">Profissional</span>
+      <div className="container mx-auto px-4 relative z-10 py-16 lg:py-20">
+        <div className="grid lg:grid-cols-[1.08fr_.92fr] gap-12 xl:gap-20 items-center">
+          <motion.div initial={{ opacity: 0, x: -28 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: .65 }}>
+            <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/8 backdrop-blur-md px-4 py-2 text-xs font-bold tracking-wide text-white/85 mb-6">
+              <Sparkles className="w-3.5 h-3.5 text-accent" /> DESENVOLVIMENTO PROFISSIONAL
+            </div>
+            <h1 className="text-4xl sm:text-5xl md:text-6xl xl:text-[4.25rem] font-extrabold text-primary-foreground leading-[1.02] mb-6 font-heading max-w-3xl">
+              Aprenda. Aplique. <span className="text-gradient">Avance.</span>
             </h1>
-
-            <p className="text-base md:text-lg text-primary-foreground/75 mb-8 max-w-lg leading-relaxed">
-              Cursos certificados internacionalmente em gestão, normas ISO, HSEQ e liderança.
-              Inscreva-se online e escolha o plano de pagamento que melhor se adapta a si.
+            <p className="text-base md:text-lg xl:text-xl text-primary-foreground/72 mb-9 max-w-xl leading-relaxed">
+              Capacitação prática para profissionais que querem transformar conhecimento em resultados no trabalho.
             </p>
 
-            <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 mb-8">
+            <div className="flex flex-col sm:flex-row flex-wrap gap-3 mb-9">
               <a href="#cursos">
-                <Button variant="hero" size="xl" className="group">
-                  Ver Cursos
-                  <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
+                <Button variant="hero" size="xl" className="group w-full sm:w-auto">
+                  Explorar cursos <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
                 </Button>
               </a>
               <a href={getWhatsAppLinkFromNumber(whatsappNumber, "Olá, gostaria de saber mais sobre os cursos disponíveis.")} target="_blank" rel="noopener noreferrer">
-                <Button variant="hero-outline" size="xl">
-                  Falar no WhatsApp
-                </Button>
+                <Button variant="hero-outline" size="xl" className="w-full sm:w-auto">Falar no WhatsApp</Button>
               </a>
             </div>
 
-            {/* Trust badges */}
-            <div className="flex flex-wrap gap-x-6 gap-y-3 mb-8 lg:mb-0">
+            <div className="flex flex-wrap gap-x-6 gap-y-3">
               {[
-                { icon: CheckCircle, label: "Certificação Internacional" },
-                { icon: Shield, label: "Formadores Especializados" },
-                { icon: GraduationCap, label: "Pagamento Flexível" },
+                { icon: CheckCircle, label: "Conteúdo aplicado" },
+                { icon: Shield, label: "Formadores especializados" },
+                { icon: GraduationCap, label: "Pagamento flexível" },
               ].map((item, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.4 + i * 0.1 }}
-                  className="flex items-center gap-2 text-primary-foreground/80"
-                >
-                  <item.icon className="w-4 h-4 text-accent" />
-                  <span className="text-xs font-medium">{item.label}</span>
+                <motion.div key={i} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: .35 + i * .1 }} className="flex items-center gap-2 text-white/78">
+                  <item.icon className="w-4 h-4 text-accent" /><span className="text-xs font-semibold">{item.label}</span>
                 </motion.div>
               ))}
             </div>
-
-            {/* Mobile stats - visible only on small screens */}
-            <div className="grid grid-cols-2 gap-3 lg:hidden">
-              {stats.map((stat, i) => {
-                const StatIcon = iconMap[stat.icon] || Users;
-                return (
-                  <motion.div
-                    key={stat.id}
-                    initial={{ opacity: 0, y: 15 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.5 + i * 0.08 }}
-                    className="bg-primary-foreground/5 backdrop-blur-sm rounded-xl p-3 text-center border border-primary-foreground/10"
-                  >
-                    <StatIcon className="w-4 h-4 text-accent mx-auto mb-1" />
-                    <p className="text-lg font-extrabold text-primary-foreground font-heading">
-                      <AnimatedCounter target={stat.value} suffix={stat.suffix} />
-                    </p>
-                    <p className="text-[9px] text-primary-foreground/60 font-medium leading-tight">
-                      {stat.label}
-                    </p>
-                  </motion.div>
-                );
-              })}
-            </div>
           </motion.div>
 
-          {/* Right: Stats card - desktop only */}
-          <motion.div
-            initial={{ opacity: 0, x: 30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="hidden lg:flex flex-col items-center gap-6"
-          >
-            <div className="relative w-full max-w-sm">
-              <motion.div
-                className="absolute -inset-1 rounded-2xl bg-gradient-to-br from-accent/20 to-primary/10 blur-xl"
-                animate={{ opacity: [0.4, 0.7, 0.4] }}
-                transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-              />
-              <div className="relative bg-card/40 backdrop-blur-2xl rounded-2xl border border-primary-foreground/10 overflow-hidden shadow-card">
-                <div className="bg-navy-gradient px-6 py-3 border-b border-primary-foreground/10">
-                  <div className="flex items-center gap-2 justify-center">
-                    <Sparkles className="w-4 h-4 text-accent" />
-                    <span className="text-primary-foreground text-sm font-semibold">Porquê a ALINVEST?</span>
+          <motion.div initial={{ opacity: 0, x: 28 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: .65, delay: .15 }}
+            className="hidden lg:block">
+            <div className="relative max-w-md ml-auto">
+              <div className="absolute -inset-6 rounded-[2rem] bg-accent/15 blur-3xl" />
+              <div className="relative rounded-[1.75rem] border border-white/15 bg-white/10 backdrop-blur-2xl p-2 shadow-2xl">
+                <div className="rounded-[1.35rem] bg-white/95 overflow-hidden">
+                  <div className="bg-navy-gradient px-7 py-5">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-[10px] font-bold uppercase tracking-[.18em] text-white/55">ALINVEST</p>
+                        <p className="text-lg font-bold text-white mt-1">O próximo passo começa aqui.</p>
+                      </div>
+                      <div className="w-11 h-11 rounded-2xl bg-accent/15 flex items-center justify-center">
+                        <GraduationCap className="w-5 h-5 text-accent" />
+                      </div>
+                    </div>
                   </div>
-                </div>
-
-                <div className="p-6">
-                  <div className="grid grid-cols-2 gap-4 mb-6">
+                  <div className="p-5 grid grid-cols-2 gap-3">
                     {stats.map((stat, i) => {
                       const StatIcon = iconMap[stat.icon] || Users;
                       return (
-                        <motion.div
-                          key={stat.id}
-                          initial={{ opacity: 0, scale: 0.8 }}
-                          animate={{ opacity: 1, scale: 1 }}
-                          transition={{ delay: 0.6 + i * 0.1 }}
-                          className="bg-muted/50 rounded-xl p-3 text-center border border-border/40 transition-colors cursor-default hover:scale-105 duration-200"
-                        >
-                          <StatIcon className="w-4 h-4 text-accent mx-auto mb-1.5" />
-                          <p className="text-xl font-extrabold text-foreground font-heading">
-                            <AnimatedCounter target={stat.value} suffix={stat.suffix} />
-                          </p>
-                          <p className="text-[9px] text-muted-foreground font-medium mt-0.5 leading-tight">
-                            {stat.label}
-                          </p>
+                        <motion.div key={stat.id} initial={{ opacity: 0, scale: .9 }} animate={{ opacity: 1, scale: 1 }}
+                          transition={{ delay: .5 + i * .08 }}
+                          className="rounded-2xl border border-border bg-secondary/55 p-4 hover:bg-secondary transition-colors">
+                          <StatIcon className="w-4 h-4 text-accent mb-2" />
+                          <p className="text-2xl font-extrabold text-foreground font-heading"><AnimatedCounter target={stat.value} suffix={stat.suffix} /></p>
+                          <p className="text-[10px] text-muted-foreground font-semibold mt-1 leading-tight">{stat.label}</p>
                         </motion.div>
                       );
                     })}
                   </div>
-
-                  <a href="#cursos" className="block">
-                    <Button variant="accent" size="lg" className="w-full group">
-                      Começar Agora
-                      <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-                    </Button>
-                  </a>
+                  <div className="px-5 pb-5">
+                    <a href="#cursos" className="block">
+                      <Button variant="accent" size="lg" className="w-full h-12 rounded-xl group">
+                        Encontrar o meu curso <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                      </Button>
+                    </a>
+                  </div>
                 </div>
               </div>
             </div>
           </motion.div>
+
+          <div className="grid grid-cols-2 gap-3 lg:hidden mt-2">
+            {stats.map((stat) => {
+              const StatIcon = iconMap[stat.icon] || Users;
+              return <div key={stat.id} className="rounded-2xl border border-white/12 bg-white/7 backdrop-blur-md p-3 text-center">
+                <StatIcon className="w-4 h-4 text-accent mx-auto mb-1" />
+                <p className="text-lg font-extrabold text-white font-heading"><AnimatedCounter target={stat.value} suffix={stat.suffix} /></p>
+                <p className="text-[9px] text-white/55 font-semibold leading-tight">{stat.label}</p>
+              </div>;
+            })}
+          </div>
         </div>
       </div>
     </section>
