@@ -109,6 +109,20 @@ const CourseDetail = () => {
         </div>
       </section>
 
+      <div className="fixed inset-x-0 bottom-0 z-50 border-t border-border bg-card/95 backdrop-blur-lg px-4 py-3 md:hidden shadow-[0_-8px_30px_rgba(0,0,0,0.08)]">
+        <div className="flex items-center gap-3 max-w-3xl mx-auto">
+          <div className="min-w-0 flex-1">
+            <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Inscrição</p>
+            <p className="font-heading font-extrabold text-accent truncate">{formatCurrency(course.price)}</p>
+          </div>
+          <a href="#inscricao" className="shrink-0">
+            <Button variant="navy" size="sm" className="rounded-lg px-5">
+              Inscrever-se
+            </Button>
+          </a>
+        </div>
+      </div>
+
       <div className="container mx-auto px-4 py-14">
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-12">
           {/* Left sidebar */}
@@ -168,7 +182,7 @@ const CourseDetail = () => {
           </motion.div>
 
           {/* Right content */}
-          <motion.div
+          <motion.div id="inscricao"
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: 0.3 }}
