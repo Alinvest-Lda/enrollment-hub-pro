@@ -47,7 +47,8 @@ Deno.serve(async (req) => {
     }
 
     // Validate phone
-    if (phone.length < 9 || phone.length > 20) {
+    const normalizedPhone = phone.replace(/\D/g, "").replace(/^258/, "");
+    if (!/^(84|85|86|87)\d{7}$/.test(normalizedPhone)) {
       return new Response(
         JSON.stringify({ success: false, error: "Telefone inválido" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -58,22 +59,73 @@ Deno.serve(async (req) => {
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
+    // Re-read the course and payment plan server-side. Never trust prices sent by the browser.
+    const { data: course, error: courseError } = await supabase
+      .from("courses")
+      .select("slug, title, price, is_active, payment_plan_group")
+      .eq("slug", courseId)
+      .eq("is_active", true)
+      .maybeSingle();
+
+    if (courseError || !course) {
+      return new Response(
+        JSON.stringify({ success: false, error: "Curso indisponível ou inválido." }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    const { data: plan, error: planError } = await supabase
+      .from("payment_plans")
+      .select("id, installments, is_active, payment_plan_group")
+      .eq("id", paymentPlan)
+      .eq("is_active", true)
+      .maybeSingle();
+
+    if (planError || !plan) {
+      return new Response(
+        JSON.stringify({ success: false, error: "Plano de pagamento inválido." }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    const coursePrice = Number(course.price);
+    const installments = Array.isArray(plan.installments)
+      ? plan.installments as Array<{ percent?: number }>
+      : [];
+    const firstPercent = Number(installments[0]?.percent ?? 100);
+    const expectedAmountDue = Math.round(coursePrice * firstPercent) / 100;
+    const planGroup = course.payment_plan_group || "2-weeks";
+    const planIsCompatible = plan.payment_plan_group === "all" || plan.payment_plan_group === planGroup;
+
+    if (
+      !planIsCompatible ||
+      !Number.isFinite(coursePrice) ||
+      !Number.isFinite(expectedAmountDue) ||
+      Math.abs(totalPrice - coursePrice) > 0.01 ||
+      Math.abs(amountDue - expectedAmountDue) > 0.01
+    ) {
+      return new Response(
+        JSON.stringify({ success: false, error: "Os valores da inscrição foram alterados. Actualize a página e tente novamente." }),
+        { status: 409, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     // Insert enrollment
     const { data: enrollment, error: enrollmentError } = await supabase
       .from("enrollments")
       .insert({
         full_name: fullName.trim().substring(0, 100),
         email: email.trim().substring(0, 255),
-        phone: phone.trim().substring(0, 20),
+        phone: normalizedPhone,
         company: company?.trim().substring(0, 100) || null,
         nuit: nuit?.trim().substring(0, 20) || null,
         province: province?.trim().substring(0, 50) || null,
         message: message?.trim().substring(0, 500) || null,
         course_id: courseId.substring(0, 100),
-        course_name: courseName.substring(0, 200),
+        course_name: String(course.title).substring(0, 200),
         payment_plan: paymentPlan,
-        amount_due: amountDue,
-        total_price: totalPrice,
+        amount_due: expectedAmountDue,
+        total_price: coursePrice,
         payment_method: paymentMethod || null,
         status: "pending",
       })
@@ -141,9 +193,9 @@ Deno.serve(async (req) => {
       await supabase.functions.invoke("notify-admin", {
         body: {
           enrollmentId: enrollment.id,
-          courseName: courseName,
-          studentName: fullName,
-          amount: amountDue,
+          courseName: course.title,
+          studentName: fullName.trim(),
+          amount: expectedAmountDue,
         },
       });
     } catch (notifErr) {

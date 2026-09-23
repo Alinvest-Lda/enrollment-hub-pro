@@ -17,7 +17,7 @@ Deno.serve(async (req) => {
     const installmentNumber = parseInt(formData.get("installmentNumber") as string, 10);
     const file = formData.get("file") as File | null;
 
-    if (!enrollmentId || !installmentNumber || !file) {
+    if (!enrollmentId || !Number.isInteger(installmentNumber) || installmentNumber < 1 || !file) {
       return new Response(
         JSON.stringify({ success: false, error: "Campos obrigatórios em falta" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -57,8 +57,35 @@ Deno.serve(async (req) => {
       );
     }
 
+    const { data: installment, error: installmentError } = await supabase
+      .from("installments")
+      .select("id, status")
+      .eq("enrollment_id", enrollmentId)
+      .eq("installment_number", installmentNumber)
+      .maybeSingle();
+
+    if (installmentError || !installment) {
+      return new Response(
+        JSON.stringify({ success: false, error: "Prestação não encontrada." }),
+        { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    if (installment.status === "paid" || installment.status === "cancelled") {
+      return new Response(
+        JSON.stringify({ success: false, error: "Esta prestação não aceita novos comprovativos." }),
+        { status: 409, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     // Upload file to storage
-    const ext = file.name.split(".").pop() || "bin";
+    const extensionMap: Record<string, string> = {
+      "image/jpeg": "jpg",
+      "image/png": "png",
+      "image/webp": "webp",
+      "application/pdf": "pdf",
+    };
+    const ext = extensionMap[file.type] || "bin";
     const filePath = `${enrollmentId}/installment-${installmentNumber}-${Date.now()}.${ext}`;
 
     const { error: uploadError } = await supabase.storage

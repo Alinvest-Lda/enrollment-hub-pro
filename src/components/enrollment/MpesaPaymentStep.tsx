@@ -28,35 +28,15 @@ const MpesaPaymentStep = ({
   const [mpesaPhone, setMpesaPhone] = useState(phone);
   const [processing, setProcessing] = useState(false);
   const [status, setStatus] = useState<"idle" | "processing" | "success" | "error">("idle");
-
-  const extractFunctionErrorMessage = async (err: any): Promise<string> => {
-    const defaultMessage = "Erro ao processar pagamento";
-
-    try {
-      if (typeof err?.context?.json === "function") {
-        const payload = await err.context.json();
-        if (payload?.error) return payload.error;
-        if (payload?.message) return payload.message;
-      }
-    } catch (parseError) {
-      console.warn("Could not parse edge function error payload", parseError);
-    }
-
-    if (typeof err?.message === "string" && err.message.trim().length > 0) {
-      if (err.message.includes("non-2xx")) {
-        return "Pagamento rejeitado pelo backend. Verifique o número/saldo e tente novamente.";
-      }
-      return err.message;
-    }
-
-    return defaultMessage;
-  };
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handlePayment = async () => {
-    if (!mpesaPhone || mpesaPhone.replace(/\D/g, "").length < 9) {
+    const normalizedPhone = mpesaPhone.replace(/\D/g, "").replace(/^258/, "");
+
+    if (!/^(84|85|86|87)\d{7}$/.test(normalizedPhone)) {
       toast({
         title: "Número inválido",
-        description: "Introduza um número M-Pesa válido (84/85/86/87).",
+        description: "Introduza um número M-Pesa válido com 9 dígitos (84, 85, 86 ou 87).",
         variant: "destructive",
       });
       return;
@@ -64,27 +44,35 @@ const MpesaPaymentStep = ({
 
     setProcessing(true);
     setStatus("processing");
+    setErrorMessage("");
 
     try {
       const data = await requestMpesaPayment({
         enrollmentId,
-        phone: mpesaPhone,
+        phone: normalizedPhone,
         amount,
         reference,
       });
 
-      if (data?.success) {
+      if (data.success && data.transactionId) {
         setStatus("success");
-        onSuccess(data.transactionId || "");
-      } else {
-        setStatus("error");
-        onError(data?.error || "Erro desconhecido");
+        onSuccess(data.transactionId);
+        return;
       }
-    } catch (err: any) {
-      console.error("M-Pesa payment error:", err);
+
+      const message = data.error || "O M-Pesa não confirmou o pedido. Tente novamente.";
       setStatus("error");
-      const userMessage = await extractFunctionErrorMessage(err);
-      onError(userMessage);
+      setErrorMessage(message);
+      onError(message);
+    } catch (err) {
+      console.error("M-Pesa payment error:", err);
+      const message =
+        err instanceof Error && err.message.trim()
+          ? err.message
+          : "Não foi possível processar o pagamento. Tente novamente.";
+      setStatus("error");
+      setErrorMessage(message);
+      onError(message);
     } finally {
       setProcessing(false);
     }
@@ -120,9 +108,11 @@ const MpesaPaymentStep = ({
           onChange={(e) => setMpesaPhone(e.target.value)}
           placeholder="84 999 9999"
           disabled={processing || status === "success"}
+          inputMode="tel"
+          autoComplete="tel"
         />
         <p className="text-xs text-muted-foreground mt-1">
-          Apenas números Vodacom (84, 85, 86, 87)
+          Aceitamos 84, 85, 86 ou 87. Também pode introduzir o número com +258.
         </p>
       </div>
 
@@ -132,7 +122,7 @@ const MpesaPaymentStep = ({
           <div>
             <p className="text-sm font-medium">A processar pagamento...</p>
             <p className="text-xs text-muted-foreground">
-              Verifique o seu telemóvel e confirme com o PIN M-Pesa
+              Verifique o seu telemóvel e confirme com o PIN M-Pesa.
             </p>
           </div>
         </div>
@@ -141,16 +131,26 @@ const MpesaPaymentStep = ({
       {status === "success" && (
         <div className="flex items-center gap-3 p-4 rounded-lg bg-success/10 border border-success/20">
           <CheckCircle className="w-5 h-5 text-success" />
-          <p className="text-sm font-medium text-success">Pagamento confirmado!</p>
+          <div>
+            <p className="text-sm font-medium text-success">Pedido M-Pesa confirmado.</p>
+            <p className="text-xs text-muted-foreground mt-1">
+              A sua inscrição foi registada com sucesso.
+            </p>
+          </div>
         </div>
       )}
 
       {status === "error" && (
-        <div className="flex items-center gap-3 p-4 rounded-lg bg-destructive/10 border border-destructive/20">
-          <AlertCircle className="w-5 h-5 text-destructive" />
-          <p className="text-sm font-medium text-destructive">
-            Falha no pagamento. Tente novamente.
-          </p>
+        <div className="rounded-lg bg-destructive/10 border border-destructive/20 p-4">
+          <div className="flex items-start gap-3">
+            <AlertCircle className="w-5 h-5 text-destructive shrink-0 mt-0.5" />
+            <div className="min-w-0">
+              <p className="text-sm font-medium text-destructive">Não foi possível concluir o pagamento.</p>
+              {errorMessage && (
+                <p className="text-xs text-muted-foreground mt-1">{errorMessage}</p>
+              )}
+            </div>
+          </div>
         </div>
       )}
 
@@ -170,7 +170,7 @@ const MpesaPaymentStep = ({
           ) : (
             <>
               <Smartphone className="w-4 h-4" />
-              Pagar com M-Pesa
+              {status === "error" ? "Tentar novamente" : "Pagar com M-Pesa"}
             </>
           )}
         </Button>
