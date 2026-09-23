@@ -100,7 +100,7 @@ const TrainingRequestSection = () => {
   };
 
   return (
-    <section id="treinamento-personalizado" className="py-24 bg-section-subtle relative overflow-hidden">
+    <section id="treinamento-personalizado" className="py-20 lg:py-24 bg-section-subtle relative overflow-hidden">
       {/* Decorative elements */}
       <div className="absolute bottom-0 left-0 w-[300px] h-[300px] rounded-full opacity-[0.04] bg-primary blur-3xl" />
       <div className="absolute top-20 right-0 w-[200px] h-[200px] rounded-full opacity-[0.03] bg-accent blur-3xl" />
@@ -111,23 +111,23 @@ const TrainingRequestSection = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-          className="text-center mb-14"
+          className="max-w-2xl mb-10 lg:mb-12"
         >
           <motion.span
-            className="inline-flex items-center gap-2 bg-accent/8 text-accent px-5 py-2 rounded-full text-sm font-semibold mb-5 border border-accent/10"
+            className="inline-flex items-center gap-2 text-accent text-[10px] font-extrabold uppercase tracking-[.16em] mb-4"
             initial={{ opacity: 0, scale: 0.9 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.4, delay: 0.1 }}
           >
-            <Sparkles className="w-4 h-4" />
+            <Sparkles className="w-3.5 h-3.5" />
             Formação à Medida
           </motion.span>
-          <h2 className="font-heading text-3xl md:text-4xl lg:text-5xl font-extrabold text-foreground mb-4">
+          <h2 className="font-heading text-3xl md:text-4xl lg:text-5xl font-extrabold text-foreground leading-tight">
             Treinamento Personalizado
           </h2>
           <motion.p
-            className="text-muted-foreground max-w-2xl mx-auto text-base md:text-lg"
+            className="text-muted-foreground max-w-xl text-sm md:text-base leading-relaxed"
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
@@ -137,12 +137,12 @@ const TrainingRequestSection = () => {
           </motion.p>
         </motion.div>
 
-        <div className="max-w-2xl mx-auto">
+        <div className="max-w-5xl mx-auto">
           {submitted ? (
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="text-center py-16 bg-card border border-border/60 rounded-2xl shadow-card"
+              className="text-center py-16 bg-card border border-border/70 rounded-2xl shadow-card"
             >
               <motion.div
                 initial={{ scale: 0 }}
@@ -155,7 +155,7 @@ const TrainingRequestSection = () => {
               <p className="text-muted-foreground text-sm max-w-md mx-auto mb-8">
                 A nossa equipa irá analisar o seu pedido e entrar em contacto dentro de 48 horas.
               </p>
-              <Button variant="outline" onClick={() => setSubmitted(false)} className="rounded-lg">Enviar outro pedido</Button>
+              <Button variant="outline" onClick={() => setSubmitted(false)} className="rounded-xl">Enviar outro pedido</Button>
             </motion.div>
           ) : (
             <motion.div
@@ -163,7 +163,7 @@ const TrainingRequestSection = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              <form onSubmit={handleSubmit(onSubmit)} className="bg-card border border-border/60 rounded-2xl p-6 md:p-8 shadow-card space-y-6">
+              <form onSubmit={handleSubmit(onSubmit)} className="bg-card border border-border/70 rounded-2xl p-6 md:p-8 lg:p-9 shadow-card space-y-6">
                 {/* Client Type */}
                 <div>
                   <Label className="mb-3 block font-heading font-semibold">Tipo de Cliente *</Label>
@@ -274,7 +274,7 @@ const TrainingRequestSection = () => {
                   </div>
                 </div>
 
-                <Button type="submit" variant="navy" className="w-full rounded-xl" size="lg" disabled={isSubmitting}>
+                <Button type="submit" variant="navy" className="w-full h-12 rounded-xl" size="lg" disabled={isSubmitting}>
                   <Send className="w-4 h-4" />
                   {isSubmitting ? "A enviar..." : "Enviar Pedido de Treinamento"}
                 </Button>
