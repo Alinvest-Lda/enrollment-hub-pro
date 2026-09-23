@@ -56,7 +56,7 @@ const MpesaPaymentStep = ({
     if (!mpesaPhone || mpesaPhone.replace(/\D/g, "").length < 9) {
       toast({
         title: "Número inválido",
-        description: "Introduza um número M-Pesa válido (84/85/86/87).",
+        description: "Introduza um número M-Pesa válido com 9 dígitos (84, 85, 86 ou 87).",
         variant: "destructive",
       });
       return;
@@ -68,7 +68,7 @@ const MpesaPaymentStep = ({
     try {
       const data = await requestMpesaPayment({
         enrollmentId,
-        phone: mpesaPhone,
+        phone: normalizedPhone,
         amount,
         reference,
       });
