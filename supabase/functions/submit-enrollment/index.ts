@@ -193,9 +193,9 @@ Deno.serve(async (req) => {
       await supabase.functions.invoke("notify-admin", {
         body: {
           enrollmentId: enrollment.id,
-          courseName: courseName,
-          studentName: fullName,
-          amount: amountDue,
+          courseName: course.title,
+          studentName: fullName.trim(),
+          amount: expectedAmountDue,
         },
       });
     } catch (notifErr) {
